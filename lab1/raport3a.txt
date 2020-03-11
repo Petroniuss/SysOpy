@@ -1,0 +1,256 @@
+Static library 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.270000l
+	USER_TIME: 0.240000l
+	SYSTEM_TIME: 0.010000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.300000l
+	USER_TIME: 0.290000l
+	SYSTEM_TIME: 0.010000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 10 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 10 --------------
+	REAL_TIME: 16.290000l
+	USER_TIME: 13.120000l
+	SYSTEM_TIME: 3.100000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.280000l
+	USER_TIME: 0.270000l
+	SYSTEM_TIME: 0.010000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Huge Test (20 files - large/very large) E.coli bible.txt pi.txt kennedy.xls plrbn12.txt xargs.1 alphabet.txt alice29.txt a.txt world192.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 20 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 20 --------------
+	REAL_TIME: 107.590000l
+	USER_TIME: 90.840000l
+	SYSTEM_TIME: 15.980000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Shared library 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.270000l
+	USER_TIME: 0.220000l
+	SYSTEM_TIME: 0.030000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.270000l
+	USER_TIME: 0.270000l
+	SYSTEM_TIME: 0.010000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 10 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 10 --------------
+	REAL_TIME: 16.940000l
+	USER_TIME: 13.620000l
+	SYSTEM_TIME: 3.270000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.280000l
+	USER_TIME: 0.270000l
+	SYSTEM_TIME: 0.020000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Huge Test (20 files - large/very large) E.coli bible.txt pi.txt kennedy.xls plrbn12.txt xargs.1 alphabet.txt alice29.txt a.txt world192.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 20 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 20 --------------
+	REAL_TIME: 113.400000l
+	USER_TIME: 96.610000l
+	SYSTEM_TIME: 16.710000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Shared library, dynamically loaded
+Shared library 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.270000l
+	USER_TIME: 0.220000l
+	SYSTEM_TIME: 0.030000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.270000l
+	USER_TIME: 0.270000l
+	SYSTEM_TIME: 0.010000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 10 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 10 --------------
+	REAL_TIME: 16.940000l
+	USER_TIME: 13.620000l
+	SYSTEM_TIME: 3.270000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.280000l
+	USER_TIME: 0.270000l
+	SYSTEM_TIME: 0.020000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Huge Test (20 files - large/very large) E.coli bible.txt pi.txt kennedy.xls plrbn12.txt xargs.1 alphabet.txt alice29.txt a.txt world192.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 20 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 20 --------------
+	REAL_TIME: 113.400000l
+	USER_TIME: 96.610000l
+	SYSTEM_TIME: 16.710000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+
+COMMENT:
+Static libraries are faster than dynamic libraries although I haven't noticed huge overhead.

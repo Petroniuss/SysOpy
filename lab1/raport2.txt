@@ -1,0 +1,445 @@
+Testing with flags: gcc -Wall 
+Static library 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.070000l
+	USER_TIME: 0.030000l
+	SYSTEM_TIME: 0.020000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.040000l
+	SYSTEM_TIME: 0.020000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 10 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 10 --------------
+	REAL_TIME: 8.940000l
+	USER_TIME: 5.060000l
+	SYSTEM_TIME: 3.840000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.050000l
+	SYSTEM_TIME: 0.010000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Huge Test (20 files - large/very large) E.coli bible.txt pi.txt kennedy.xls plrbn12.txt xargs.1 alphabet.txt alice29.txt a.txt world192.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 20 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 20 --------------
+	REAL_TIME: 45.970000l
+	USER_TIME: 28.730000l
+	SYSTEM_TIME: 17.150000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Shared library, dynamically loaded 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.040000l
+	SYSTEM_TIME: 0.010000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.040000l
+	SYSTEM_TIME: 0.020000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 10 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 10 --------------
+	REAL_TIME: 6.490000l
+	USER_TIME: 3.260000l
+	SYSTEM_TIME: 3.200000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.050000l
+	SYSTEM_TIME: 0.010000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Huge Test (20 files - large/very large) E.coli bible.txt pi.txt kennedy.xls plrbn12.txt xargs.1 alphabet.txt alice29.txt a.txt world192.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 20 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 20 --------------
+	REAL_TIME: 42.360000l
+	USER_TIME: 26.050000l
+	SYSTEM_TIME: 16.150000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Shared library 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.070000l
+	USER_TIME: 0.020000l
+	SYSTEM_TIME: 0.020000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.050000l
+	USER_TIME: 0.050000l
+	SYSTEM_TIME: 0.020000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 10 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 10 --------------
+	REAL_TIME: 6.570000l
+	USER_TIME: 3.290000l
+	SYSTEM_TIME: 3.250000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.030000l
+	SYSTEM_TIME: 0.020000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Huge Test (20 files - large/very large) E.coli bible.txt pi.txt kennedy.xls plrbn12.txt xargs.1 alphabet.txt alice29.txt a.txt world192.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 20 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 20 --------------
+	REAL_TIME: 45.860000l
+	USER_TIME: 28.650000l
+	SYSTEM_TIME: 17.140000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.250000l
+	USER_TIME: 0.030000l
+	SYSTEM_TIME: 0.030000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.030000l
+	SYSTEM_TIME: 0.030000l
+
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.070000l
+	USER_TIME: 0.040000l
+	SYSTEM_TIME: 0.010000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.050000l
+	SYSTEM_TIME: 0.010000l
+
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.080000l
+	USER_TIME: 0.020000l
+	SYSTEM_TIME: 0.030000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.060000l
+	SYSTEM_TIME: 0.010000l
+
+Static library 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.080000l
+	USER_TIME: 0.030000l
+	SYSTEM_TIME: 0.030000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.040000l
+	SYSTEM_TIME: 0.010000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 10 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 10 --------------
+	REAL_TIME: 8.240000l
+	USER_TIME: 3.470000l
+	SYSTEM_TIME: 3.070000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.060000l
+	USER_TIME: 0.040000l
+	SYSTEM_TIME: 0.030000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Huge Test (20 files - large/very large) E.coli bible.txt pi.txt kennedy.xls plrbn12.txt xargs.1 alphabet.txt alice29.txt a.txt world192.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
+create_table 20 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 20 --------------
+	REAL_TIME: 39.430000l
+	USER_TIME: 23.790000l
+	SYSTEM_TIME: 15.410000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Testing with flags: gcc -Wall 
+Static library 
+Small Test (4 files - small files) a.txt b.txt cp.html grammar.lsp
+create_table 4 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+compare_pairs 4 --------------
+	REAL_TIME: 0.130000l
+	USER_TIME: 0.030000l
+	SYSTEM_TIME: 0.020000l
+
+Remove operation 1 2 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove operation 1 0 --------------
+	REAL_TIME: 0.000000l
+	USER_TIME: 0.000000l
+	SYSTEM_TIME: 0.000000l
+
+Remove_block 0 1000 --------------
+	REAL_TIME: 0.050000l
+	USER_TIME: 0.050000l
+	SYSTEM_TIME: 0.020000l
+
+Medium Test (10 files - medium-sized/large files) a.txt b.txt cp.html grammar.lsp lcet10.txt asyoulik.txt aaa.txt alphabet.txt
