@@ -8,3 +8,12 @@ CC=gcc -Wall
 
 io: $(OBJ)
 	$(CC) -o io $(OBJ)
+
+generate: io
+	./io generate "files/a.txt" 5 10
+
+clean: 
+	rm -r *.o io
+
+.PHONY:
+	generate clean

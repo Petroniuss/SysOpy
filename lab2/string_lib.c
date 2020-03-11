@@ -3,6 +3,7 @@
 #include <time.h>
 #include <string.h>
 #include <ctype.h>
+#include <stdarg.h>
 
 char* concat(const char* s1, const char* s2) {
     int   len    = strlen(s1) + strlen(s2) + 1;
@@ -84,4 +85,6 @@ char* randomString(int length) {
     }
 
     str[length] = '\0';
+
+    return str;
 }
