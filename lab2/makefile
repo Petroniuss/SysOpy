@@ -10,10 +10,10 @@ io: $(OBJ)
 	$(CC) -o io $(OBJ)
 
 generate: io
-	./io generate "files/a.txt" 3 5
+	./io generate "files/a.txt" 24 12
 
 copy: io
-	./io copy "files/a.txt" "files/a-copy.txt" 3 5 -sys
+	./io copy "files/a.txt" "files/a-copy.txt" 24 12 -lib
 
 clean: 
 	rm -r *.o io

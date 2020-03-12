@@ -48,6 +48,27 @@ void copySys(char* src, char* dest, int recordsNum, int recordSize) {
     close(destFd);
 }
 
+void copyLib(char* src, char* dest, int recordsNum, int recordSize) {
+    FILE* srcFilePtr = fopen(src, "r");
+
+    if (!srcFilePtr) {
+        error("Source file does not exist");
+    }
+
+    FILE* destFilePtr = fopen(dest, "a+");
+
+    char* buffer = (char*) malloc(sizeof(char) * (recordSize + 2));
+    size_t bytes = recordSize + 1;
+
+    while (recordsNum-- > 0) {
+        fread(buffer, sizeof(char), bytes, srcFilePtr);
+        fwrite(buffer, sizeof(char), bytes, destFilePtr);
+    }
+
+    fclose(srcFilePtr);
+    fclose(destFilePtr);
+}
+
 int main(int argc, char* argv[]) {
     char msg[250] = "";
     int i = 0;
@@ -69,12 +90,18 @@ int main(int argc, char* argv[]) {
             int   recordsNum = atoi(argv[++i]);
             int   recordSize = atoi(argv[++i]);
 
-            if (strcmp("-sys", argv[++i]) == 0) {
+            i += 1;
+
+            if (strcmp("-sys", argv[i]) == 0) {
                 copySys(src, dest, recordsNum, recordSize);
+            } else if (strcmp("-lib", argv[i]) == 0) {
+                copyLib(src, dest, recordsNum, recordSize);
             } else {
                 error("Not implemented");
             }
 
+            sprintf(msg, "Command: copy src: \"%s\" to \"%s\", %s records, %s bytes each. Flag: %s \n", argv[i - 4], argv[i - 3], argv[i - 2], argv[i - 1], argv[i]);
+            printf("%s", msg);
         } else {
             error("Failed to parse command");
         }
