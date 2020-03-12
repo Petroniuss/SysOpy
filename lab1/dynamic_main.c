@@ -5,7 +5,6 @@
 #include <memory.h>
 #include <unistd.h>
 #include <sys/times.h>
-#include <dlfcn.h>
 #include <ctype.h>
 #include <time.h>
 
