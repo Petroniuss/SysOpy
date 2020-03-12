@@ -73,7 +73,9 @@ void copyLib(char* src, char* dest, int recordsNum, int recordSize) {
     fclose(destFilePtr);
 }
 
-void swapLines(int fd, int i, int j, size_t bytes) {
+// Q-SORT-SYSTEM -----------------------------------------------
+
+void swapLinesWithFileDescriptor(int fd, int i, int j, size_t bytes) {
     char* bufferI = malloc(sizeof(char) * (bytes + 1));
     char* bufferJ = malloc(sizeof(char) * (bytes + 1));
 
@@ -108,15 +110,14 @@ int qSortSysPartition(int fd, int from, int to, size_t bytes) {
         read(fd, e, bytes);
 
         if (strcmp(e, pivot) < 0) {
-            swapLines(fd, ++smaller, i, bytes);
+            swapLinesWithFileDescriptor(fd, ++smaller, i, bytes);
         }
     }
 
-    swapLines(fd, ++smaller, i, bytes);
+    swapLinesWithFileDescriptor(fd, ++smaller, i, bytes);
 
     return smaller;
 }
-
 
 
 void qSortSysRecursive(int fd, int from, int to, size_t bytes) {
@@ -134,6 +135,10 @@ void qSortSysRecursive(int fd, int from, int to, size_t bytes) {
 void qSortSys(char* filename, int recordsNum, int recordSize) {
     int fd = open(filename, O_RDWR);
 
+    if (fd == -1) {
+        error("File does not exist");
+    }
+
     size_t bytes = recordSize + 1;
     int from = 0;
     int to   = recordsNum - 1;
@@ -143,6 +148,86 @@ void qSortSys(char* filename, int recordsNum, int recordSize) {
     close(fd);
 }
 
+// -------------------------------------------------------------------
+
+// Q-SORT-LIBRARY----------------------------------------------------
+
+void swapLines(FILE* file, int i, int j, size_t bytes) {
+    char* bufferI = malloc(sizeof(char) * (bytes + 1));
+    char* bufferJ = malloc(sizeof(char) * (bytes + 1));
+
+    long int iOff = i * bytes;
+    long int jOff = j * bytes;
+
+    fseek(file, iOff, 0);
+    fread(bufferI, sizeof(char), bytes, file);
+
+    fseek(file, jOff, 0);
+    fread(bufferJ, sizeof(char), bytes, file);
+
+    fseek(file, iOff, 0);
+    fwrite(bufferJ, sizeof(char), bytes, file);
+    fseek(file, jOff, 0);
+    fwrite(bufferI, sizeof(char), bytes, file);
+
+    free(bufferI);
+    free(bufferJ);
+}
+
+
+int qSortLibPartition(FILE* file, int from, int to, size_t bytes) {
+    char* pivot = malloc(sizeof(char) * (bytes + 1));
+    char* e     = malloc(sizeof(char) * (bytes + 1));
+
+    fseek(file, to * bytes, 0);
+    fread(pivot, sizeof(char), bytes, file);
+
+    int smaller = from - 1;
+    int i       = from - 1;
+    while (++i < to) {
+        fseek(file, i * bytes, 0);
+        fread(e, sizeof(char), bytes, file);
+
+        if (strcmp(e, pivot) < 0) {
+            swapLines(file, ++smaller, i, bytes);
+        }
+    }
+
+    swapLines(file, ++smaller, i, bytes);
+
+    return smaller;
+}
+
+void qSortLibRecursive(FILE* file, int from, int to, size_t bytes) {
+    if (from >= to) {
+        return;
+    }
+
+    int mid = qSortLibPartition(file, from, to, bytes);
+
+    qSortLibRecursive(file, from, mid - 1, bytes);
+    qSortLibRecursive(file, mid + 1, to, bytes);
+}
+
+
+void qSortLib(char* filename, int recordsNum, int recordSize) {
+    FILE* file = fopen(filename, "r+");
+
+    if (!file) {
+        error("File does not exist!");
+    }
+
+    size_t bytes = recordSize + 1;
+    int from = 0;
+    int to   = recordsNum - 1;
+
+    qSortLibRecursive(file, from, to, bytes);
+
+    fclose(file);
+}
+
+
+// -------------------------------------------------------------------
 
 
 int main(int argc, char* argv[]) {
@@ -150,7 +235,6 @@ int main(int argc, char* argv[]) {
     int i = 0;
     while (++i < argc) {
         const char* command = argv[i];
-        printf("%s\n", command);
         
         if (strcmp("generate", command) == 0) {
             char* filename   = argv[++i];
@@ -188,7 +272,7 @@ int main(int argc, char* argv[]) {
             if (strcmp("-sys", argv[i]) == 0) {
                 qSortSys(filename, recordsNum, recordSize);
             } else if (strcmp("-lib", argv[i]) == 0) {
-                error("Not impl");
+                qSortLib(filename, recordsNum, recordSize);
             } else {
                 error("Not implemented");
             }
