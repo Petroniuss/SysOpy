@@ -10,10 +10,13 @@ io: $(OBJ)
 	$(CC) -o io $(OBJ)
 
 generate: io
-	./io generate "files/a.txt" 24 12
+	./io generate "files/a.txt" 100 1
 
 copy: io
-	./io copy "files/a.txt" "files/a-copy.txt" 24 12 -lib
+	./io copy "files/a.txt" "files/a-copy.txt" 5 1 -lib
+
+sort: io
+	./io sort "files/a.txt" 100	 1 -sys
 
 clean: 
 	rm -r *.o io
