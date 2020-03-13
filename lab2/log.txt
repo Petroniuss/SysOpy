@@ -1,0 +1,7 @@
+Command: generate file "files/a.txt" with 24 records, 1 bytes each.
+Timing ---------------------------
+	REAL_TIME: 0.000000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+

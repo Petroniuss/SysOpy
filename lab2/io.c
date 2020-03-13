@@ -6,11 +6,35 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+#include <time.h>
+#include <memory.h>
+#include <sys/times.h>
+
+// LOGGING ----------------------------------------------------------
 
 void error(char* msg) {
     printf("Error: %s\n", msg);
     exit(0);
 }
+
+void logInfo(FILE* logFile, char* msg) {
+    printf("%s\n", msg);
+    fprintf(logFile, "%s\n", msg);
+}
+
+double timeDifference(clock_t t1, clock_t t2){
+    return ((double)(t2 - t1) / sysconf(_SC_CLK_TCK));
+}
+
+void formatTime(char* buffer, clock_t start, clock_t end, struct tms* t_start, struct tms* t_end){
+    double real = timeDifference(start, end);
+    double user = timeDifference(t_start -> tms_utime, t_end -> tms_utime);
+    double system = timeDifference(t_start -> tms_stime, t_end -> tms_stime);
+    
+    sprintf(buffer, "Timing ---------------------------\n\tREAL_TIME: %fs\n\tUSER_TIME: %fs\n\tSYSTEM_TIME: %fs\n----------------------------------\n", real, user, system);
+}
+
+// -----------------------------------------------------------------
 
 void generate(char* filename, int recordsNum, int recordSize) {
     int fd = open(filename, O_CREAT | O_WRONLY | O_TRUNC, S_IRWXU);
@@ -231,18 +255,27 @@ void qSortLib(char* filename, int recordsNum, int recordSize) {
 
 
 int main(int argc, char* argv[]) {
-    char msg[250] = "";
+    FILE* logFile = fopen("log.txt", "a");
+    
+    clock_t startTime;
+    clock_t endTime;
+    struct tms* tmsStart = calloc(1, sizeof(struct tms*));
+    struct tms* tmsEnd   = calloc(1, sizeof(struct tms*));
+
+    char msg[250];
     int i = 0;
+
     while (++i < argc) {
         const char* command = argv[i];
+        startTime = times(tmsStart);
         
         if (strcmp("generate", command) == 0) {
             char* filename   = argv[++i];
             int   recordsNum = atoi(argv[++i]);
             int   recordSize = atoi(argv[++i]);
 
-            sprintf(msg, "Command: generate file \"%s\" with %s records, %s bytes each. \n", argv[i - 2], argv[i - 1], argv[i]);
-            printf("%s", msg);
+            sprintf(msg, "Command: generate file \"%s\" with %s records, %s bytes each.", argv[i - 2], argv[i - 1], argv[i]);
+            logInfo(logFile, msg);
             generate(filename, recordsNum, recordSize);
         } else if (strcmp("copy", command) == 0) { 
             char* src   = argv[++i];
@@ -252,6 +285,9 @@ int main(int argc, char* argv[]) {
 
             i += 1;
 
+            sprintf(msg, "Command: copy src: \"%s\" to \"%s\", %s records, %s bytes each. Flag: %s", argv[i - 4], argv[i - 3], argv[i - 2], argv[i - 1], argv[i]);
+            logInfo(logFile, msg);
+
             if (strcmp("-sys", argv[i]) == 0) {
                 copySys(src, dest, recordsNum, recordSize);
             } else if (strcmp("-lib", argv[i]) == 0) {
@@ -260,14 +296,14 @@ int main(int argc, char* argv[]) {
                 error("Not implemented");
             }
 
-            sprintf(msg, "Command: copy src: \"%s\" to \"%s\", %s records, %s bytes each. Flag: %s \n", argv[i - 4], argv[i - 3], argv[i - 2], argv[i - 1], argv[i]);
-            printf("%s", msg);
         } else if (strcmp("sort", command) == 0) {
             char* filename   = argv[++i];
             int   recordsNum = atoi(argv[++i]);
             int   recordSize = atoi(argv[++i]);
 
             i += 1;
+            sprintf(msg, "Command: sort file: \"%s\" with %s records, %s bytes each. Flag: %s", argv[i - 3], argv[i - 2], argv[i - 1], argv[i]);
+            logInfo(logFile, msg);
 
             if (strcmp("-sys", argv[i]) == 0) {
                 qSortSys(filename, recordsNum, recordSize);
@@ -281,8 +317,12 @@ int main(int argc, char* argv[]) {
             error("Failed to parse command");
         }
 
-        printf("Done\n");
+        endTime = times(tmsEnd);
+        formatTime(msg, startTime, endTime, tmsStart, tmsEnd);
+        logInfo(logFile, msg);
     }
+
+    fclose(logFile);
 
     return 0;
 }
