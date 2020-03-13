@@ -1,18 +1,21 @@
-#include "string_lib.h"
+#define _XOPEN_SOURCE 500
+#include <ftw.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdint.h>
+#include "string_lib.h"
 #include <ctype.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <string.h>
 #include <time.h>
 #include <memory.h>
 #include <sys/times.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include <limits.h> 
-
+#include <limits.h>
+#include <libgen.h> 
 
 #define MODE_SET       ((unsigned char) '1')
 #define MODE_NOT_SET   ((unsigned char) '0')
@@ -48,6 +51,8 @@ struct FileInfo {
     time_t accessTime;
     time_t modificationTime;
 } typedef FileInfo;
+
+FindArgs* args;
 
 char* formatFileInfo(FileInfo* file) {
     char* infoBuffer = malloc(sizeof(char) * PATH_MAX_SIZE);
@@ -101,6 +106,10 @@ void find(FindArgs* args, char* path, int depth) {
     }
 
     DIR* dir = opendir(path);
+
+    if (!dir) {
+        error("Failed to open directory.");
+    }
 
     struct stat statBuffer;
     char* absPath  = (char*) malloc(sizeof(char) * PATH_MAX_SIZE);
@@ -159,14 +168,69 @@ void find(FindArgs* args, char* path, int depth) {
     free(buffer);
 }
 
+// Find implementation usin nftw
+static int nf(const char* fpath, const struct stat* sb, int tflag, struct FTW* ftwbuffer) {
+    if (ftwbuffer -> level > args -> maxDepth || ftwbuffer -> level == 0) {
+    //    return FTW_SKIP_SUBTREE | FTW_SKIP_SIBLINGS;
+        return 0;
+    }
+
+    struct stat statBuffer = *sb;
+    char* absPath  = (char*) malloc(sizeof(char) * PATH_MAX_SIZE);
+
+    FileInfo* fileInfo = (FileInfo*) malloc(sizeof(FileInfo));
+    fileInfo -> absolutePath = realpath(fpath, absPath);
+    fileInfo -> accessTime = statBuffer.st_atime;
+    fileInfo -> modificationTime = statBuffer.st_mtime;
+    fileInfo -> sizeBytes = statBuffer.st_size;
+    fileInfo -> hardLinks = statBuffer.st_nlink;
+    
+    if (tflag == FTW_D || tflag == FTW_DNR) {
+        fileInfo -> fileType = "dir";
+    } else if (tflag == FTW_F) {
+        fileInfo -> fileType = "file";
+    } else if (tflag == FTW_SL || tflag == FTW_SLN) {
+        fileInfo -> fileType = "slink";
+
+        char* dir = dirname(strdup(fpath));
+        char* filename = basename(strdup(fpath));
+        realpath(dir, absPath);
+        char* cnc = concatWithSeparator(absPath, filename, "/");
+
+        free(absPath);
+        fileInfo -> absolutePath = cnc;
+    } else if (tflag == FTW_NS) {
+        fileInfo -> fileType = "cannot stat";
+    }
+
+    char* info = formatFileInfo(fileInfo);
+
+    if (valid(args, fileInfo)) {
+        printf("%s \n", info);
+    }
+    
+    free(info);
+    free(fileInfo -> absolutePath);
+    free(fileInfo);
+
+    return 0;
+}
+
+void findWithNFTW(char* path) {
+    int flags = 1; // for ignoring symlinks
+
+    nftw(path, nf, 20, flags);
+}
+
 
 // -----------------------------------------------------------------
 
 int main(int argc, char* argv[]) {
     int i = 1;
+    int nftw = 0;
     srand(time(0));
 
-    FindArgs* args = (FindArgs*) malloc(sizeof(FindArgs));
+    args = (FindArgs*) malloc(sizeof(FindArgs));
     char*   path = argv[i];
     args -> aMode = MODE_NOT_SET;
     args -> mMode = MODE_NOT_SET;
@@ -225,12 +289,18 @@ int main(int argc, char* argv[]) {
         } else if (strcmp("-maxdepth", flag) == 0) { 
             args -> maxDepth = atoi(arg);
             args -> maxDepthMode = MODE_SET;
+        } else if (strcmp("-nftw", flag) == 0) {
+            nftw = 1;
         } else {
             error("Uknown flag");
         }
     }
 
-    find(args, path, 1);
+    if (nftw) {
+        findWithNFTW(path);
+    } else {
+        find(args, path, 1);
+    }
 
     return 0;
 }
