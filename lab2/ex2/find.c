@@ -134,15 +134,19 @@ void find(FindArgs* args, char* path, int depth) {
             fileInfo -> fileType = "file";
         } else if (S_ISDIR(statBuffer.st_mode)) {
             fileInfo -> fileType = "dir";
-            find(args, subpath, depth + 1);
+            lstat(subpath, &statBuffer);
+            
+            if (S_ISLNK(statBuffer.st_mode)) {
+                fileInfo -> fileType = "slink";
+            } else {
+                find(args, subpath, depth + 1);
+            }
         } else if (S_ISCHR(statBuffer.st_mode)) {
             fileInfo -> fileType = "char dev";
         } else if (S_ISBLK(statBuffer.st_mode)) {
             fileInfo -> fileType = "block dev";
         } else if (S_ISFIFO(statBuffer.st_mode)) {
             fileInfo -> fileType = "fifo";
-        } else if (S_ISLNK(statBuffer.st_mode)) {
-            fileInfo -> fileType = "slink";
         } else { // Socket
             fileInfo -> fileType = "sock";
         }
