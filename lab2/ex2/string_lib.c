@@ -88,3 +88,25 @@ char* randomString(int length) {
 
     return str;
 }
+
+char* substring(char* str, int start, int end) {
+    if (start >= end)
+        return "";
+    
+    char* substr = (char*) malloc(sizeof(char) * (end - start + 1));
+
+    int i = start - 1;
+    while(++i < end) {
+        substr[i - start] = str[i];
+    }
+
+    substr[end - start] = '\0';
+
+    return substr;
+}
+
+char* suffix(char* str, int from) {
+    int len = strlen(str);
+
+    return substring(str, from, len);
+}

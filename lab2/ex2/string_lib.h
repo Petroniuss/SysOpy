@@ -13,3 +13,7 @@ char* copyString(const char* str);
 int startsWith(const char* str, const char* prefix);
 
 char* randomString(int length);
+
+char* substring(char* str, int start, int end);
+
+char* suffix(char* str, int from); 

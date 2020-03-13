@@ -3,14 +3,16 @@ HEADERS = $(wildcard *.h)
 OBJ := $(patsubst %.c, %.o, $(SRC))
 CC = gcc -Wall 
 
-run: 
+run: find 
 	echo "run"
+	./find "./alal" -mtime +12 -atime -2 -maxdepth 2
+
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $< 
 
-superior-find: $(OBJ)
-	$(CC) -o superior-find $(OBJ)
+find: $(OBJ)
+	$(CC) -o find $(OBJ)
 
 clean: 
 	rm -r *.o io ./tests/*
