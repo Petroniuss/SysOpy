@@ -5,7 +5,7 @@ CC = gcc -Wall
 
 run: find 
 	echo "run"
-	./find "./alal" -mtime +12 -atime -2 -maxdepth 2
+	./find "./tests" -mtime +12 -atime -2 -maxdepth 2
 
 
 %.o: %.c $(HEADERS)
@@ -15,7 +15,7 @@ find: $(OBJ)
 	$(CC) -o find $(OBJ)
 
 clean: 
-	rm -r *.o io ./tests/*
+	rm -r *.o find
 
 .PHONY:
 	clean run

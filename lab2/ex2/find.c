@@ -9,6 +9,10 @@
 #include <time.h>
 #include <memory.h>
 #include <sys/times.h>
+#include <sys/types.h>
+#include <dirent.h>
+#include <limits.h> 
+
 
 #define MODE_SET       ((unsigned char) '1')
 #define MODE_NOT_SET   ((unsigned char) '0')
@@ -16,7 +20,11 @@
 #define MODE_LESS      ((unsigned char) '-')
 #define MODE_PRECISELY ((unsigned char) '=')
 
+#define PATH_MAX_SIZE 1000
+
 // LOGGING ----------------------------------------------------------
+
+FILE* logFile;
 
 void error(char* msg) {
     printf("Error: %s\n", msg);
@@ -28,64 +36,113 @@ void logInfo(FILE* logFile, char* msg) {
     fprintf(logFile, "%s\n", msg);
 }
 
-double timeDifference(clock_t t1, clock_t t2){
-    return ((double)(t2 - t1) / sysconf(_SC_CLK_TCK));
-}
 
-void formatTime(char* buffer, clock_t start, clock_t end, struct tms* t_start, struct tms* t_end){
-    double real = timeDifference(start, end);
-    double user = timeDifference(t_start -> tms_utime, t_end -> tms_utime);
-    double system = timeDifference(t_start -> tms_stime, t_end -> tms_stime);
-
-    sprintf(buffer, "Timing ---------------------------\n\tREAL_TIME: %fs\n\tUSER_TIME: %fs\n\tSYSTEM_TIME: %fs\n----------------------------------\n", real, user, system);
-}
 
 // -----------------------------------------------------------------
 
 struct FindArgs {
-    char* path;
-
     int mTime;
     unsigned char mMode;
-
     int aTime;
     unsigned char aMode;
-
     unsigned char maxDepthMode;
     int maxDepth;
 } typedef FindArgs;
 
-struct Mode {
+struct FileInfo {
+    char* absolutePath;
+    int   hardLinks;
+    char* fileType;
+    long int   sizeBytes;
+    time_t accessTime;
+    time_t modificationTime;
+} typedef FileInfo;
 
-} typedef Mode;
+char* formatFileInfo(FileInfo* file) {
+    char* infoBuffer = malloc(sizeof(char) * PATH_MAX_SIZE);
+    char* accessTime = malloc(sizeof(char) * 26);
+    char* modifiTime = malloc(sizeof(char) * 26);
 
-void showArgs(FindArgs* args) {
-    printf("%s\n", args -> path);
-    printf("%d\n", args -> mTime);
-    printf("%c\n", args -> mMode);
-    printf("%d\n", args -> aTime);
-    printf("%c\n", args -> aMode);
-    printf("%d\n", args -> maxDepth);
-    printf("%c\n", args -> maxDepthMode);
+    struct tm* tmAccess = localtime(&(file -> accessTime));
+    struct tm* tmModif = localtime(&(file -> modificationTime));
+
+    strftime(accessTime, 26, "%Y-%m-%d::%H:%M:%S", tmAccess);
+    strftime(modifiTime, 26, "%Y-%m-%d::%H:%M:%S", tmModif);
+
+    sprintf(infoBuffer, "%s %d %s %ldbytes %s %s",
+                file -> absolutePath, file -> hardLinks, file -> fileType, 
+                file -> sizeBytes, accessTime, modifiTime);
+
+    free(accessTime);
+    free(modifiTime);
+
+    return infoBuffer;
+}
+
+void find(FindArgs* args, char* path, int depth) {
+    DIR* dir = opendir(path);
+
+    struct dirent* dirent = readdir(dir);
+    struct stat*   statBuffer  = (struct stat*) malloc(sizeof(stat));
+    char* absPath  = (char*) malloc(sizeof(char) * PATH_MAX_SIZE);
+    char* buffer   = (char*) malloc(sizeof(char) * (PATH_MAX_SIZE + 100));
+    FileInfo* fileInfo = (FileInfo*) malloc(sizeof(FileInfo));
+
+    realpath(path, absPath);
+
+    while ((dirent = readdir(dir)) != NULL) {
+        char* filename = dirent -> d_name;
+        if (strcmp(filename, ".") == 0 || strcmp(filename, "..") == 0)
+            continue;
+
+        char* absolutePath = concatWithSeparator(absPath, filename, "/");
+        stat(absolutePath, statBuffer);
+
+        fileInfo -> absolutePath = absolutePath;
+        fileInfo -> accessTime = statBuffer -> st_atime;
+        fileInfo -> modificationTime = statBuffer -> st_mtime;
+        fileInfo -> sizeBytes = statBuffer -> st_size;
+
+        if (S_ISREG(statBuffer -> st_mode)) {
+            fileInfo -> fileType = "file";
+        } else if (S_ISDIR(statBuffer -> st_mode)) {
+            fileInfo -> fileType = "dir";
+        } else if (S_ISCHR(statBuffer -> st_mode)) {
+            fileInfo -> fileType = "char dev";
+        } else if (S_ISBLK(statBuffer -> st_mode)) {
+            fileInfo -> fileType = "block dev";
+        } else if (S_ISFIFO(statBuffer -> st_mode)) {
+            fileInfo -> fileType = "fifo";
+        } else if (S_ISLNK(statBuffer -> st_mode)) {
+            fileInfo -> fileType = "slink";
+        } else { // Socket
+            fileInfo -> fileType = "sock";
+        }
+        
+        char* info = formatFileInfo(fileInfo);
+        printf("%s \n", info);
+
+        free(fileInfo -> absolutePath);
+        free(info);
+    }
+
+    free(fileInfo);    
+    free(statBuffer);
+    free(absPath);
+    free(buffer);
 }
 
 
 // -----------------------------------------------------------------
 
 int main(int argc, char* argv[]) {
-    FILE* logFile = fopen("log.txt", "a");
+    logFile = fopen("log.txt", "a");
     
-    clock_t startTime;
-    clock_t endTime;
-    struct tms* tmsStart = calloc(1, sizeof(struct tms*));
-    struct tms* tmsEnd   = calloc(1, sizeof(struct tms*));
-
-    char msg[250];
     int i = 1;
     srand(time(0));
 
     FindArgs* args = (FindArgs*) malloc(sizeof(FindArgs));
-    args -> path = argv[i];
+    char*   path = argv[i];
     args -> aMode = MODE_NOT_SET;
     args -> mMode = MODE_NOT_SET;
     args -> maxDepthMode = MODE_NOT_SET; 
@@ -148,7 +205,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    showArgs(args);
+    find(args, path, 0);
     fclose(logFile);
 
     return 0;
