@@ -24,16 +24,9 @@
 
 // LOGGING ----------------------------------------------------------
 
-FILE* logFile;
-
 void error(char* msg) {
     printf("Error: %s\n", msg);
     exit(0);
-}
-
-void logInfo(FILE* logFile, char* msg) {
-    printf("%s\n", msg);
-    fprintf(logFile, "%s\n", msg);
 }
 
 // -----------------------------------------------------------------
@@ -170,8 +163,6 @@ void find(FindArgs* args, char* path, int depth) {
 // -----------------------------------------------------------------
 
 int main(int argc, char* argv[]) {
-    logFile = fopen("log.txt", "a");
-    
     int i = 1;
     srand(time(0));
 
@@ -239,8 +230,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    find(args, path, 0);
-    fclose(logFile);
+    find(args, path, 1);
 
     return 0;
 }
