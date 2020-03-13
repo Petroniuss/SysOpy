@@ -5,7 +5,7 @@ CC = gcc -Wall
 
 run: find 
 	echo "run"
-	./find "./tests" -mtime +12 -atime -2 -maxdepth 2
+	./find "./tests" -mtime -1 -atime -1 -maxdepth 2
 
 
 %.o: %.c $(HEADERS)

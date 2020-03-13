@@ -36,8 +36,6 @@ void logInfo(FILE* logFile, char* msg) {
     fprintf(logFile, "%s\n", msg);
 }
 
-
-
 // -----------------------------------------------------------------
 
 struct FindArgs {
@@ -79,55 +77,87 @@ char* formatFileInfo(FileInfo* file) {
     return infoBuffer;
 }
 
+int valid(FindArgs* args, FileInfo* info) {
+    time_t currentTime = time(NULL);
+
+    int mDiifD = (int) difftime(currentTime, info -> modificationTime) / (24 * 3600); 
+    int aDiffD = (int) difftime(currentTime, info -> accessTime) / (24 * 3600);
+
+    if (args -> mMode == MODE_PRECISELY && mDiifD != args -> mTime) {
+        return 0;
+    } else if (args -> mMode == MODE_MORE && mDiifD <= args -> mTime) {
+        return 0;
+    } else if (args -> mMode == MODE_LESS && mDiifD >= args -> mTime) {
+        return 0;
+    }
+
+    if (args -> aMode == MODE_PRECISELY && aDiffD != args -> aTime) {
+        return 0;
+    } else if (args -> aMode == MODE_MORE && aDiffD <= args -> aTime) {
+        return 0;
+    } else if (args -> aMode == MODE_LESS && aDiffD >= args -> aTime) {
+        return 0;
+    }
+
+    return 1;
+}
+
 void find(FindArgs* args, char* path, int depth) {
+    if (args -> maxDepthMode == MODE_SET && (args -> maxDepth - depth < 0)) {
+        return;
+    }
+
     DIR* dir = opendir(path);
 
-    struct dirent* dirent = readdir(dir);
-    struct stat*   statBuffer  = (struct stat*) malloc(sizeof(stat));
+    struct stat statBuffer;
     char* absPath  = (char*) malloc(sizeof(char) * PATH_MAX_SIZE);
     char* buffer   = (char*) malloc(sizeof(char) * (PATH_MAX_SIZE + 100));
     FileInfo* fileInfo = (FileInfo*) malloc(sizeof(FileInfo));
 
     realpath(path, absPath);
 
-    while ((dirent = readdir(dir)) != NULL) {
+    for(struct dirent* dirent = readdir(dir); dirent != NULL; dirent = readdir(dir)) {
         char* filename = dirent -> d_name;
         if (strcmp(filename, ".") == 0 || strcmp(filename, "..") == 0)
             continue;
 
-        char* absolutePath = concatWithSeparator(absPath, filename, "/");
-        stat(absolutePath, statBuffer);
+        char* subpath = concatWithSeparator(absPath, filename, "/");
+        stat(subpath, &statBuffer);
 
-        fileInfo -> absolutePath = absolutePath;
-        fileInfo -> accessTime = statBuffer -> st_atime;
-        fileInfo -> modificationTime = statBuffer -> st_mtime;
-        fileInfo -> sizeBytes = statBuffer -> st_size;
+        fileInfo -> absolutePath = subpath;
+        fileInfo -> accessTime = statBuffer.st_atime;
+        fileInfo -> modificationTime = statBuffer.st_mtime;
+        fileInfo -> sizeBytes = statBuffer.st_size;
+        fileInfo -> hardLinks = statBuffer.st_nlink;
 
-        if (S_ISREG(statBuffer -> st_mode)) {
+        if (S_ISREG(statBuffer.st_mode)) {
             fileInfo -> fileType = "file";
-        } else if (S_ISDIR(statBuffer -> st_mode)) {
+        } else if (S_ISDIR(statBuffer.st_mode)) {
             fileInfo -> fileType = "dir";
-        } else if (S_ISCHR(statBuffer -> st_mode)) {
+            find(args, subpath, depth + 1);
+        } else if (S_ISCHR(statBuffer.st_mode)) {
             fileInfo -> fileType = "char dev";
-        } else if (S_ISBLK(statBuffer -> st_mode)) {
+        } else if (S_ISBLK(statBuffer.st_mode)) {
             fileInfo -> fileType = "block dev";
-        } else if (S_ISFIFO(statBuffer -> st_mode)) {
+        } else if (S_ISFIFO(statBuffer.st_mode)) {
             fileInfo -> fileType = "fifo";
-        } else if (S_ISLNK(statBuffer -> st_mode)) {
+        } else if (S_ISLNK(statBuffer.st_mode)) {
             fileInfo -> fileType = "slink";
         } else { // Socket
             fileInfo -> fileType = "sock";
         }
         
         char* info = formatFileInfo(fileInfo);
-        printf("%s \n", info);
+        
+        if (valid(args, fileInfo)) {
+            printf("%s \n", info);
+        }
 
         free(fileInfo -> absolutePath);
         free(info);
     }
 
     free(fileInfo);    
-    free(statBuffer);
     free(absPath);
     free(buffer);
 }
