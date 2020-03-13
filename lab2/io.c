@@ -133,10 +133,13 @@ int qSortSysPartition(int fd, int from, int to, size_t bytes) {
         lseek(fd, i * bytes, SEEK_SET);
         read(fd, e, bytes);
 
-        if (strcmp(e, pivot) < 0) {
+        if (strcmp(e, pivot) <= 0) {
             swapLinesWithFileDescriptor(fd, ++smaller, i, bytes);
         }
     }
+
+    free(pivot);
+    free(e);
 
     swapLinesWithFileDescriptor(fd, ++smaller, i, bytes);
 
@@ -212,10 +215,13 @@ int qSortLibPartition(FILE* file, int from, int to, size_t bytes) {
         fseek(file, i * bytes, 0);
         fread(e, sizeof(char), bytes, file);
 
-        if (strcmp(e, pivot) < 0) {
+        if (strcmp(e, pivot) <= 0) {
             swapLines(file, ++smaller, i, bytes);
         }
     }
+
+    free(pivot);
+    free(e);
 
     swapLines(file, ++smaller, i, bytes);
 
@@ -264,6 +270,7 @@ int main(int argc, char* argv[]) {
 
     char msg[250];
     int i = 0;
+    srand(time(0));
 
     while (++i < argc) {
         const char* command = argv[i];
