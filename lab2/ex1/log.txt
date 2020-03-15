@@ -1,630 +1,210 @@
-Command: generate file "tests/test_1.txt" with 1000 records, 1 bytes each.
+Command: generate file "tests/test_1.txt" with 100 records, 1 bytes each.
 Timing ---------------------------
 	REAL_TIME: 0.000000s
 	USER_TIME: 0.000000s
 	SYSTEM_TIME: 0.000000s
 ----------------------------------
 
-Command: copy src: "tests/test_1.txt" to "tests/test_1-sys.txt", 1000 records, 1 bytes each. Flag: -sys
+Command: copy src: "tests/test_1.txt" to "tests/test_1-sys.txt", 100 records, 1 bytes each. Flag: -sys
+Timing ---------------------------
+	REAL_TIME: 0.000000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: copy src: "tests/test_1.txt" to "tests/test_1-lib.txt", 100 records, 1 bytes each. Flag: -lib
+Timing ---------------------------
+	REAL_TIME: 0.000000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: sort file: "tests/test_1-lib.txt" with 100 records, 1 bytes each. Flag: -lib
 Timing ---------------------------
 	REAL_TIME: 0.010000s
 	USER_TIME: 0.000000s
 	SYSTEM_TIME: 0.000000s
 ----------------------------------
 
-Command: copy src: "tests/test_1.txt" to "tests/test_1-lib.txt", 1000 records, 1 bytes each. Flag: -lib
+Command: sort file: "tests/test_1-sys.txt" with 100 records, 1 bytes each. Flag: -sys
 Timing ---------------------------
 	REAL_TIME: 0.000000s
 	USER_TIME: 0.000000s
 	SYSTEM_TIME: 0.000000s
 ----------------------------------
 
-Command: sort file: "tests/test_1-lib.txt" with 1000 records, 1 bytes each. Flag: -lib
+Command: generate file "tests/test_4.txt" with 100 records, 4 bytes each.
 Timing ---------------------------
-	REAL_TIME: 0.210000s
-	USER_TIME: 0.120000s
-	SYSTEM_TIME: 0.080000s
+	REAL_TIME: 0.000000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
 ----------------------------------
 
-Command: sort file: "tests/test_1-sys.txt" with 1000 records, 1 bytes each. Flag: -sys
+Command: copy src: "tests/test_4.txt" to "tests/test_4-sys.txt", 100 records, 4 bytes each. Flag: -sys
+Timing ---------------------------
+	REAL_TIME: 0.000000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: copy src: "tests/test_4.txt" to "tests/test_4-lib.txt", 100 records, 4 bytes each. Flag: -lib
+Timing ---------------------------
+	REAL_TIME: 0.000000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: sort file: "tests/test_4-lib.txt" with 100 records, 4 bytes each. Flag: -lib
+Timing ---------------------------
+	REAL_TIME: 0.010000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: sort file: "tests/test_4-sys.txt" with 100 records, 4 bytes each. Flag: -sys
+Timing ---------------------------
+	REAL_TIME: 0.000000s
+	USER_TIME: 0.000000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: generate file "tests/test_512.txt" with 15000 records, 512 bytes each.
+Timing ---------------------------
+	REAL_TIME: 0.120000s
+	USER_TIME: 0.110000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: copy src: "tests/test_512.txt" to "tests/test_512-sys.txt", 15000 records, 512 bytes each. Flag: -sys
+Timing ---------------------------
+	REAL_TIME: 0.050000s
+	USER_TIME: 0.010000s
+	SYSTEM_TIME: 0.030000s
+----------------------------------
+
+Command: copy src: "tests/test_512.txt" to "tests/test_512-lib.txt", 15000 records, 512 bytes each. Flag: -lib
+Timing ---------------------------
+	REAL_TIME: 0.010000s
+	USER_TIME: 0.010000s
+	SYSTEM_TIME: 0.000000s
+----------------------------------
+
+Command: sort file: "tests/test_512-lib.txt" with 15000 records, 512 bytes each. Flag: -lib
+Timing ---------------------------
+	REAL_TIME: 1.870000s
+	USER_TIME: 0.940000s
+	SYSTEM_TIME: 0.920000s
+----------------------------------
+
+Command: sort file: "tests/test_512-sys.txt" with 15000 records, 512 bytes each. Flag: -sys
+Timing ---------------------------
+	REAL_TIME: 1.370000s
+	USER_TIME: 0.710000s
+	SYSTEM_TIME: 0.640000s
+----------------------------------
+
+Command: generate file "tests/test_1024.txt" with 15000 records, 1024 bytes each.
 Timing ---------------------------
 	REAL_TIME: 0.190000s
-	USER_TIME: 0.080000s
-	SYSTEM_TIME: 0.090000s
-----------------------------------
-
-Command: generate file "tests/test_4.txt" with 10000 records, 4 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.020000s
-	USER_TIME: 0.000000s
+	USER_TIME: 0.160000s
 	SYSTEM_TIME: 0.020000s
 ----------------------------------
 
-Command: copy src: "tests/test_4.txt" to "tests/test_4-sys.txt", 10000 records, 4 bytes each. Flag: -sys
+Command: copy src: "tests/test_1024.txt" to "tests/test_1024-sys.txt", 15000 records, 1024 bytes each. Flag: -sys
 Timing ---------------------------
-	REAL_TIME: 0.030000s
+	REAL_TIME: 0.050000s
+	USER_TIME: 0.020000s
+	SYSTEM_TIME: 0.030000s
+----------------------------------
+
+Command: copy src: "tests/test_1024.txt" to "tests/test_1024-lib.txt", 15000 records, 1024 bytes each. Flag: -lib
+Timing ---------------------------
+	REAL_TIME: 0.020000s
 	USER_TIME: 0.000000s
 	SYSTEM_TIME: 0.010000s
 ----------------------------------
 
-Command: copy src: "tests/test_4.txt" to "tests/test_4-lib.txt", 10000 records, 4 bytes each. Flag: -lib
+Command: sort file: "tests/test_1024-lib.txt" with 15000 records, 1024 bytes each. Flag: -lib
 Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
+	REAL_TIME: 1.690000s
+	USER_TIME: 0.810000s
+	SYSTEM_TIME: 0.860000s
 ----------------------------------
 
-Command: sort file: "tests/test_4-lib.txt" with 10000 records, 4 bytes each. Flag: -lib
+Command: sort file: "tests/test_1024-sys.txt" with 15000 records, 1024 bytes each. Flag: -sys
 Timing ---------------------------
-	REAL_TIME: 0.810000s
-	USER_TIME: 0.380000s
-	SYSTEM_TIME: 0.430000s
+	REAL_TIME: 1.190000s
+	USER_TIME: 0.500000s
+	SYSTEM_TIME: 0.670000s
 ----------------------------------
 
-Command: sort file: "tests/test_4-sys.txt" with 10000 records, 4 bytes each. Flag: -sys
+Command: generate file "tests/test_4096.txt" with 15000 records, 4096 bytes each.
 Timing ---------------------------
-	REAL_TIME: 0.750000s
-	USER_TIME: 0.380000s
-	SYSTEM_TIME: 0.360000s
-----------------------------------
-
-Command: generate file "tests/test_512.txt" with 1000 records, 512 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_512.txt" to "tests/test_512-sys.txt", 1000 records, 512 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_512.txt" to "tests/test_512-lib.txt", 1000 records, 512 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_512-lib.txt" with 1000 records, 512 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.070000s
-	USER_TIME: 0.050000s
-	SYSTEM_TIME: 0.010000s
-----------------------------------
-
-Command: sort file: "tests/test_512-sys.txt" with 1000 records, 512 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.060000s
-	USER_TIME: 0.010000s
+	REAL_TIME: 0.700000s
+	USER_TIME: 0.650000s
 	SYSTEM_TIME: 0.040000s
 ----------------------------------
 
-Command: generate file "tests/test_1024.txt" with 1000 records, 1024 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.010000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1024.txt" to "tests/test_1024-sys.txt", 1000 records, 1024 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1024.txt" to "tests/test_1024-lib.txt", 1000 records, 1024 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_1024-lib.txt" with 1000 records, 1024 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.100000s
-	USER_TIME: 0.050000s
-	SYSTEM_TIME: 0.030000s
-----------------------------------
-
-Command: sort file: "tests/test_1024-sys.txt" with 1000 records, 1024 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.060000s
-	USER_TIME: 0.030000s
-	SYSTEM_TIME: 0.030000s
-----------------------------------
-
-Command: generate file "tests/test_4096.txt" with 1000 records, 4096 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.050000s
-	USER_TIME: 0.040000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_4096.txt" to "tests/test_4096-sys.txt", 1000 records, 4096 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_4096.txt" to "tests/test_4096-lib.txt", 1000 records, 4096 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_4096-lib.txt" with 1000 records, 4096 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.120000s
-	USER_TIME: 0.040000s
-	SYSTEM_TIME: 0.070000s
-----------------------------------
-
-Command: sort file: "tests/test_4096-sys.txt" with 1000 records, 4096 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.070000s
-	USER_TIME: 0.040000s
-	SYSTEM_TIME: 0.020000s
-----------------------------------
-
-Command: generate file "tests/test_8192.txt" with 1000 records, 8192 bytes each.
+Command: copy src: "tests/test_4096.txt" to "tests/test_4096-sys.txt", 15000 records, 4096 bytes each. Flag: -sys
 Timing ---------------------------
 	REAL_TIME: 0.090000s
-	USER_TIME: 0.080000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_8192.txt" to "tests/test_8192-sys.txt", 1000 records, 8192 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_8192.txt" to "tests/test_8192-lib.txt", 1000 records, 8192 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.020000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_8192-lib.txt" with 1000 records, 8192 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.150000s
-	USER_TIME: 0.060000s
-	SYSTEM_TIME: 0.090000s
-----------------------------------
-
-Command: sort file: "tests/test_8192-sys.txt" with 1000 records, 8192 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.090000s
-	USER_TIME: 0.010000s
-	SYSTEM_TIME: 0.070000s
-----------------------------------
-
-Command: generate file "tests/test_1.txt" with 1000 records, 1 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1.txt" to "tests/test_1-sys.txt", 1000 records, 1 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1.txt" to "tests/test_1-lib.txt", 1000 records, 1 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_1-lib.txt" with 1000 records, 1 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.210000s
-	USER_TIME: 0.070000s
-	SYSTEM_TIME: 0.130000s
-----------------------------------
-
-Command: sort file: "tests/test_1-sys.txt" with 1000 records, 1 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.180000s
-	USER_TIME: 0.110000s
+	USER_TIME: 0.020000s
 	SYSTEM_TIME: 0.060000s
 ----------------------------------
 
-Command: generate file "tests/test_4.txt" with 10000 records, 4 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.030000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.010000s
-----------------------------------
-
-Command: copy src: "tests/test_4.txt" to "tests/test_4-sys.txt", 10000 records, 4 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.030000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.010000s
-----------------------------------
-
-Command: copy src: "tests/test_4.txt" to "tests/test_4-lib.txt", 10000 records, 4 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_4-lib.txt" with 10000 records, 4 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.810000s
-	USER_TIME: 0.470000s
-	SYSTEM_TIME: 0.330000s
-----------------------------------
-
-Command: sort file: "tests/test_4-sys.txt" with 10000 records, 4 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.740000s
-	USER_TIME: 0.370000s
-	SYSTEM_TIME: 0.360000s
-----------------------------------
-
-Command: generate file "tests/test_512.txt" with 1000 records, 512 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_512.txt" to "tests/test_512-sys.txt", 1000 records, 512 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_512.txt" to "tests/test_512-lib.txt", 1000 records, 512 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_512-lib.txt" with 1000 records, 512 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.070000s
-	USER_TIME: 0.030000s
-	SYSTEM_TIME: 0.030000s
-----------------------------------
-
-Command: sort file: "tests/test_512-sys.txt" with 1000 records, 512 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.060000s
-	USER_TIME: 0.020000s
-	SYSTEM_TIME: 0.030000s
-----------------------------------
-
-Command: generate file "tests/test_1024.txt" with 1000 records, 1024 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.010000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1024.txt" to "tests/test_1024-sys.txt", 1000 records, 1024 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1024.txt" to "tests/test_1024-lib.txt", 1000 records, 1024 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_1024-lib.txt" with 1000 records, 1024 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.090000s
-	USER_TIME: 0.030000s
-	SYSTEM_TIME: 0.050000s
-----------------------------------
-
-Command: sort file: "tests/test_1024-sys.txt" with 1000 records, 1024 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.080000s
-	USER_TIME: 0.030000s
-	SYSTEM_TIME: 0.030000s
-----------------------------------
-
-Command: generate file "tests/test_4096.txt" with 1000 records, 4096 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.040000s
-	USER_TIME: 0.040000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_4096.txt" to "tests/test_4096-sys.txt", 1000 records, 4096 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_4096.txt" to "tests/test_4096-lib.txt", 1000 records, 4096 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_4096-lib.txt" with 1000 records, 4096 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.120000s
-	USER_TIME: 0.060000s
-	SYSTEM_TIME: 0.050000s
-----------------------------------
-
-Command: sort file: "tests/test_4096-sys.txt" with 1000 records, 4096 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.070000s
-	USER_TIME: 0.030000s
-	SYSTEM_TIME: 0.030000s
-----------------------------------
-
-Command: generate file "tests/test_8192.txt" with 1000 records, 8192 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.090000s
-	USER_TIME: 0.080000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_8192.txt" to "tests/test_8192-sys.txt", 1000 records, 8192 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_8192.txt" to "tests/test_8192-lib.txt", 1000 records, 8192 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_8192-lib.txt" with 1000 records, 8192 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.160000s
-	USER_TIME: 0.050000s
-	SYSTEM_TIME: 0.100000s
-----------------------------------
-
-Command: sort file: "tests/test_8192-sys.txt" with 1000 records, 8192 bytes each. Flag: -sys
+Command: copy src: "tests/test_4096.txt" to "tests/test_4096-lib.txt", 15000 records, 4096 bytes each. Flag: -lib
 Timing ---------------------------
 	REAL_TIME: 0.080000s
 	USER_TIME: 0.020000s
 	SYSTEM_TIME: 0.050000s
 ----------------------------------
 
-Command: generate file "tests/test_1.txt" with 1000 records, 1 bytes each.
+Command: sort file: "tests/test_4096-lib.txt" with 15000 records, 4096 bytes each. Flag: -lib
 Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1.txt" to "tests/test_1-sys.txt", 1000 records, 1 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.020000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_1.txt" to "tests/test_1-lib.txt", 1000 records, 1 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_1-lib.txt" with 1000 records, 1 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.740000s
-	USER_TIME: 0.350000s
-	SYSTEM_TIME: 0.370000s
-----------------------------------
-
-Command: sort file: "tests/test_1-sys.txt" with 1000 records, 1 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.660000s
-	USER_TIME: 0.360000s
-	SYSTEM_TIME: 0.290000s
-----------------------------------
-
-Command: generate file "tests/test_4.txt" with 10000 records, 4 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.070000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.060000s
-----------------------------------
-
-Command: copy src: "tests/test_4.txt" to "tests/test_4-sys.txt", 10000 records, 4 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.090000s
-	USER_TIME: 0.020000s
-	SYSTEM_TIME: 0.060000s
-----------------------------------
-
-Command: copy src: "tests/test_4.txt" to "tests/test_4-lib.txt", 10000 records, 4 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_4-lib.txt" with 10000 records, 4 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 3.420000s
-	USER_TIME: 1.660000s
+	REAL_TIME: 3.030000s
+	USER_TIME: 1.280000s
 	SYSTEM_TIME: 1.750000s
 ----------------------------------
 
-Command: sort file: "tests/test_4-sys.txt" with 10000 records, 4 bytes each. Flag: -sys
+Command: sort file: "tests/test_4096-sys.txt" with 15000 records, 4096 bytes each. Flag: -sys
 Timing ---------------------------
-	REAL_TIME: 3.150000s
-	USER_TIME: 1.510000s
-	SYSTEM_TIME: 1.630000s
+	REAL_TIME: 1.680000s
+	USER_TIME: 0.680000s
+	SYSTEM_TIME: 0.990000s
 ----------------------------------
 
-Command: generate file "tests/test_512.txt" with 1000 records, 512 bytes each.
+Command: generate file "tests/test_8192.txt" with 15000 records, 8192 bytes each.
 Timing ---------------------------
-	REAL_TIME: 0.040000s
-	USER_TIME: 0.020000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_512.txt" to "tests/test_512-sys.txt", 1000 records, 512 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: copy src: "tests/test_512.txt" to "tests/test_512-lib.txt", 1000 records, 512 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.000000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_512-lib.txt" with 1000 records, 512 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.240000s
-	USER_TIME: 0.120000s
-	SYSTEM_TIME: 0.110000s
-----------------------------------
-
-Command: sort file: "tests/test_512-sys.txt" with 1000 records, 512 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.200000s
-	USER_TIME: 0.090000s
-	SYSTEM_TIME: 0.100000s
-----------------------------------
-
-Command: generate file "tests/test_1024.txt" with 1000 records, 1024 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.050000s
-	USER_TIME: 0.030000s
-	SYSTEM_TIME: 0.010000s
-----------------------------------
-
-Command: copy src: "tests/test_1024.txt" to "tests/test_1024-sys.txt", 1000 records, 1024 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.010000s
-----------------------------------
-
-Command: copy src: "tests/test_1024.txt" to "tests/test_1024-lib.txt", 1000 records, 1024 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.010000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.000000s
-----------------------------------
-
-Command: sort file: "tests/test_1024-lib.txt" with 1000 records, 1024 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.290000s
-	USER_TIME: 0.130000s
-	SYSTEM_TIME: 0.150000s
-----------------------------------
-
-Command: sort file: "tests/test_1024-sys.txt" with 1000 records, 1024 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.210000s
-	USER_TIME: 0.110000s
+	REAL_TIME: 1.390000s
+	USER_TIME: 1.300000s
 	SYSTEM_TIME: 0.090000s
 ----------------------------------
 
-Command: generate file "tests/test_4096.txt" with 1000 records, 4096 bytes each.
+Command: copy src: "tests/test_8192.txt" to "tests/test_8192-sys.txt", 15000 records, 8192 bytes each. Flag: -sys
 Timing ---------------------------
-	REAL_TIME: 0.170000s
-	USER_TIME: 0.130000s
-	SYSTEM_TIME: 0.020000s
-----------------------------------
-
-Command: copy src: "tests/test_4096.txt" to "tests/test_4096-sys.txt", 1000 records, 4096 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.010000s
+	REAL_TIME: 0.130000s
 	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.010000s
+	SYSTEM_TIME: 0.120000s
 ----------------------------------
 
-Command: copy src: "tests/test_4096.txt" to "tests/test_4096-lib.txt", 1000 records, 4096 bytes each. Flag: -lib
+Command: copy src: "tests/test_8192.txt" to "tests/test_8192-lib.txt", 15000 records, 8192 bytes each. Flag: -lib
 Timing ---------------------------
-	REAL_TIME: 0.020000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.010000s
+	REAL_TIME: 0.140000s
+	USER_TIME: 0.020000s
+	SYSTEM_TIME: 0.110000s
 ----------------------------------
 
-Command: sort file: "tests/test_4096-lib.txt" with 1000 records, 4096 bytes each. Flag: -lib
+Command: sort file: "tests/test_8192-lib.txt" with 15000 records, 8192 bytes each. Flag: -lib
 Timing ---------------------------
-	REAL_TIME: 0.480000s
-	USER_TIME: 0.200000s
-	SYSTEM_TIME: 0.260000s
+	REAL_TIME: 3.410000s
+	USER_TIME: 1.420000s
+	SYSTEM_TIME: 1.970000s
 ----------------------------------
 
-Command: sort file: "tests/test_4096-sys.txt" with 1000 records, 4096 bytes each. Flag: -sys
+Command: sort file: "tests/test_8192-sys.txt" with 15000 records, 8192 bytes each. Flag: -sys
 Timing ---------------------------
-	REAL_TIME: 0.270000s
-	USER_TIME: 0.100000s
-	SYSTEM_TIME: 0.160000s
-----------------------------------
-
-Command: generate file "tests/test_8192.txt" with 1000 records, 8192 bytes each.
-Timing ---------------------------
-	REAL_TIME: 0.330000s
-	USER_TIME: 0.300000s
-	SYSTEM_TIME: 0.020000s
-----------------------------------
-
-Command: copy src: "tests/test_8192.txt" to "tests/test_8192-sys.txt", 1000 records, 8192 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.020000s
-	USER_TIME: 0.000000s
-	SYSTEM_TIME: 0.020000s
-----------------------------------
-
-Command: copy src: "tests/test_8192.txt" to "tests/test_8192-lib.txt", 1000 records, 8192 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.030000s
-	USER_TIME: 0.010000s
-	SYSTEM_TIME: 0.010000s
-----------------------------------
-
-Command: sort file: "tests/test_8192-lib.txt" with 1000 records, 8192 bytes each. Flag: -lib
-Timing ---------------------------
-	REAL_TIME: 0.560000s
-	USER_TIME: 0.280000s
-	SYSTEM_TIME: 0.270000s
-----------------------------------
-
-Command: sort file: "tests/test_8192-sys.txt" with 1000 records, 8192 bytes each. Flag: -sys
-Timing ---------------------------
-	REAL_TIME: 0.290000s
-	USER_TIME: 0.090000s
-	SYSTEM_TIME: 0.200000s
+	REAL_TIME: 1.840000s
+	USER_TIME: 0.600000s
+	SYSTEM_TIME: 1.230000s
 ----------------------------------
 
