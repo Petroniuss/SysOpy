@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
@@ -119,6 +120,54 @@ char* suffix(char* str, int from) {
 
 // FILE UTILS ----------------------------------
 
+// This ugly thing allows for inserting into files.. Note that it's not very efficient.
+int finsert(FILE* file, const char *buffer) {
+    long int insert_pos = ftell(file);
+    if (insert_pos < 0) return insert_pos;
+
+    // Grow from the bottom
+    int seek_ret = fseek(file, 0, SEEK_END);
+    if (seek_ret) return seek_ret;
+    long int total_left_to_move = ftell(file);
+    if (total_left_to_move < 0) return total_left_to_move;
+
+    char move_buffer[1024];
+    long int ammount_to_grow = strlen(buffer);
+    if (ammount_to_grow >= sizeof(move_buffer)) return -1;
+
+    total_left_to_move -= insert_pos;
+
+    for(;;) {
+        int ammount_to_move = sizeof(move_buffer);
+        if (total_left_to_move < ammount_to_move) ammount_to_move = total_left_to_move;
+
+        long int read_pos = insert_pos + total_left_to_move - ammount_to_move;
+
+        seek_ret = fseek(file, read_pos, SEEK_SET);
+        if (seek_ret) return seek_ret;
+        fread(move_buffer, ammount_to_move, 1, file);
+        if (ferror(file)) return ferror(file);
+
+        seek_ret = fseek(file, read_pos + ammount_to_grow, SEEK_SET);
+        if (seek_ret) return seek_ret;
+        fwrite(move_buffer, ammount_to_move, 1, file);
+        if (ferror(file)) return ferror(file);
+
+        total_left_to_move -= ammount_to_move;
+
+        if (!total_left_to_move) break;
+
+    }
+
+    seek_ret = fseek(file, insert_pos, SEEK_SET);
+    if (seek_ret) return seek_ret;
+    fwrite(buffer, ammount_to_grow, 1, file);
+    if (ferror(file)) return ferror(file);
+
+    return 0;
+}
+
+
 // Move file pointer to start of specified line.
 void movePtrToLine(FILE* ptr, int line) {
     fseek(ptr, 0, SEEK_SET);
@@ -191,3 +240,40 @@ void readColumn(Matrix* matrix, int* nums, int col) {
         movePtrToNextLine(matrix -> filePtr);
     }
 }
+
+Matrix* createResultFile(char* filename, int rows, int cols) {
+    Matrix* matrix = malloc(sizeof(Matrix));
+
+    matrix -> filePtr = fopen(filename, "w+");
+    matrix -> rows    = rows;
+    matrix -> cols    = cols;
+
+    for(int j = 0; j < rows; j++) {
+        for(int i = 1; i < cols; i++) {
+            fputc(' ', matrix -> filePtr);
+        }
+        fputc('\n', matrix -> filePtr);
+    }
+
+    fflush(matrix -> filePtr);
+
+    return matrix;
+}
+
+void writeResult(Matrix* matrixX, int row, int col, int res) {
+    movePtrToLine(matrixX -> filePtr, row);
+
+    int spaces = 0;
+    while (spaces < col) {
+        if (getc(matrixX -> filePtr) == ' ')
+            spaces++;
+    }
+    
+    char* strNum = numberToString(res);
+
+    finsert(matrixX -> filePtr, strNum);
+    fflush(matrixX -> filePtr);
+
+    free(strNum);
+}
+

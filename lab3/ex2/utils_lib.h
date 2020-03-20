@@ -28,6 +28,8 @@ char* substring(char* str, int start, int end);
 char* suffix(char* str, int from); 
 
 // File uitls
+int finsert(FILE* file, const char *buffer);
+
 int countLines(FILE* filePtr);
 
 void movePtrToLine(FILE* ptr, int line);
@@ -40,4 +42,8 @@ void readRow(Matrix* matrix, int* nums, int row);
 void readNextRow(Matrix* matrix, int* nums);
 
 void readColumn(Matrix* matrix, int* nums, int col);
+
+Matrix* createResultFile(char* filename, int rows, int cols);
+
+void writeResult(Matrix* matrixX, int row, int col, int res);
 // ----------

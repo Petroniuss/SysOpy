@@ -3,8 +3,12 @@
 #include <stdio.h>
 #include <sys/wait.h>
 #include <sys/types.h>
+#include <sys/file.h>
 #include <linux/limits.h>
 #include "utils_lib.h"
+
+int* row;
+int* col;
 
 void error(char* msg) {
     printf("Error: %s \n", msg);
@@ -28,8 +32,8 @@ int main(int argc, char* argv[]) {
     
 
     char* configFile = argv[1];
-    int workersNum   = atoi(argv[2]);
-    int timeLimit    = atoi(argv[3]);
+    // int workersNum   = atoi(argv[2]);
+    // int timeLimit    = atoi(argv[3]);
     
     char filenameA[PATH_MAX]; 
     char filenameB[PATH_MAX];
@@ -47,5 +51,25 @@ int main(int argc, char* argv[]) {
     Matrix* matrixA = initMatrix(filenameA);
     Matrix* matrixB = initMatrix(filenameB);
 
+    if (matrixA -> cols != matrixB -> rows) {
+        error("Number of columns in matrixA must be equal to number of columns in matrixB");
+    }
+
+    int n = matrixA -> cols;
+    row = malloc(sizeof(int) * n);
+    col = malloc(sizeof(int) * n);
+
+    Matrix* matrixX = createResultFile(resultFilename, matrixA -> rows, matrixB -> cols);
+
     return 0;
+}
+
+int dotVectors(int* row, int* col, int n) {
+    int result = 0;
+
+    for (int i = 0; i < n; i++) {
+        result += row[i] * col[i];
+    }
+
+    return result;
 }

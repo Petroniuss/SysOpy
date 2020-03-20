@@ -20,4 +20,4 @@ clean:
 	rm -r *.o parallel
 
 .PHONY:
-	clean run 
+	clean run compile
