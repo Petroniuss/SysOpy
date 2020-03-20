@@ -5,6 +5,12 @@
 #include <ctype.h>
 #include <stdarg.h>
 
+struct Matrix {
+    FILE* filePtr;
+    int rows;
+    int cols;
+} typedef Matrix;
+
 char* concat(const char* s1, const char* s2) {
     int   len    = strlen(s1) + strlen(s2) + 1;
     char* result = (char*) malloc(len);
@@ -109,4 +115,79 @@ char* suffix(char* str, int from) {
     int len = strlen(str);
 
     return substring(str, from, len);
+}
+
+// FILE UTILS ----------------------------------
+
+// Move file pointer to start of specified line.
+void movePtrToLine(FILE* ptr, int line) {
+    fseek(ptr, 0, SEEK_SET);
+
+    int count = 0;
+    while (count < line) {
+        for (char c = getc(ptr); c != '\n'; c = getc(ptr)) {}
+        count++;
+    }
+}
+
+
+// Counts lines of given file.
+int countLines(FILE* filePtr) {
+    int count = 0;
+    movePtrToLine(filePtr, 0);
+
+    for (char c = getc(filePtr); c != EOF; c = getc(filePtr)) {
+        if (c == '\n')  
+            count++;
+    }
+
+    return count;
+}
+
+void movePtrToNextLine(FILE* ptr) {
+    for (char c = getc(ptr); c != '\n'; c = getc(ptr)) {}
+}
+
+// MATRIX--specific ---------------------
+
+int countElemsInFirstRow(FILE* filePtr) {
+    int spaces = 0;
+    movePtrToLine(filePtr, 0);
+
+    for (char c = getc(filePtr); c != '\n'; c = getc(filePtr)) {
+        if (c == ' ')  
+            spaces++;
+    }
+
+    return spaces + 1;
+}
+
+void readRow(Matrix* matrix, int* nums, int row) {
+    movePtrToLine(matrix -> filePtr, row);
+    for (int i = 0; i < matrix -> cols; i++) {
+        fscanf(matrix -> filePtr, "%d", &(nums[i]));
+    }
+}
+
+void readNextRow(Matrix* matrix, int* nums) {
+    for (int i = 0; i < matrix -> cols; i++) {
+        fscanf(matrix -> filePtr, "%d", &(nums[i]));
+    }
+}
+
+void readColumn(Matrix* matrix, int* nums, int col) {
+    movePtrToLine(matrix -> filePtr, 0);
+
+    for (int i = 0; i < matrix -> rows; i++) {
+        int j = 0;
+        int num;
+
+        while (j <= col) {
+            fscanf(matrix -> filePtr, "%d", &num);
+            j++;
+        }
+
+        nums[i] = num;
+        movePtrToNextLine(matrix -> filePtr);
+    }
 }

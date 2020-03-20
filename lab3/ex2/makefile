@@ -5,7 +5,7 @@ CC = gcc -Wall
 
 ## Add some parameters to it!
 run: parallel
-	./parallel  
+	./parallel args 2 2
 
 compile: parallel
 	make parallel
@@ -17,7 +17,7 @@ parallel: $(OBJ)
 	$(CC) -c -o $@ $< 
 
 clean: 
-	rm -r *.o find
+	rm -r *.o parallel
 
 .PHONY:
-	clean run
+	clean run 
