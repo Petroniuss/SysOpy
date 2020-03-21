@@ -9,14 +9,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define MIN 0
-#define MAX 99
+#define MIN -2
+#define MAX 2
 #define TES_DIR "test/"
 #define MAX_EXEC_TIME "5"
-#define EXECUTION_FLAG "-commonFile"
-
-// Todo rewrite function converting int to string! It's causing errors!
-// Aside from it looks good.
+#define EXECUTION_FLAG "-distinctFiles"
 
 int generateTest(int min, int max, int testNum) {
     char filename1 [PATH_MAX];
@@ -119,7 +116,7 @@ int main(int argc, char* argv[]) {
         passed += generateTest(min, max, i);
     }
 
-    printf("Finished testing - %d/%d passed.\n", passed, testNumber);
+    printf("\nFinished testing - %d/%d passed.\n", passed, testNumber);
     printf("---------------------------------------\n");
 
     return 0;

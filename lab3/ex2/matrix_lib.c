@@ -71,16 +71,18 @@ Matrix* createResultFile(char* filename, int rows, int cols) {
 
 void writeResult(Matrix* matrixX, int row, int col, int res) {
     movePtrToLine(matrixX -> filePtr, row);
-
     int spaces = 0;
     while (spaces < col) {
         if (getc(matrixX -> filePtr) == ' ')
             spaces++;
     }
-    
+
     char* strNum = numberToString(res);
 
     finsert(matrixX -> filePtr, strNum);
+    if(ferror(matrixX -> filePtr) != 0) {
+        exit(1);
+    }
     fflush(matrixX -> filePtr);
 
     free(strNum);

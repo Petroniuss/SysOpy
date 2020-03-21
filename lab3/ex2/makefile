@@ -3,13 +3,16 @@ HEADERS = $(wildcard *.h)
 OBJ := $(patsubst %.c, %.o, $(SRC))
 CC = gcc -Wall 
 
+.PHONY:
+	test clean run
+
 ## Add some parameters to it!
 run: parallel
-	./parallel args 2 5 -commonFile
+	./parallel args 2 5 -distinctFiles
 
 #  Params: TestNumber Min Max
 test: tester
-	./tester 2 2 2
+	./tester 5 2 5
 
 tester: parallel tester.o
 	$(CC) -o tester tester.o utils_lib.o matrix_lib.o
@@ -23,5 +26,3 @@ parallel: $(OBJ)
 clean: 
 	rm -r *.o parallel tester test/*.tst 
 
-.PHONY:
-	clean run

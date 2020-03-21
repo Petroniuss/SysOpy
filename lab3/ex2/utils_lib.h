@@ -31,6 +31,10 @@ struct timespec nowRealTime();
 struct timespec nowCpuTime();
 
 // File uitls
+void copyFile(FILE* dest, FILE* src);
+
+void insert(FILE* file, char* buffer);
+
 int finsert(FILE* file, const char *buffer);
 
 int countLines(FILE* filePtr);

@@ -32,20 +32,14 @@ char* concatWithSeparator(const char* s1, const char* s2, const char* separator)
 
 char* numberToString(int i) {
     int size = 1;
-    int tmp  = i;
+    int tmp  = abs(i);
     while(tmp / 10 > 0) {
         tmp /= 10;
         size++;
     }
 
-    char* buffer = (char*) malloc((size + 1) * sizeof(char));
-
-    for(int j = size - 1; j >= 0; j--) {
-        char psi  = ((i % 10) + '0');
-        buffer[j] = psi;
-        i /= 10;
-    }
-    buffer[size] = '\0';
+    char* buffer = (char*) malloc((size + 2) * sizeof(char));
+    sprintf(buffer, "%d", i);
 
     return buffer;
 }
@@ -157,6 +151,43 @@ double realTime(struct timespec start) {
 }
 
 // FILE UTILS ----------------------------------
+// assumes files are open.
+void copyFile(FILE* dest, FILE* src) {
+    fseek(dest, 0, SEEK_SET);
+    fseek(src, 0, SEEK_SET);
+
+    char c;
+    while((c = fgetc(src)) != EOF) {
+        fputc(c, dest);
+    }
+}
+
+void insert(FILE* file, char* buffer) {
+    char* temp = malloc(sizeof(char) * 50);
+    sprintf(temp, "test/temp-%d", rand());
+
+    long int insertPosition = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    FILE* tmp = fopen(temp, "w+");
+    long i = 0;
+    while(i != insertPosition) {
+        fputc(fgetc(file), tmp);
+        i++;
+    }
+    fputs(buffer, tmp);
+
+    char c;
+    while ((c = fgetc(file)) != EOF)
+      fputc(c, tmp); 
+
+    // fputc(EOF, -1);
+
+    copyFile(file, tmp);
+    
+    fclose(tmp);
+    remove(temp);
+}
 
 // This ugly thing allows for inserting into files.. Note that it's not very efficient.
 int finsert(FILE* file, const char *buffer) {
