@@ -7,8 +7,9 @@ CC = gcc -Wall
 run: parallel
 	./parallel args 2 5 -commonFile
 
+#  Params: TestNumber Min Max
 test: tester
-	./tester 2 2 4
+	./tester 2 2 2
 
 tester: parallel tester.o
 	$(CC) -o tester tester.o utils_lib.o matrix_lib.o

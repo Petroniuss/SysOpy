@@ -9,11 +9,14 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define MIN -9
-#define MAX 19
+#define MIN 0
+#define MAX 99
 #define TES_DIR "test/"
 #define MAX_EXEC_TIME "5"
 #define EXECUTION_FLAG "-commonFile"
+
+// Todo rewrite function converting int to string! It's causing errors!
+// Aside from it looks good.
 
 int generateTest(int min, int max, int testNum) {
     char filename1 [PATH_MAX];
@@ -37,8 +40,8 @@ int generateTest(int min, int max, int testNum) {
     int n = randNum(min, max);
     int k = randNum(min, max);
 
-    generateMatrix(filename1, m, n, MIN, MAX);
-    generateMatrix(filename2, n, k, MIN, MAX);
+    Matrix* matrixA = generateMatrix(filename1, m, n, MIN, MAX);
+    Matrix* matrixB = generateMatrix(filename2, n, k, MIN, MAX);
 
     printf("\tGenerated test matrices\n");
     
@@ -56,15 +59,50 @@ int generateTest(int min, int max, int testNum) {
         int returnStatus;
         printf("\tTesting...\n");
         waitpid(pid, &returnStatus, 0);
-        
+
         if (returnStatus != 0) {
             printf("\tRunning failed\n");
             return 0;
         }
     }
 
-    
-    printf("\tDone.\n");
+    // Check if results are succesfull
+    matrixA -> filePtr = fopen(filename1, "r");
+    matrixB -> filePtr = fopen(filename2, "r");
+    FILE* result       = fopen(filename3, "r");
+
+    if (!result) {
+        printf("\tTest failed.\n");
+            return 0;
+    }
+
+    int* row = malloc(sizeof(int) * n);
+    int* col = malloc(sizeof(int) * n);
+
+    for (int i = 0; i < m; i++) {
+        readRow(matrixA, row, i);
+        for (int j = 0; j < k; j++) {
+            readColumn(matrixB, col, j);
+
+            int expected = dotVectors(row, col, n);
+            int actual;
+            fscanf(result, "%d", &actual);
+
+            if (expected != actual) {
+                printf("\tTest failed\n");
+                printf("\tExpected %d and got %d on row: %d, column: %d\n", expected, actual, i, j);
+                return 0;
+            }
+        }
+    }
+
+    free(row);
+    free(col);
+    fclose(matrixA -> filePtr);
+    fclose(matrixB -> filePtr);
+    fclose(result);
+
+    printf("\tTest passed.\n");
     
     return 1;
 }
