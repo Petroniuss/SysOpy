@@ -1,11 +1,5 @@
 #include <stdio.h>
 
-struct Matrix {
-    FILE* filePtr;
-    int rows;
-    int cols;
-} typedef Matrix;
-
 // String utils 
 char* concat(const char* s1, const char* s2);
 
@@ -34,16 +28,4 @@ int countLines(FILE* filePtr);
 
 void movePtrToLine(FILE* ptr, int line);
 
-// Matrix --
-int countElemsInFirstRow(FILE* fileptr);
-
-void readRow(Matrix* matrix, int* nums, int row);
-
-void readNextRow(Matrix* matrix, int* nums);
-
-void readColumn(Matrix* matrix, int* nums, int col);
-
-Matrix* createResultFile(char* filename, int rows, int cols);
-
-void writeResult(Matrix* matrixX, int row, int col, int res);
-// ----------
+void movePtrToNextLine(FILE* ptr);
