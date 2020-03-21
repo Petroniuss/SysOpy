@@ -21,6 +21,13 @@ char* substring(char* str, int start, int end);
 
 char* suffix(char* str, int from); 
 
+// Time utils
+double realTime(struct timespec start);
+
+struct timespec now();
+
+float cpuTime(clock_t start);
+
 // File uitls
 int finsert(FILE* file, const char *buffer);
 

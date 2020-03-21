@@ -118,6 +118,35 @@ char* suffix(char* str, int from) {
     return substring(str, from, len);
 }
 
+// TIME UTILS
+
+
+// CPU time.
+float cpuTime(clock_t start) {
+    clock_t end = clock();
+    float seconds = (float) (end - start) / CLOCKS_PER_SEC;
+
+    return seconds;   
+}
+
+// System-wide realtime clock.
+struct timespec now() {
+    struct timespec now;
+    clock_gettime(CLOCK_REALTIME, &now);
+
+    return now;
+}
+
+// Real time in seconds
+double realTime(struct timespec start) {
+    struct timespec end;
+    clock_gettime(CLOCK_REALTIME, &end);
+
+    long double elapsedTimeSeconds = (end.tv_sec - start.tv_sec) + ((end.tv_nsec - start.tv_nsec) / 1e9);
+    
+    return elapsedTimeSeconds; 
+}
+
 // FILE UTILS ----------------------------------
 
 // This ugly thing allows for inserting into files.. Note that it's not very efficient.

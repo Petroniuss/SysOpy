@@ -14,6 +14,51 @@ void error(char* msg) {
     exit(0);
 }
 
+void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, int colStart, int colEnd) {
+    int n = matrixA -> cols;
+    int* row = malloc(sizeof(int) * n);
+    int* col = malloc(sizeof(int) * n);
+
+    int finishedMultiplications = 0;
+    struct timespec start = now();
+
+    int rowCounter = 0;
+    int colCounter = colStart;
+    
+    readRow(matrixA, row, 0);
+    readColumn(matrixB, col, colStart);
+
+    while(colCounter < colEnd && realTime(start) < maxTime) {
+        int result = dotVectors(row, col, n);
+        // printf("Row:%d dot column:%d = %d, time: %fs\n", rowCounter, colCounter, result, realTime(start));
+        
+        // Writing result -- error prone task.
+        flock(fileno(matrixX -> filePtr), LOCK_EX);
+        writeResult(matrixX, rowCounter, colCounter, result);
+        flock(fileno(matrixX -> filePtr), LOCK_UN);
+
+        finishedMultiplications += 1;
+
+        rowCounter++;
+        if (rowCounter == matrixA -> rows) { 
+            rowCounter = 0;
+            colCounter++;
+
+            readRow(matrixA, row, 0);
+            if (colCounter < colEnd) {
+                readColumn(matrixB, col, colCounter);
+            }
+        } else {
+            readNextRow(matrixA, row);
+        }
+    }
+
+    // printf("PID: %d, Finished time: %fs\n", getpid() ,realTime(start));
+
+    exit(finishedMultiplications);
+}
+
+
 Matrix* initMatrix(char filename[PATH_MAX]) {
     Matrix* matrix = malloc(sizeof(Matrix));    
     matrix -> filePtr = fopen(filename, "r");
@@ -92,60 +137,10 @@ int main(int argc, char* argv[]) {
         printf("Process %d ended with status: %d\n", workersPids[i], WEXITSTATUS(returnStatus));
     }
 
+    free(matrixA);
+    free(matrixB);
+    free(matrixX);
+    free(workersPids);
+
     return 0;
-}
-
-// Change the way you measure time.
-float timeDifference(clock_t t1, clock_t t2){
-    return ((float)(t2 - t1) / sysconf(CLOCKS_PER_SEC));
-}
-
-float runningTime(clock_t startTime) {
-    clock_t end = clock();
-    float seconds = timeDifference(startTime, end);
-    
-    return seconds;
-}
-
-void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, int colStart, int colEnd) {
-    int n = matrixA -> cols;
-    int m = matrixA -> rows;
-    int* row = malloc(sizeof(int) * n);
-    int* col = malloc(sizeof(int) * n);
-
-    int finishedMultiplications = 0;
-    clock_t start = clock();
-
-    int rowCounter = 0;
-    int colCounter = colStart;
-    
-    readRow(matrixA, row, 0);
-    readColumn(matrixB, col, colStart);
-
-    while(colCounter < colEnd && runningTime(start) < maxTime) {
-        int result = dotVectors(row, col, n);
-        printf("Row:%d dot column:%d = %d, time: %f\n", rowCounter, colCounter, result, runningTime(start));
-        
-        // Writing result -- error prone task.
-        flock(fileno(matrixX -> filePtr), LOCK_EX);
-        writeResult(matrixX, rowCounter, colCounter, result);
-        flock(fileno(matrixX -> filePtr), LOCK_UN);
-
-        finishedMultiplications += 1;
-
-        rowCounter++;
-        if (rowCounter == matrixA -> rows) { 
-            rowCounter = 0;
-            colCounter++;
-
-            readRow(matrixA, row, 0);
-            if (colCounter < colEnd) {
-                readColumn(matrixB, col, colCounter);
-            }
-        } else {
-            readNextRow(matrixA, row);
-        }
-    }
-
-    exit(finishedMultiplications);
 }
