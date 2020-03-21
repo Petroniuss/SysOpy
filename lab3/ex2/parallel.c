@@ -54,7 +54,12 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, i
         }
     }
 
-    // printf("PID: %d, Finished time: %fs\n", getpid() ,realTime(start));
+    // TODO - Process shouldn't stop after finishing its part (although...).
+    fclose(matrixA -> filePtr);
+    fclose(matrixB -> filePtr);
+    fclose(matrixX -> filePtr);
+
+    printf("PID: %d, Finished time: %fs\n", getpid() ,realTime(start));
 
     exit(finishedMultiplications);
 }
@@ -146,6 +151,10 @@ int main(int argc, char* argv[]) {
         waitpid(workersPids[i], &returnStatus, 0);
         printf("Process %d ended with status: %d\n", workersPids[i], WEXITSTATUS(returnStatus));
     }
+
+    fclose(matrixA -> filePtr);
+    fclose(matrixB -> filePtr);
+    fclose(matrixX -> filePtr);
 
     free(matrixA);
     free(matrixB);
