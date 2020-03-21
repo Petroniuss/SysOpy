@@ -8,6 +8,7 @@
 #include <time.h>
 #include "utils_lib.h"
 #include "matrix_lib.h"
+#include <string.h>
 
 void error(char* msg) {
     printf("Error: %s \n", msg);
@@ -20,7 +21,7 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, i
     int* col = malloc(sizeof(int) * n);
 
     int finishedMultiplications = 0;
-    struct timespec start = now();
+    struct timespec start = nowRealTime();
 
     int rowCounter = 0;
     int colCounter = colStart;
@@ -75,13 +76,14 @@ Matrix* initMatrix(char filename[PATH_MAX]) {
 
 
 int main(int argc, char* argv[]) {
-    if (argc < 4) 
+    if (argc < 5) 
         error("Not enaugh arguments");
     
 
     char* configFile = argv[1];
     int workersNum   = atoi(argv[2]);
     int timeLimit    = atoi(argv[3]);
+    char* executionFlag = argv[4];
     
     char filenameA[PATH_MAX]; 
     char filenameB[PATH_MAX];
@@ -104,6 +106,14 @@ int main(int argc, char* argv[]) {
 
     if (workersNum > matrixB -> cols || workersNum <= 0) {
         error("Invalid number of worker processes");
+    }
+
+    if (strcmp(executionFlag, "-commonFile") == 0) {
+
+    } else if(strcmp(executionFlag, "-distinctFiles") == 0) {
+
+    } else {
+        error("Given flag is not supported. Use '-commonFile' or '-distinctFiles'");
     }
 
     

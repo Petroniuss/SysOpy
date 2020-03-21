@@ -24,9 +24,11 @@ char* suffix(char* str, int from);
 // Time utils
 double realTime(struct timespec start);
 
-struct timespec now();
+double cpuTime(struct timespec start);
 
-float cpuTime(clock_t start);
+struct timespec nowRealTime();
+
+struct timespec nowCpuTime();
 
 // File uitls
 int finsert(FILE* file, const char *buffer);

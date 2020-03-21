@@ -120,17 +120,28 @@ char* suffix(char* str, int from) {
 
 // TIME UTILS
 
+double diffSeconds(struct timespec start, struct timespec end) {
+    long double elapsedTimeSeconds = (end.tv_sec - start.tv_sec) + ((end.tv_nsec - start.tv_nsec) / 1e9);
+    return elapsedTimeSeconds;
+}
 
-// CPU time.
-float cpuTime(clock_t start) {
-    clock_t end = clock();
-    float seconds = (float) (end - start) / CLOCKS_PER_SEC;
 
-    return seconds;   
+struct timespec nowCpuTime() {
+    struct timespec now;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &now);
+
+    return now;
+}
+
+double cpuTime(struct timespec start) {
+    struct timespec end;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &end);
+
+    return diffSeconds(start, end);   
 }
 
 // System-wide realtime clock.
-struct timespec now() {
+struct timespec nowRealTime() {
     struct timespec now;
     clock_gettime(CLOCK_REALTIME, &now);
 
@@ -142,9 +153,7 @@ double realTime(struct timespec start) {
     struct timespec end;
     clock_gettime(CLOCK_REALTIME, &end);
 
-    long double elapsedTimeSeconds = (end.tv_sec - start.tv_sec) + ((end.tv_nsec - start.tv_nsec) / 1e9);
-    
-    return elapsedTimeSeconds; 
+    return diffSeconds(start, end);
 }
 
 // FILE UTILS ----------------------------------
