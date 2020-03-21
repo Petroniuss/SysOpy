@@ -5,11 +5,9 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include <linux/limits.h>
+#include <time.h>
 #include "utils_lib.h"
 #include "matrix_lib.h"
-
-int* row;
-int* col;
 
 void error(char* msg) {
     printf("Error: %s \n", msg);
@@ -63,19 +61,29 @@ int main(int argc, char* argv[]) {
         error("Invalid number of worker processes");
     }
 
-    int n = matrixA -> cols;
-    row = malloc(sizeof(int) * n);
-    col = malloc(sizeof(int) * n);
-
+    
     Matrix* matrixX = createResultFile(resultFilename, matrixA -> rows, matrixB -> cols);
 
-    int* workersPids = malloc(sizeof(int) * workersNum);
+    int* workersPids  = malloc(sizeof(int) * workersNum);
+    double runningSum = 0.0;
+    double factor     = ((double) workersNum ) / matrixB -> cols;
 
     for (int i = 0; i < workersNum; i++) {
+        int start = (int) runningSum;
+        runningSum += factor;
+        int end   = (int) runningSum;
+        
         int forked = fork();
         if (forked == 0) { //child
             // Should probably do some stuff..
-            return 1;
+            if (i == workersNum - 1) {
+                end = matrixB -> cols;
+            }
+
+            printf("Worker: %d, start: %d, end: %d \n", i, start, end);
+            // runWorker(matrixA, matrixB, matrixX, timeLimit, start, end);
+
+            exit(2);
         } else { // parent
             workersPids[i] = forked;    
         }
@@ -90,3 +98,55 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
+float timeDifference(clock_t t1, clock_t t2){
+    return ((float)(t2 - t1) / sysconf(_SC_CLK_TCK));
+}
+
+float runningTime(clock_t startTime) {
+    clock_t end = clock();
+    float seconds = timeDifference(startTime, end);
+    
+    return seconds;
+}
+
+void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, int colStart, int colEnd) {
+    int n = matrixA -> cols;
+    int m = matrixA -> rows;
+    int* row = malloc(sizeof(int) * n);
+    int* col = malloc(sizeof(int) * n);
+
+    int finishedMultiplications = 0;
+    clock_t start = clock();
+
+    int rowCounter = 0;
+    int colCounter = colStart;
+    
+    readRow(matrixA, row, 0);
+    readColumn(matrixB, col, colStart);
+
+    while(colCounter < colEnd && runningTime(start) < maxTime) {
+        int result = dotVectors(row, col, n);
+        printf("%d * %d = %d \n", rowCounter, colCounter, result);
+        
+        // Writing result -- error prone task.
+        flock(fileno(matrixX -> filePtr), LOCK_EX);
+        writeResult(matrixX, rowCounter, colCounter, result);
+        flock(fileno(matrixX -> filePtr), LOCK_UN);
+
+        finishedMultiplications += 1;
+        printf("Written result to matrix\n");
+
+        rowCounter++;
+        if (rowCounter == matrixA -> rows) { 
+            rowCounter = 0;
+            colCounter++;
+
+            readRow(matrixA, row, 0);
+            if (colCounter < colEnd) {
+                readColumn(matrixB, col, colCounter);
+            }
+        }
+    }
+
+    exit(finishedMultiplications);
+}
