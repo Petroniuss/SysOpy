@@ -96,3 +96,24 @@ int dotVectors(int* row, int* col, int n) {
 
     return result;
 }
+
+Matrix* generateMatrix(char* filename, int rows, int cols, int min, int max) {
+    Matrix* matrix = malloc(sizeof(Matrix));
+
+    matrix -> filePtr = fopen(filename, "w+");
+    matrix -> rows    = rows;
+    matrix -> cols    = cols;
+
+    for (int i = 0; i < rows; i++) {
+        fprintf(matrix -> filePtr, "%d", randNum(min, max));
+        for(int j = 1; j < cols; j++) {
+            fprintf(matrix -> filePtr, " %d", randNum(min, max));
+        }
+        fputc('\n', matrix -> filePtr);
+    }
+
+    fclose(matrix -> filePtr);
+
+    return matrix;
+}
+

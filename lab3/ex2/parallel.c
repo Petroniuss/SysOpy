@@ -12,7 +12,7 @@
 
 void error(char* msg) {
     printf("Error: %s \n", msg);
-    exit(0);
+    exit(1);
 }
 
 void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, int colStart, int colEnd) {
@@ -83,8 +83,8 @@ Matrix* initMatrix(char filename[PATH_MAX]) {
 int main(int argc, char* argv[]) {
     if (argc < 5) 
         error("Not enaugh arguments");
-    
 
+   
     char* configFile = argv[1];
     int workersNum   = atoi(argv[2]);
     int timeLimit    = atoi(argv[3]);
@@ -121,7 +121,6 @@ int main(int argc, char* argv[]) {
         error("Given flag is not supported. Use '-commonFile' or '-distinctFiles'");
     }
 
-    
     Matrix* matrixX = createResultFile(resultFilename, matrixA -> rows, matrixB -> cols);
 
     int* workersPids  = malloc(sizeof(int) * workersNum);

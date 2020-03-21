@@ -38,3 +38,6 @@ int countLines(FILE* filePtr);
 void movePtrToLine(FILE* ptr, int line);
 
 void movePtrToNextLine(FILE* ptr);
+
+// Random utils
+int randNum(int lower, int upper);

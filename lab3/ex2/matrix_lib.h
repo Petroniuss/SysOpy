@@ -19,3 +19,5 @@ Matrix* createResultFile(char* filename, int rows, int cols);
 void writeResult(Matrix* matrixX, int row, int col, int res);
 
 int dotVectors(int* row, int* col, int n);
+
+Matrix* generateMatrix(char* filename, int rows, int cols, int min, int max);

@@ -7,8 +7,11 @@ CC = gcc -Wall
 run: parallel
 	./parallel args 2 5 -commonFile
 
-compile: parallel
-	make parallel
+test: tester
+	./tester 2 2 4
+
+tester: parallel tester.o
+	$(CC) -o tester tester.o utils_lib.o matrix_lib.o
 
 parallel: $(OBJ)
 	$(CC) -o parallel parallel.o utils_lib.o matrix_lib.o 
@@ -17,7 +20,7 @@ parallel: $(OBJ)
 	$(CC) -c -o $@ $< 
 
 clean: 
-	rm -r *.o parallel
+	rm -r *.o parallel tester test/*.tst 
 
 .PHONY:
-	clean run compile
+	clean run

@@ -234,3 +234,10 @@ int countLines(FILE* filePtr) {
 void movePtrToNextLine(FILE* ptr) {
     for (char c = getc(ptr); c != '\n'; c = getc(ptr)) {}
 }
+
+// [lower, upper]
+int randNum(int lower, int upper) {
+    int num =  (rand() % (upper - lower + 1)) + lower;
+    
+    return num;
+}
