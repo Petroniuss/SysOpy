@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <linux/limits.h>
 
 struct Matrix {
     FILE* filePtr;
@@ -21,3 +22,5 @@ void writeResult(Matrix* matrixX, int row, int col, int res);
 int dotVectors(int* row, int* col, int n);
 
 Matrix* generateMatrix(char* filename, int rows, int cols, int min, int max);
+
+Matrix* initMatrix(char filename[PATH_MAX]);

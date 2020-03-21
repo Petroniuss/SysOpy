@@ -7,6 +7,8 @@
 #include <linux/limits.h>
 #include <time.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 #include "utils_lib.h"
 #include "matrix_lib.h"
@@ -60,7 +62,7 @@ void runSimpleWorker(Matrix* matrixA, Matrix* matrixB, int maxTime, int colStart
     exit(finishedMultiplications);
 }
 
-void distincFilesManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename, int workersNum, int maxTime) {
+void distinctFilesManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename, int workersNum, int maxTime) {
     int* workersPids  = malloc(sizeof(int) * workersNum);
     char** files      = malloc(sizeof(char*) * (workersNum + 1));
     double runningSum = 0.0;
@@ -126,8 +128,14 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, char* resultFi
     int* row = malloc(sizeof(int) * n);
     int* col = malloc(sizeof(int) * n);
 
+    printf("Desc: %d \n", fileno(matrixX -> filePtr));
     fclose(matrixX -> filePtr); 
-    matrixX -> filePtr = fopen(resultFilename, "w");
+    // matrixX -> filePtr = fopen(resultFilename, "w+");
+    int fd = open(resultFilename, O_RDWR);
+    printf("New Desc: %d \n", fd);
+    matrixX -> filePtr = fdopen(fd, "w+");
+    printf("New Desc: %d \n", fileno(matrixX -> filePtr));
+
 
     int finishedMultiplications = 0;
     struct timespec start = nowRealTime();
@@ -140,18 +148,15 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, char* resultFi
 
     while(colCounter < colEnd && realTime(start) < maxTime) {
         int result = dotVectors(row, col, n);
-        // printf("Row:%d dot column:%d = %d, time: %fs\n", rowCounter, colCounter, result, realTime(start));
         
         // Writing result -- error prone task.
-        printf("Locking %d\n", colStart);
-        flock(fileno(matrixX -> filePtr), LOCK_NB | LOCK_EX);
+        flock(fileno(matrixX -> filePtr), LOCK_EX);
         printf("Locked %d\n", colStart);
         fprintf(matrixX -> filePtr, "%d ", colStart);
         writeResult(matrixX, rowCounter, colCounter, result);
-        printf("Unlocking\n");
+        printf("Written result %d\n", colStart);
         flock(fileno(matrixX -> filePtr), LOCK_UN);
         printf("UnLocked %d\n", colStart);
-        sleep(1);
 
         finishedMultiplications += 1;
 
@@ -173,7 +178,7 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, char* resultFi
     fclose(matrixB -> filePtr);
     fclose(matrixX -> filePtr);
 
-    printf("PID: %d, Finished time: %fs\n", getpid() ,realTime(start));
+    // printf("PID: %d, Finished time: %fs\n", getpid() ,realTime(start));
 
     exit(finishedMultiplications);
 }
@@ -192,15 +197,12 @@ void commonFileManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename, i
         int end   = (int) runningSum;
 
         int forked = fork();
-        if (forked == 0) { // child
-            // Should probably do some stuff..
-            if (i == workersNum - 1) {
+        if (forked == 0) { 
+            if (i == workersNum - 1) 
                 end = matrixB -> cols;
-            }
-            // printf("Worker: %d, start: %d, end: %d \n", i, start, end);
+            
             runWorker(matrixA, matrixB, matrixX, resultFilename, maxTime, start, end);
-            exit(0); // if error encountered.
-        } else { // parent
+        } else { 
             workersPids[i] = forked;    
         }
     }
@@ -220,30 +222,12 @@ void commonFileManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename, i
     free(matrixX);
     free(workersPids);
 }
-
 // -----
-
-
-Matrix* initMatrix(char filename[PATH_MAX]) {
-    Matrix* matrix = malloc(sizeof(Matrix));    
-    matrix -> filePtr = fopen(filename, "r");
-
-    if (!matrix -> filePtr) {
-        error("Cannot open matrix file");
-    }
-
-    matrix -> rows    = countLines(matrix -> filePtr);
-    matrix -> cols    = countElemsInFirstRow(matrix -> filePtr);
-
-    return matrix;
-}
-
 
 int main(int argc, char* argv[]) {
     if (argc < 5) 
         error("Not enaugh arguments");
 
-   
     char* configFile = argv[1];
     int workersNum   = atoi(argv[2]);
     int timeLimit    = atoi(argv[3]);
@@ -275,7 +259,7 @@ int main(int argc, char* argv[]) {
     if (strcmp(executionFlag, "-commonFile") == 0) {
         commonFileManager(matrixA, matrixB, resultFilename, workersNum, timeLimit);
     } else if(strcmp(executionFlag, "-distinctFiles") == 0) {
-        distincFilesManager(matrixA, matrixB, resultFilename, workersNum, timeLimit);
+        distinctFilesManager(matrixA, matrixB, resultFilename, workersNum, timeLimit);
     } else {
         error("Given flag is not supported. Use '-commonFile' or '-distinctFiles'");
     }

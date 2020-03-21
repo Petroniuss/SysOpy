@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <linux/limits.h>
 #include "utils_lib.h"
 
 struct Matrix {
@@ -25,6 +26,20 @@ void readRow(Matrix* matrix, int* nums, int row) {
     for (int i = 0; i < matrix -> cols; i++) {
         fscanf(matrix -> filePtr, "%d", &(nums[i]));
     }
+}
+
+Matrix* initMatrix(char filename[PATH_MAX]) {
+    Matrix* matrix = malloc(sizeof(Matrix));    
+    matrix -> filePtr = fopen(filename, "r");
+
+    if (!matrix -> filePtr) {
+        error("Cannot open matrix file");
+    }
+
+    matrix -> rows    = countLines(matrix -> filePtr);
+    matrix -> cols    = countElemsInFirstRow(matrix -> filePtr);
+
+    return matrix;
 }
 
 void readNextRow(Matrix* matrix, int* nums) {
@@ -79,7 +94,7 @@ void writeResult(Matrix* matrixX, int row, int col, int res) {
 
     char* strNum = numberToString(res);
 
-    finsert(matrixX -> filePtr, strNum);
+    insert(matrixX -> filePtr, strNum);
     if(ferror(matrixX -> filePtr) != 0) {
         exit(1);
     }

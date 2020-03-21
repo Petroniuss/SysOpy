@@ -6,11 +6,11 @@ CC = gcc -Wall
 .PHONY:
 	test clean run
 
-## Add some parameters to it!
+## Params: file-with-matrices number-of-workers time-limit -flag (inidicating how to run program: -distinctFiles or -commonFile)
 run: parallel
-	./parallel args 2 5 -distinctFiles
+	./parallel test/args 2 5 -commonFile
 
-#  Params: TestNumber Min Max
+#  Params: TestNumber Min Max, where min and max refer to number of rows/cols 
 test: tester
 	./tester 5 2 5
 
