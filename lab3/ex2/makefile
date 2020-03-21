@@ -5,7 +5,7 @@ CC = gcc -Wall
 
 ## Add some parameters to it!
 run: parallel
-	./parallel args 2 2
+	./parallel args 2 5
 
 compile: parallel
 	make parallel
