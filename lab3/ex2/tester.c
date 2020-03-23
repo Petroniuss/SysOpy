@@ -13,7 +13,7 @@
 #define MAX 2
 #define TES_DIR "test/"
 #define MAX_EXEC_TIME "5"
-#define EXECUTION_FLAG "-distinctFiles"
+#define EXECUTION_FLAG "-commonFile"
 
 int generateTest(int min, int max, int testNum) {
     char filename1 [PATH_MAX];

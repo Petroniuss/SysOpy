@@ -27,5 +27,5 @@ worker: $(OBJ)
 	$(CC) -c -o $@ $< 
 
 clean: 
-	rm -r *.o parallel tester test/*.tst 
+	rm -r *.o parallel tester test/*.tst worker
 

@@ -39,11 +39,8 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, i
         
         // Writing result -- error prone task.
         flock(fileno(matrixX -> filePtr), LOCK_EX);
-        printf("Locked %d\n", colStart);
         writeResult(matrixX, rowCounter, colCounter, result);
-        printf("Written result %d\n", colStart);
         flock(fileno(matrixX -> filePtr), LOCK_UN);
-        printf("UnLocked %d\n", colStart);        
 
         finishedMultiplications += 1;
 
@@ -66,7 +63,6 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, i
     fclose(matrixX -> filePtr);
 
     // printf("PID: %d, Finished time: %fs\n", getpid() ,realTime(start));
-
     exit(finishedMultiplications);
 }
 
@@ -87,7 +83,7 @@ int main(int argc, char* argv[]) {
     matrixX -> cols = matrixB -> cols;
     matrixX -> filePtr = fopen(resultFilename, "r+");
 
-    printf("\n%s %s %s %d %d %d\n", filenameA, filenameB, resultFilename, colStart, colEnd, maxTime);
+    // printf("\n%s %s %s %d %d %d\n", filenameA, filenameB, resultFilename, colStart, colEnd, maxTime);
     runWorker(matrixA, matrixB, matrixX, maxTime, colStart, colEnd);
     
     return 1;

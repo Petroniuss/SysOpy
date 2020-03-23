@@ -121,12 +121,10 @@ void distinctFilesManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename
 }
 
 // COMMON FILE WORKERS!
-// Todo - fix this damn flock..
 void runWorker(char* filenameA, char* filenameB, char* resultFilename, int colStart, int colEnd, int maxTime) {
     execl("./worker", "./worker", filenameA, filenameB, resultFilename, numberToString(colStart), numberToString(colEnd), numberToString(maxTime), NULL);
 }
 
-// TODO fix synchronization - (kill me ...)
 void commonFileManager(Matrix* matrixA, Matrix* matrixB, char* filenameA, char* filenameB, char* resultFilename, int workersNum, int maxTime) {
     Matrix* matrixX = createResultFile(resultFilename, matrixA -> rows, matrixB -> cols);
     fclose(matrixX -> filePtr);
@@ -153,7 +151,7 @@ void commonFileManager(Matrix* matrixA, Matrix* matrixB, char* filenameA, char* 
         }
     }
 
-    sleep(2);
+    // sleep(maxTime);
 
     for (int i = workersNum - 1; i >= 0; i--) {
         int returnStatus;
