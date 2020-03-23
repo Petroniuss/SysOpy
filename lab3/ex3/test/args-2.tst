@@ -1,1 +1,0 @@
-test/matrixA-2.tst test/matrixB-2.tst test/matrixX-2.tst
