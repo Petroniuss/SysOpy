@@ -6,15 +6,15 @@ CC = gcc -Wall
 .PHONY:
 	test clean run
 
-## Params: -file-with-matrices -number-of-workers -time-limit -flag -cpuTimeLimit -memoryLimit
-# flag indicates how to run program: -distinctFiles or -commonFile
+#  Params: -file-with-matrices -number-of-workers -time-limit -flag -cpuTimeLimit -memoryLimit
+#  flag indicates how to run program: -distinctFiles or -commonFile
 run: parallel worker
 	./parallel test/args 2 5 -distinctFiles 3 10
 
-#  Params: -TestNumber -Min -Max -cpuTimeLimit -memoryLimit
+#  Params: -test-number -min -max -cpuTimeLimit -memoryLimit
 #  min and max refer to number of rows/cols 
 test: tester
-	./tester 5 10 25 10 10
+	./tester 1 5 25 2 10
 
 tester: parallel worker tester.o
 	$(CC) -o tester tester.o utils_lib.o matrix_lib.o
