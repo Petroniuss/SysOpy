@@ -14,7 +14,7 @@ run: parallel worker
 #  Params: -TestNumber -Min -Max -cpuTimeLimit -memoryLimit
 #  min and max refer to number of rows/cols 
 test: tester
-	./tester 5 2 5 3 10
+	./tester 5 10 25 10 10
 
 tester: parallel worker tester.o
 	$(CC) -o tester tester.o utils_lib.o matrix_lib.o

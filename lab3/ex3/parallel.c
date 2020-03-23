@@ -19,8 +19,24 @@ void error(char* msg) {
     exit(1);
 }
 
-void runSimpleWorker(Matrix* matrixA, Matrix* matrixB, int maxTime, int colStart, int colEnd, char* outputFile) {
+void runSimpleWorker(Matrix* matrixA, Matrix* matrixB, int maxTime, int colStart, int colEnd, char* outputFile, int cpuTimeLimit, int virtualMemoryLimit) {
     FILE* ptr = fopen(outputFile, "w");
+
+    long int memoryLimitBytes = 1000000 * virtualMemoryLimit;
+
+    // Set hard limits for cpu-time 
+    struct rlimit cpuRL;
+    getrlimit (RLIMIT_CPU, &cpuRL);
+
+    cpuRL.rlim_max = cpuTimeLimit;
+    setrlimit(RLIMIT_CPU, &cpuRL);
+
+    // Set hard limits for virtual-memory-space
+    struct rlimit memRL;
+    getrlimit(RLIMIT_AS, &memRL);
+    
+    memRL.rlim_max = memoryLimitBytes;
+    setrlimit(RLIMIT_AS, &memRL);
 
     int n = matrixA -> cols;
     int* row = malloc(sizeof(int) * n);
@@ -37,7 +53,8 @@ void runSimpleWorker(Matrix* matrixA, Matrix* matrixB, int maxTime, int colStart
     readColumn(matrixB, col, colStart);
 
     while(rowCounter < matrixA -> rows && realTime(start) < maxTime) {
-        logSystemUsage(RUSAGE_SELF, pid);
+        if (finishedMultiplications % 3 == 0)
+            logSystemUsage(RUSAGE_SELF, pid);
         int result = dotVectors(row, col, n);
         
         fprintf(ptr, "%d", result);
@@ -84,7 +101,7 @@ void distinctFilesManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename
             if (i == workersNum - 1) 
                 end = matrixB -> cols;
             
-            runSimpleWorker(matrixA, matrixB, maxTime, start, end, files[i]);
+            runSimpleWorker(matrixA, matrixB, maxTime, start, end, files[i], cpuTimeLimit, virtualMemoryLimit);
         } else { 
             workersPids[i] = forked;    
         }
@@ -210,6 +227,8 @@ int main(int argc, char* argv[]) {
     if (workersNum > matrixB -> cols || workersNum <= 0) {
         error("Invalid number of worker processes");
     }
+
+    printf("Setting limits for child processes: CPU Time hard limit: %ds virtual memory hard limit: %dMb\n", cpuTimeLimit, virtualMemoryLimit);
 
     if (strcmp(executionFlag, "-commonFile") == 0) {
         commonFileManager(matrixA, matrixB, filenameA, filenameB, resultFilename, workersNum, timeLimit, cpuTimeLimit, virtualMemoryLimit);

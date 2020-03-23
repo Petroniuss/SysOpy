@@ -31,7 +31,8 @@ void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, int maxTime, i
 
     while(colCounter < colEnd && realTime(start) < maxTime) {
         // Here we perfom logging
-        logSystemUsage(RUSAGE_SELF, pid);
+        if (finishedMultiplications % 3 == 0)
+            logSystemUsage(RUSAGE_SELF, pid);
         int result = dotVectors(row, col, n);
         
         // Writing result -- error prone task.
@@ -77,18 +78,18 @@ int main(int argc, char* argv[]) {
 
     long int memoryLimitBytes = 1000000 * virtualMemoryLimit;
 
-    // Set limits for cpu-time
+    // Set hard limits for cpu-time 
     struct rlimit cpuRL;
     getrlimit (RLIMIT_CPU, &cpuRL);
 
-    cpuRL.rlim_cur = cpuTimeLimit;
+    cpuRL.rlim_max = cpuTimeLimit;
     setrlimit(RLIMIT_CPU, &cpuRL);
 
-    // Set limits for virtual-memory-space
+    // Set hard limits for virtual-memory-space
     struct rlimit memRL;
     getrlimit(RLIMIT_AS, &memRL);
     
-    memRL.rlim_cur = memoryLimitBytes;
+    memRL.rlim_max = memoryLimitBytes;
     setrlimit(RLIMIT_AS, &memRL);
 
     Matrix* matrixA = initMatrix(filenameA);
