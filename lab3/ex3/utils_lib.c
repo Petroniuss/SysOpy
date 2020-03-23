@@ -289,7 +289,7 @@ void logSystemUsage(int who, int pid) {
 
     // Linux doesn't support reading memory usage through getrusage anymore :/. 
 
-    printf("Process with pid: %d\n\tUser CPU time: %lu.%06lu s\n\tSystem CPU time: %lu.%06lu s\n\tFilesystem performed ouput %d times\n",
+    printf("Process with pid: %d\n\tUser CPU time: %lu.%06lu s\n\tSystem CPU time: %lu.%06lu s\n\tFilesystem performed ouput %ld times\n",
              pid, userCpuTime.tv_sec, userCpuTime.tv_usec, systemCpuTime.tv_sec, systemCpuTime.tv_usec, usage.ru_oublock);
 
 }  
