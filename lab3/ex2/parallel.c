@@ -121,71 +121,17 @@ void distinctFilesManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename
 }
 
 // COMMON FILE WORKERS!
-
 // Todo - fix this damn flock..
-void runWorker(Matrix* matrixA, Matrix* matrixB, Matrix* matrixX, char* resultFilename, int maxTime, int colStart, int colEnd) {
-    int n = matrixA -> cols;
-    int* row = malloc(sizeof(int) * n);
-    int* col = malloc(sizeof(int) * n);
-
-    printf("Desc: %d \n", fileno(matrixX -> filePtr));
-    fclose(matrixX -> filePtr); 
-    // matrixX -> filePtr = fopen(resultFilename, "w+");
-    int fd = open(resultFilename, O_RDWR);
-    printf("New Desc: %d \n", fd);
-    matrixX -> filePtr = fdopen(fd, "w+");
-    printf("New Desc: %d \n", fileno(matrixX -> filePtr));
-
-
-    int finishedMultiplications = 0;
-    struct timespec start = nowRealTime();
-
-    int rowCounter = 0;
-    int colCounter = colStart;
-    
-    readRow(matrixA, row, 0);
-    readColumn(matrixB, col, colStart);
-
-    while(colCounter < colEnd && realTime(start) < maxTime) {
-        int result = dotVectors(row, col, n);
-        
-        // Writing result -- error prone task.
-        flock(fileno(matrixX -> filePtr), LOCK_EX);
-        printf("Locked %d\n", colStart);
-        fprintf(matrixX -> filePtr, "%d ", colStart);
-        writeResult(matrixX, rowCounter, colCounter, result);
-        printf("Written result %d\n", colStart);
-        flock(fileno(matrixX -> filePtr), LOCK_UN);
-        printf("UnLocked %d\n", colStart);
-
-        finishedMultiplications += 1;
-
-        rowCounter++;
-        if (rowCounter == matrixA -> rows) { 
-            rowCounter = 0;
-            colCounter++;
-
-            readRow(matrixA, row, 0);
-            if (colCounter < colEnd) {
-                readColumn(matrixB, col, colCounter);
-            }
-        } else {
-            readNextRow(matrixA, row);
-        }
-    }
-
-    fclose(matrixA -> filePtr);
-    fclose(matrixB -> filePtr);
-    fclose(matrixX -> filePtr);
-
-    // printf("PID: %d, Finished time: %fs\n", getpid() ,realTime(start));
-
-    exit(finishedMultiplications);
+void runWorker(char* filenameA, char* filenameB, char* resultFilename, int colStart, int colEnd, int maxTime) {
+    execl("./worker", "./worker", filenameA, filenameB, resultFilename, numberToString(colStart), numberToString(colEnd), numberToString(maxTime), NULL);
 }
 
 // TODO fix synchronization - (kill me ...)
-void commonFileManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename, int workersNum, int maxTime) {
+void commonFileManager(Matrix* matrixA, Matrix* matrixB, char* filenameA, char* filenameB, char* resultFilename, int workersNum, int maxTime) {
     Matrix* matrixX = createResultFile(resultFilename, matrixA -> rows, matrixB -> cols);
+    fclose(matrixX -> filePtr);
+    fclose(matrixA -> filePtr);
+    fclose(matrixB -> filePtr);
 
     int* workersPids  = malloc(sizeof(int) * workersNum);
     double runningSum = 0.0;
@@ -197,25 +143,23 @@ void commonFileManager(Matrix* matrixA, Matrix* matrixB, char* resultFilename, i
         int end   = (int) runningSum;
 
         int forked = fork();
-        if (forked == 0) { 
+        if (forked == 0) {
+            printf("Child"); 
             if (i == workersNum - 1) 
                 end = matrixB -> cols;
-            
-            runWorker(matrixA, matrixB, matrixX, resultFilename, maxTime, start, end);
+            runWorker(filenameA, filenameB, resultFilename, start, end, maxTime);
         } else { 
             workersPids[i] = forked;    
         }
     }
+
+    sleep(2);
 
     for (int i = workersNum - 1; i >= 0; i--) {
         int returnStatus;
         waitpid(workersPids[i], &returnStatus, 0);
         printf("Process %d ended with status: %d\n", workersPids[i], WEXITSTATUS(returnStatus));
     }
-
-    fclose(matrixA -> filePtr);
-    fclose(matrixB -> filePtr);
-    fclose(matrixX -> filePtr);
 
     free(matrixA);
     free(matrixB);
@@ -257,7 +201,7 @@ int main(int argc, char* argv[]) {
     }
 
     if (strcmp(executionFlag, "-commonFile") == 0) {
-        commonFileManager(matrixA, matrixB, resultFilename, workersNum, timeLimit);
+        commonFileManager(matrixA, matrixB, filenameA, filenameB, resultFilename, workersNum, timeLimit);
     } else if(strcmp(executionFlag, "-distinctFiles") == 0) {
         distinctFilesManager(matrixA, matrixB, resultFilename, workersNum, timeLimit);
     } else {

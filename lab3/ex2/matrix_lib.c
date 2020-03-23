@@ -33,7 +33,8 @@ Matrix* initMatrix(char filename[PATH_MAX]) {
     matrix -> filePtr = fopen(filename, "r");
 
     if (!matrix -> filePtr) {
-        error("Cannot open matrix file");
+        printf("Cannot open matrix file");
+        exit(1);
     }
 
     matrix -> rows    = countLines(matrix -> filePtr);
@@ -94,7 +95,7 @@ void writeResult(Matrix* matrixX, int row, int col, int res) {
 
     char* strNum = numberToString(res);
 
-    insert(matrixX -> filePtr, strNum);
+    finsert(matrixX -> filePtr, strNum);
     if(ferror(matrixX -> filePtr) != 0) {
         exit(1);
     }
