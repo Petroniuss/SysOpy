@@ -34,6 +34,14 @@ void setHandler() {
     option |= FLAG_HANDLE;
 }
 
+void anotherHandle(int sig) {
+    printf("What up\n");
+}
+
+void anotherHandler() {
+    signal(SIGNAL, anotherHandle);
+}
+
 void setMask() {
     sigset_t oldMask;
     sigset_t mask;
@@ -117,8 +125,9 @@ int main(int argc, char* argv[]) {
             checkPending(0);
             return 0;
         }
+        
         raise(SIGNAL);
-
+        
         if (option & FLAG_IGNORE) {
             // Signal is ignored ...
             printf("Signal is ignored in child process\n");
@@ -143,4 +152,6 @@ int main(int argc, char* argv[]) {
 }
 
 // Bullet points
-// - Child process doesn't copy parent's handlers.
+// Todo - Child process doesn't copy parent's handlers ?? (Sometimes it does but here it looks like it doesn't!) <-- Unexpected feature.
+// Parent's pending signal is not visible in child (descendant)
+// Masks are copied to child. 

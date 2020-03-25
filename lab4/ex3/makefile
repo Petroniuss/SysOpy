@@ -13,7 +13,7 @@ child: $(OBJ)
 	$(CC) -c -o $@ $<
 
 clean: 
-	rm -r *.o inheritance child
+	rm -r *.o inheritance
 
 .PHONY:
 	clean run 
