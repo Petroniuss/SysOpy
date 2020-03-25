@@ -3,17 +3,17 @@ HEADERS = $(wildcard *.h)
 OBJ := $(patsubst %.c, %.o, $(SRC))
 CC = gcc -Wall 
 
-inheritance: $(OBJ) child
-	$(CC) -o inheritance inheritance.o 
+run: siginfo
+	./siginfo
 
-child: $(OBJ)
-	$(CC) -o child child.o
+siginfo: $(OBJ) 
+	$(CC) -o siginfo siginfo.o 
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $<
 
 clean: 
-	rm -r *.o inheritance
+	rm -r *.o siginfo
 
 .PHONY:
 	clean run 
