@@ -30,7 +30,9 @@ void childSignalHanlder(int sig, siginfo_t* info, void* ucontext) {
 
 void segFaultHandler(int sig, siginfo_t* info, void* ucontext) {
     printf("Segmentation fault occured.\n");
-    printf("\tFault address: %p\n", info->si_addr);
+    // si_addr gives us the faulty address of instruction
+    // In our case it's 5 since we tried to access 5th element of empty array.
+    printf("\tFaulty address: %p\n", info->si_addr);
 
     exit(0);
 }
