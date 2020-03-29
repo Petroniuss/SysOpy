@@ -9,10 +9,12 @@
 #define FLAG_SIGRT   (1 << 2)
 #define FLAG_KILL    (1 << 3)
 
-int flag = 0;
+#define SIGRT1 SIGRTMIN
+#define SIGRT2 SIGRTMIN + 1
 
-int received = 0;
 int receivedTerminalSignal = 0;
+int flag     = 0;
+int received = 0;
 int senderPID;
 
 void error(char* msg) {
@@ -20,40 +22,37 @@ void error(char* msg) {
     exit(1);
 }
 
-// SIGQUEUE
+// -------------- SIGQUEUE --------------
 
-void handle_queue_SIGUSR1(int sig, siginfo_t* info, void* ucontext) {
+void handle_queue_SIGUSR1(int sig) {
     received++;
-    printf("Recevied \n");
 }
 
 void handle_queue_SIGUSR2(int sig, siginfo_t* info, void* ucontext) {
     receivedTerminalSignal = 1;
-    printf("Received terminating\n");
 }
 
 void execSIGQUEUE() {
     // Install handlers
     struct sigaction act1;
-    act1.sa_sigaction = handle_queue_SIGUSR1;
+    act1.sa_handler = handle_queue_SIGUSR1;
     act1.sa_flags = SA_SIGINFO;
     sigemptyset(&act1.sa_mask);
     sigaddset(&act1.sa_mask, SIGUSR2);
     sigaction(SIGUSR1, &act1, NULL);
 
-    struct sigaction act;
-    act.sa_sigaction = handle_queue_SIGUSR2;
-    act.sa_flags = SA_SIGINFO;
-    sigemptyset(&act.sa_mask);
-    sigaddset(&act.sa_mask, SIGUSR1);
-    sigaction(SIGUSR2, &act, NULL);
+    struct sigaction act2;
+    act2.sa_sigaction = handle_queue_SIGUSR2;
+    act2.sa_flags = SA_SIGINFO;
+    sigemptyset(&act2.sa_mask);
+    sigaddset(&act2.sa_mask, SIGUSR1);
+    sigaction(SIGUSR2, &act2, NULL);
     
     // Block other signals
     sigset_t mask;
     sigfillset(&mask);
     sigdelset(&mask, SIGUSR1);
     sigdelset(&mask, SIGUSR2);
-    sigdelset(&mask, SIGINT);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("Catcher\n\tPid - %d.\n", getpid());
@@ -74,10 +73,11 @@ void execSIGQUEUE() {
 
     printf("Catcher\n\tReceived %d signals.\n", received);
 }
+// ----------------------------------
 
-// --
 
-// SIGRT
+//-------------- SIGRT --------------
+
 void handleSIGRT1(int signal) {
     received++;
 }
@@ -93,51 +93,38 @@ void execSIGRT() {
     act1.sa_handler = handleSIGRT1;
     act1.sa_flags = 0;
     sigemptyset(&act1.sa_mask);
-    sigaddset(&act1.sa_mask, SIGRTMIN + 2);
-    sigaction(SIGRTMIN + 1, &act1, NULL);
+    sigaddset(&act1.sa_mask, SIGRT2);
+    sigaction(SIGRT1, &act1, NULL);
 
-    struct sigaction act;
-    act.sa_sigaction = handleSIGRT2;
-    act.sa_flags = SA_SIGINFO;
-    sigemptyset(&act.sa_mask);
-    sigaddset(&act.sa_mask, SIGRTMIN + 1);
-    sigaction(SIGRTMIN + 2, &act, NULL);
+    struct sigaction act2;
+    act2.sa_sigaction = handleSIGRT2;
+    act2.sa_flags = SA_SIGINFO;
+    sigemptyset(&act2.sa_mask);
+    sigaddset(&act2.sa_mask, SIGRT1);
+    sigaction(SIGRT2, &act2, NULL);
     
     // Block other signals
     sigset_t mask;
     sigfillset(&mask);
-    sigdelset(&mask, SIGRTMIN + 1);
-    sigdelset(&mask, SIGRTMIN + 2);
-    sigdelset(&mask, SIGQUIT);
+    sigdelset(&mask, SIGRT1);
+    sigdelset(&mask, SIGRT2);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     printf("Catcher\n\tPid - %d.\n", getpid());
 
     while (!receivedTerminalSignal) {
-        sigsuspend(&mask);
+        pause();
     }
 
     for (int i = 0; i < received; i++) {
-        kill(senderPID, SIGRTMIN + 1);
+        kill(senderPID, SIGRT1);
     }
 
-    kill(senderPID, SIGRTMIN + 2);
+    kill(senderPID, SIGRT2);
 
     printf("Catcher\n\tReceived %d signals.\n", received);
 }
-
-// SIGQUEUE
-
-void handleSIGUSR1_SIGQUEUE(int signal) {
-    received++;
-}
-
-void handleSIGUSR2_SIGQUEUE(int sig, siginfo_t* info, void* ucontext) {
-    senderPID = info -> si_pid;
-    receivedTerminalSignal = 1;
-}
-
-// --
+// ------------------------------------------------
 
 // KILL ---------------------------- 
 
