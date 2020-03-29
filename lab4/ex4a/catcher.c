@@ -37,7 +37,7 @@ void execSIGQUEUE() {
     // Install handlers
     struct sigaction act1;
     act1.sa_handler = handle_queue_SIGUSR1;
-    act1.sa_flags = SA_SIGINFO;
+    act1.sa_flags = 0;
     sigemptyset(&act1.sa_mask);
     sigaddset(&act1.sa_mask, SIGUSR2);
     sigaction(SIGUSR1, &act1, NULL);

@@ -63,7 +63,6 @@ void execSIGQUEUE() {
     val.sival_int = 0;
 
     // Send signals
-    printf("Sending\n");
     for (int i = 0; i < nSignals; i++) {
         sigqueue(catcherPid, SIGUSR1, val);
     }
