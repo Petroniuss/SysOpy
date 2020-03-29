@@ -27,16 +27,50 @@ void error(char* msg) {
 
 // ------------------------- SIGQUEUE -------------------------
 
-void handleSIGUSR1_SIGQUEUE(int signal) {
-    // todo
+void handle_queue_SIGUSR1(int sig, siginfo_t* info, void* ucontext) {
+    if (receiveMode) {
+        received++;
+        printf("Sender\n\tReceived Signal\n\tNext signal number should be %d.\n", info -> si_int);
+    }
 }
 
-void handleSIGUSR2_SIGQUEUE(int sig, siginfo_t* info, void* ucontext) {
-    // todo
+void handle_queue_SIGUSR2(int sig, siginfo_t* info, void* ucontext) {
+    printf("Sender\n\tI know catcher received %d signals.\n", info -> si_int);
+    receivedTerminalSignal = 1;
 }
 
 void execSIGQUEUE() {
-    // todo  
+    struct sigaction act1;
+    act1.sa_sigaction = handle_queue_SIGUSR1;
+    act1.sa_flags = SA_SIGINFO;
+    sigemptyset(&act1.sa_mask);
+    sigaddset(&act1.sa_mask, SIGUSR2);
+    sigaction(SIGUSR1, &act1, NULL);
+
+    struct sigaction act2;
+    act2.sa_sigaction = handle_queue_SIGUSR2;
+    act2.sa_flags = SA_SIGINFO;
+    sigemptyset(&act2.sa_mask);
+    sigaddset(&act2.sa_mask, SIGUSR1);
+    sigaction(SIGUSR2, &act2, NULL);  
+
+    // Block other signals
+    sigset_t mask;
+    sigfillset(&mask);
+    sigdelset(&mask, SIGUSR1);
+    sigdelset(&mask, SIGUSR2);
+    sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    union sigval val;
+    val.sival_int = 0;
+
+    // Send signals
+    for (int i = 0; i < nSignals; i++) {
+        sigqueue(catcherPid, SIGUSR1, val);
+        pause();
+    }
+    printf("Sent %d signals\n", nSignals);
+    sigqueue(catcherPid, SIGUSR2, val);
 }
 // ----------------------------------------------------------
 
@@ -138,12 +172,14 @@ void execKill() {
 
     receiveMode = 1;
     kill(catcherPid, SIGUSR2);
+    printf("Sender\n\t Sent %d signals.\n", nSignals);
     
-    while (!receivedTerminalSignal) {
-        pause();
-    }
+    // We don't send second series.
+    // while (!receivedTerminalSignal) {
+    //     pause();
+    // }
 
-    printf("Sender\n\tReceived %d signals.\n\tHe should have received %d.\n", received, nSignals);
+    // printf("Sender\n\tReceived %d signals.\n\tHe should have received %d.\n", received, nSignals);
 }
 
 // -------------------------------------------------------------
