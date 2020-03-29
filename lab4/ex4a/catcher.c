@@ -29,6 +29,7 @@ void handle_queue_SIGUSR1(int sig) {
 }
 
 void handle_queue_SIGUSR2(int sig, siginfo_t* info, void* ucontext) {
+    senderPID = info -> si_pid;
     receivedTerminalSignal = 1;
 }
 
@@ -61,7 +62,7 @@ void execSIGQUEUE() {
         pause();
     }
 
-    for (int i = 0; i < received; i++) {
+    for (int i = 1; i <= received; i++) {
         union sigval val;
         val.sival_int = i + 1;
         sigqueue(senderPID, SIGUSR1, val);

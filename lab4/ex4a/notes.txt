@@ -4,4 +4,4 @@ Notes:
     - sigrt    - real time signal are not lost since they're queued
                  and they arrive in the same order as they have been sent with.
     
-    - sigqueue -   
+    - sigqueue - Not yet tested.  

@@ -28,7 +28,7 @@ void error(char* msg) {
 // ---------------- SIGQUEUE ----------------
 
 void handle_queue_SIGUSR1(int sig, siginfo_t* info, void* ucontext) {
-    printf("Sender\n\tNext signal number should be %d.\n", info -> si_int);
+    printf("Sender\n\tReceived Signal\n\tNext signal number should be %d.\n", info -> si_int);
     received++;
 }
 
