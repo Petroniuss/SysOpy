@@ -4,37 +4,36 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
-#include <errno.h>
 
 #define FLAG_SIGQUE  (1 << 1)
 #define FLAG_SIGRT   (1 << 2)
 #define FLAG_KILL    (1 << 3)
 
 int flag = 0;
-int catcherPid;
-int nSignals;
 
+int received = 0;
 int receivedTerminalSignal = 0;
-int received        = 0;
+int senderPID;
 
 void error(char* msg) {
     printf("Error: %s\n", msg);
     exit(1);
 }
 
+// SIGQUEUE
+
 void handle_queue_SIGUSR1(int sig, siginfo_t* info, void* ucontext) {
-    printf("Sender\n\tNext signal number should be %d.\n", info -> si_int);
     received++;
+    printf("Recevied \n");
 }
 
 void handle_queue_SIGUSR2(int sig, siginfo_t* info, void* ucontext) {
-    printf("Sender\n\tI know catcher received %d signals.\n", info -> si_int);
     receivedTerminalSignal = 1;
+    printf("Received terminating\n");
 }
 
-
-// MY SYSTEM DOES NOT IMPLEMENT SIGQUEUE.
 void execSIGQUEUE() {
+    // Install handlers
     struct sigaction act1;
     act1.sa_sigaction = handle_queue_SIGUSR1;
     act1.sa_flags = SA_SIGINFO;
@@ -47,8 +46,8 @@ void execSIGQUEUE() {
     act.sa_flags = SA_SIGINFO;
     sigemptyset(&act.sa_mask);
     sigaddset(&act.sa_mask, SIGUSR1);
-    sigaction(SIGUSR2, &act, NULL);  
-
+    sigaction(SIGUSR2, &act, NULL);
+    
     // Block other signals
     sigset_t mask;
     sigfillset(&mask);
@@ -57,39 +56,42 @@ void execSIGQUEUE() {
     sigdelset(&mask, SIGINT);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
-    union sigval val;
-    val.sival_int = 0;
-
-    // Send signals
-    printf("Sending\n");
-    for (int i = 0; i < nSignals; i++) {
-        sigqueue(catcherPid, SIGUSR1, val);
-    }
-    int ret = sigqueue(catcherPid, SIGUSR2, val);
-    printf("Sent to %d, %d, %d, %d\n", catcherPid, SIGUSR2, ret, errno);
+    printf("Catcher\n\tPid - %d.\n", getpid());
 
     while (!receivedTerminalSignal) {
         pause();
     }
 
-    printf("Sender\n\tReceived %d signals.\n\tHe should have received %d.\n", received, nSignals);
+    for (int i = 0; i < received; i++) {
+        union sigval val;
+        val.sival_int = i + 1;
+        sigqueue(senderPID, SIGUSR1, val);
+    }
+
+    union sigval val;
+    val.sival_int = received;
+    sigqueue(senderPID, SIGUSR2, val);
+
+    printf("Catcher\n\tReceived %d signals.\n", received);
 }
 
-// SIGRT
+// --
 
-void handleSIGRT1(int sig, siginfo_t* info, void* ucontext) {
+// SIGRT
+void handleSIGRT1(int signal) {
     received++;
 }
 
 void handleSIGRT2(int sig, siginfo_t* info, void* ucontext) {
+    senderPID = info -> si_pid;
     receivedTerminalSignal = 1;
 }
 
 void execSIGRT() {
-    // // Install handlers
+    // Install handlers
     struct sigaction act1;
-    act1.sa_sigaction = handleSIGRT1;
-    act1.sa_flags = SA_SIGINFO;
+    act1.sa_handler = handleSIGRT1;
+    act1.sa_flags = 0;
     sigemptyset(&act1.sa_mask);
     sigaddset(&act1.sa_mask, SIGRTMIN + 2);
     sigaction(SIGRTMIN + 1, &act1, NULL);
@@ -99,8 +101,8 @@ void execSIGRT() {
     act.sa_flags = SA_SIGINFO;
     sigemptyset(&act.sa_mask);
     sigaddset(&act.sa_mask, SIGRTMIN + 1);
-    sigaction(SIGRTMIN + 2, &act, NULL);  
-
+    sigaction(SIGRTMIN + 2, &act, NULL);
+    
     // Block other signals
     sigset_t mask;
     sigfillset(&mask);
@@ -109,30 +111,42 @@ void execSIGRT() {
     sigdelset(&mask, SIGQUIT);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
-    // Send signals
-    for (int i = 0; i < nSignals; i++) {
-        kill(catcherPid, SIGRTMIN + 1);
-        sleep(1);
-    }
-
-    kill(catcherPid, SIGRTMIN + 2);
+    printf("Catcher\n\tPid - %d.\n", getpid());
 
     while (!receivedTerminalSignal) {
         sigsuspend(&mask);
     }
 
-    printf("Sender\n\tReceived %d signals.\n\tHe should have received %d.\n", received, nSignals);
+    for (int i = 0; i < received; i++) {
+        kill(senderPID, SIGRTMIN + 1);
+    }
+
+    kill(senderPID, SIGRTMIN + 2);
+
+    printf("Catcher\n\tReceived %d signals.\n", received);
 }
 
-// 
+// SIGQUEUE
 
-// KILL
+void handleSIGUSR1_SIGQUEUE(int signal) {
+    received++;
+}
+
+void handleSIGUSR2_SIGQUEUE(int sig, siginfo_t* info, void* ucontext) {
+    senderPID = info -> si_pid;
+    receivedTerminalSignal = 1;
+}
+
+// --
+
+// KILL ---------------------------- 
 
 void handleSIGUSR1(int signal) {
     received++;
 }
 
-void handleSIGUSR2(int signal) {
+void handleSIGUSR2(int sig, siginfo_t* info, void* ucontext) {
+    senderPID = info -> si_pid;
     receivedTerminalSignal = 1;
 }
 
@@ -146,12 +160,12 @@ void execKill() {
     sigaction(SIGUSR1, &act1, NULL);
 
     struct sigaction act;
-    act.sa_handler = handleSIGUSR2;
-    act.sa_flags = 0;
+    act.sa_sigaction = handleSIGUSR2;
+    act.sa_flags = SA_SIGINFO;
     sigemptyset(&act.sa_mask);
     sigaddset(&act.sa_mask, SIGUSR1);
     sigaction(SIGUSR2, &act, NULL);
-
+    
     // Block other signals
     sigset_t mask;
     sigfillset(&mask);
@@ -159,29 +173,25 @@ void execKill() {
     sigdelset(&mask, SIGUSR2);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
-    // Send signals
-    for (int i = 0; i < nSignals; i++) {
-        kill(catcherPid, SIGUSR1);
-    }
+    printf("Catcher\n\tPid - %d.\n", getpid());
 
-    kill(catcherPid, SIGUSR2);
-    
     while (!receivedTerminalSignal) {
         pause();
     }
 
-    printf("Sender\n\tReceived %d signals.\n\tHe should have received %d.\n", received, nSignals);
+    for (int i = 0; i < received; i++) {
+        kill(senderPID, SIGUSR1);
+    }
+
+    kill(senderPID, SIGUSR2);
+
+    printf("Catcher\n\tReceived %d signals.\n", received);
 }
- 
+
+// ------------------------------------------------
 
 int main(int argc, char* argv[]) { 
-    if (argc < 3) 
-        error("Not enaugh arguments"); 
-
-    catcherPid = atoi(argv[1]);
-    nSignals   = atoi(argv[2]);
-
-    char* execFlag = argv[3];
+    char* execFlag = argv[1];
 
     if (strcmp("-kill", execFlag) == 0) 
         flag |= FLAG_KILL;
@@ -192,14 +202,12 @@ int main(int argc, char* argv[]) {
     else
         error("Enter valid flag");
 
-    
     if (FLAG_KILL & flag) 
         execKill();
     else if (FLAG_SIGQUE & flag)
         execSIGQUEUE();
     else if (FLAG_SIGRT & flag)
         execSIGRT();
-
 
     return 0;
 }
