@@ -9,10 +9,14 @@
 #define FLAG_SIGRT   (1 << 2)
 #define FLAG_KILL    (1 << 3)
 
+#define SIGRT1 SIGRTMIN 
+#define SIGRT2 SIGRTMIN + 1
+
 int flag = 0;
 
 int received = 0;
 int receivedTerminalSignal = 0;
+int receiveMode = 0;
 int senderPID;
 
 void error(char* msg) {
@@ -20,55 +24,7 @@ void error(char* msg) {
     exit(1);
 }
 
-void handleSIGRT1(int signal) {
-    received++;
-}
-
-void handleSIGRT2(int sig, siginfo_t* info, void* ucontext) {
-    senderPID = info -> si_pid;
-    receivedTerminalSignal = 1;
-}
-
-void execSIGRT() {
-    // Install handlers
-    struct sigaction act1;
-    act1.sa_handler = handleSIGRT1;
-    act1.sa_flags = 0;
-    sigemptyset(&act1.sa_mask);
-    sigaddset(&act1.sa_mask, SIGRTMIN + 2);
-    sigaction(SIGRTMIN + 1, &act1, NULL);
-
-    struct sigaction act;
-    act.sa_sigaction = handleSIGRT2;
-    act.sa_flags = SA_SIGINFO;
-    sigemptyset(&act.sa_mask);
-    sigaddset(&act.sa_mask, SIGRTMIN + 1);
-    sigaction(SIGRTMIN + 2, &act, NULL);
-    
-    // Block other signals
-    sigset_t mask;
-    sigfillset(&mask);
-    sigdelset(&mask, SIGRTMIN + 1);
-    sigdelset(&mask, SIGRTMIN + 2);
-    sigdelset(&mask, SIGQUIT);
-    sigprocmask(SIG_SETMASK, &mask, NULL);
-
-    printf("Catcher\n\tPid - %d.\n", getpid());
-
-    while (!receivedTerminalSignal) {
-        sigsuspend(&mask);
-    }
-
-    for (int i = 0; i < received; i++) {
-        kill(senderPID, SIGRTMIN + 1);
-    }
-
-    kill(senderPID, SIGRTMIN + 2);
-
-    printf("Catcher\n\tReceived %d signals.\n", received);
-}
-
-// SIGQUEUE
+// ------------------------- SIGQUEUE -------------------------
 
 void handleSIGUSR1_SIGQUEUE(int signal) {
     received++;
@@ -78,8 +34,6 @@ void handleSIGUSR2_SIGQUEUE(int sig, siginfo_t* info, void* ucontext) {
     senderPID = info -> si_pid;
     receivedTerminalSignal = 1;
 }
-
-// int sigqueue(pid_t pid, int sig, const union sigval value)
 
 void execSIGQUEUE() {
     // Install handlers
@@ -118,10 +72,63 @@ void execSIGQUEUE() {
 
     // printf("Catcher\n\tReceived %d signals.\n", received);
 }
+// ---------------------------------------------------------
 
-// --
 
-// KILL 
+// ------------------------- SIGRT -------------------------
+
+void handleSIGRT1(int sig, siginfo_t* info, void* ucontext) {
+   received++;
+   kill(info -> si_pid, sig);
+}
+
+void handleSIGRT2(int sig, siginfo_t* info, void* ucontext) {
+    senderPID = info -> si_pid;
+    receivedTerminalSignal = 1;
+}
+
+void execSIGRT() {
+    // Install handlers
+    struct sigaction act1;
+    act1.sa_sigaction = handleSIGRT1;
+    act1.sa_flags = SA_SIGINFO;
+    sigemptyset(&act1.sa_mask);
+    sigaddset(&act1.sa_mask, SIGRT2);
+    sigaction(SIGRT1, &act1, NULL);
+
+    struct sigaction act;
+    act.sa_sigaction = handleSIGRT2;
+    act.sa_flags = SA_SIGINFO;
+    sigemptyset(&act.sa_mask);
+    sigaddset(&act.sa_mask, SIGRT1);
+    sigaction(SIGRT2, &act, NULL);
+    
+    // Block other signals
+    sigset_t mask;
+    sigfillset(&mask);
+    sigdelset(&mask, SIGRT1);
+    sigdelset(&mask, SIGRT2);
+    sigdelset(&mask, SIGQUIT);
+    sigprocmask(SIG_SETMASK, &mask, NULL);
+
+    printf("Catcher\n\tPid - %d.\n", getpid());
+
+    while (!receivedTerminalSignal) {
+        sigsuspend(&mask);
+    }
+
+    for (int i = 0; i < received; i++) {
+        kill(senderPID, SIGRT1);
+    }
+
+    kill(senderPID, SIGRT2);
+
+    printf("Catcher\n\tReceived %d signals.\n", received);
+}
+// ---------------------------------------------------------
+
+
+// -------------------------- KILL ------------------------- 
 
 void handleSIGUSR1(int sig, siginfo_t* info, void* ucontext) {
     received++;
@@ -171,7 +178,7 @@ void execKill() {
     printf("Catcher\n\tReceived %d signals.\n", received);
 }
 
-// ---
+// --------------------------------------------------- 
 
 int main(int argc, char* argv[]) { 
     char* execFlag = argv[1];

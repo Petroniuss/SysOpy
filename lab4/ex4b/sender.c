@@ -9,26 +9,43 @@
 #define FLAG_SIGRT   (1 << 2)
 #define FLAG_KILL    (1 << 3)
 
+#define SIGRT1 SIGRTMIN 
+#define SIGRT2 SIGRTMIN + 1
+
 int flag = 0;
 int catcherPid;
 int nSignals;
 
 int receivedTerminalSignal = 0;
 int received        = 0;
+int receiveMode = 0;
 
 void error(char* msg) {
     printf("Error: %s\n", msg);
     exit(1);
 }
 
-void execSIGQUEUE() {
+// ------------------------- SIGQUEUE -------------------------
 
+void handleSIGUSR1_SIGQUEUE(int signal) {
+    // todo
 }
 
-// SIGRT
+void handleSIGUSR2_SIGQUEUE(int sig, siginfo_t* info, void* ucontext) {
+    // todo
+}
+
+void execSIGQUEUE() {
+    // todo  
+}
+// ----------------------------------------------------------
+
+
+//  ------------------------- SIGRT -------------------------
 
 void handleSIGRT1(int signal) {
-    received++;
+    if (receiveMode)
+        received++;
 }
 
 void handleSIGRT2(int signal) {
@@ -41,30 +58,32 @@ void execSIGRT() {
     act1.sa_handler = handleSIGRT1;
     act1.sa_flags = 0;
     sigemptyset(&act1.sa_mask);
-    sigaddset(&act1.sa_mask, SIGRTMIN + 2);
-    sigaction(SIGRTMIN + 1, &act1, NULL);
+    sigaddset(&act1.sa_mask, SIGRT2);
+    sigaction(SIGRT1, &act1, NULL);
 
     struct sigaction act;
     act.sa_handler = handleSIGRT2;
     act.sa_flags = 0;
     sigemptyset(&act.sa_mask);
-    sigaddset(&act.sa_mask, SIGRTMIN + 1);
-    sigaction(SIGRTMIN + 2, &act, NULL);  
+    sigaddset(&act.sa_mask, SIGRT1);
+    sigaction(SIGRT2, &act, NULL);  
 
     // Block other signals
     sigset_t mask;
     sigfillset(&mask);
-    sigdelset(&mask, SIGRTMIN + 1);
-    sigdelset(&mask, SIGRTMIN + 2);
+    sigdelset(&mask, SIGRT1);
+    sigdelset(&mask, SIGRT2);
     sigdelset(&mask, SIGQUIT);
     sigprocmask(SIG_SETMASK, &mask, NULL);
 
     // Send signals
     for (int i = 0; i < nSignals; i++) {
-        kill(catcherPid, SIGRTMIN + 1);
+        kill(catcherPid, SIGRT1);
+        pause();
     }
 
-    kill(catcherPid, SIGRTMIN + 2);
+    receiveMode = 1;
+    kill(catcherPid, SIGRT2);
 
     while (!receivedTerminalSignal) {
         sigsuspend(&mask);
@@ -73,11 +92,10 @@ void execSIGRT() {
     printf("Sender\n\tReceived %d signals.\n\tHe should have received %d.\n", received, nSignals);
 }
 
-// 
+// ---------------------------------------------------------
 
-// KILL
 
-int receiveMode = 0;
+// -------------------------- KILL -------------------------
 
 void handleSIGUSR1(int signal) {
     if (receiveMode)
@@ -127,6 +145,8 @@ void execKill() {
 
     printf("Sender\n\tReceived %d signals.\n\tHe should have received %d.\n", received, nSignals);
 }
+
+// -------------------------------------------------------------
  
 
 int main(int argc, char* argv[]) { 
