@@ -1,0 +1,19 @@
+Observations:
+    - Ignoring signals is inherited.
+      Forked process and exec both ignore sent signal, 
+      so they do not terminate when signal is sent.
+
+    - When handler is installed using sigaction,
+      Forked process has the same handler as his parrent 
+      Exec does not appear to have any handler installed so 
+      he terminates upon receiving signal.
+    
+    - Masks are inherited. Both forked process 
+      and exec block sent signal, so they do not terminate 
+      on receiving signal.
+    
+    - Checking pending singals proceeds as follows:
+        Parent masks signal, then it sends one and checks if
+        it sees this signal. Children are spawned and we check 
+        if pending signals are being copied - which they are not.
+      Children do not see parent's pending signals.

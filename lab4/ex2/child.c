@@ -34,7 +34,6 @@ int main(int argc, char* argv[]) {
     }
 
     raise(SIGNAL);
-    // printf("Raised signal child.\n");
 
     if (option & FLAG_IGNORE) {
         // Signal is ignored ...

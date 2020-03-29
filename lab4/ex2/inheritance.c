@@ -30,16 +30,13 @@ void handle(int signal) {
 }
 
 void setHandler() {
-    signal(SIGNAL, handle);
+    struct sigaction act;
+    act.sa_handler = handle;
+    act.sa_flags   = 0;
+    sigemptyset(&act.sa_mask);
+    sigaction(SIGUSR1, &act, NULL);
+
     option |= FLAG_HANDLE;
-}
-
-void anotherHandle(int sig) {
-    printf("What up\n");
-}
-
-void anotherHandler() {
-    signal(SIGNAL, anotherHandle);
 }
 
 void setMask() {
@@ -86,7 +83,7 @@ int main(int argc, char* argv[]) {
     } else if (strcmp("-mask", flag) == 0) {
         setMask();
     } else if (strcmp("-pending", flag) == 0) {
-        setPending();
+        setPending();   
     } 
 
     if (strcmp("-exec", argv[2]) == 0) {
@@ -132,21 +129,16 @@ int main(int argc, char* argv[]) {
             // Signal is ignored ...
             printf("Signal is ignored in child process\n");
         } else if (option & FLAG_HANDLE) {
-            // Child process doesn't copy parent's handlers so 
-            // the process terminates as soon as it receives SIGNAL.
+            // Handler is being copied from parent.
         } else if (option & FLAG_MASK) {
             // Signal is blocked... so the process does not terminate.
             printf("Signal is blocked - child.\n");
-        } else if (option & FLAG_PENDING) {
-            checkPending(0);
         }
 
         return 0;
     } 
     
-    if (exec) {
-        wait(NULL);
-    }
+    waitpid(pid, NULL,0);
 
     return 0;
 }
