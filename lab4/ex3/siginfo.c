@@ -9,8 +9,24 @@
 #define SIG_1 SIGFPE
 // Sent when child process finishes execution
 #define SIG_2 SIGCHLD
-// Sent when IO operation occurs 
+// Sent when segmentation fault occurs. 
 #define SIG_3 SIGSEGV
+
+/*
+    Notes:
+      I am provoking 3 signals:
+        - SIGFPE - is sent when arithemitc exception occurs, 
+                   so i divide by zero in child process and SIGFPE is sent
+                   i examine si_code which contains informations about errors.
+                   For example i check if it equals to FPE_INTDIV which indicates
+                   that divisio by zero occured.
+        - SIGSEGV - is sent when segmentation fault occurs,
+                    so I am trying to use unintiaized pointer to acces 5th element in array.
+                    Signal is sent and I examine si_addr which gives us the faulty address of instruction.
+
+        - SIGCHLD - sent when child finished its exection.
+                    Along with this signal return code is sent in si_status.
+*/
 
 
 void arithmeticExceptionHandler(int sig, siginfo_t* info, void* ucontext) {
