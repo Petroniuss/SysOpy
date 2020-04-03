@@ -3,19 +3,17 @@ HEADERS = $(wildcard *.h)
 OBJ := $(patsubst %.c, %.o, $(SRC))
 CC = gcc -Wall 
 
-compile: interpreter
+compile: producer consumer
 	echo "Compiled"
 
-# Example using prepared file with commands (executing using exec/fork/pipe)
-test: interpreter
-	./interpreter "test/sh-1.txt" -pipe
+runTestConsumer: consumer
+	./consumer 
 
-# Another example interpreting different file using popen
-another: interpreter
-	./interpreter "test/sh-2.txt" -popen
+consumer: $(OBJ)
+	$(CC) -o consumer consumer.o utils_lib.o
 
-interpreter: $(OBJ)
-	$(CC) -o interpreter interpreter.o utils_lib.o
+producer: $(OBJ)
+	$(CC) -o producer producer.o utils_lib.o
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $<
