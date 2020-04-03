@@ -10,8 +10,6 @@
 #define FLAG_PIPE  1
 #define FLAG_POPEN 2
 
-#define MAX_OUTPUT_LEN 100000;
-
 void error(const char* msg) {
     printf("Error: %s\n", msg);
     
@@ -94,6 +92,13 @@ void runProcess(char* line) {
     exit(1);
 }
 
+void runProcessWithPopen(char* line) {
+    FILE* file = popen(line, "w"); 
+    pclose(file);
+
+    exit(EXIT_SUCCESS);
+}
+
 
 int main(int argc, char* argv[]) { 
     if (argc < 2) 
@@ -119,7 +124,10 @@ int main(int argc, char* argv[]) {
                 runProcess(linesV[i]);
         }
     } else if (flag & FLAG_POPEN) {
-
+        for (int i = 0; i < linesC; i++) {
+            if (fork() == 0) 
+                runProcessWithPopen(linesV[i]);
+        }
     }
 
     
@@ -130,5 +138,4 @@ int main(int argc, char* argv[]) {
     printf("Main\n  Done...\n");
 
     return 0;
-
 }
