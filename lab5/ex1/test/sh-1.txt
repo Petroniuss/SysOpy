@@ -1,0 +1,2 @@
+ps aux | wc -l | wc -c
+ps aux
