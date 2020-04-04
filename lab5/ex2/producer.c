@@ -21,14 +21,18 @@ int main(int argc, char* argv[]) {
     char* filename = argv[2];
     int N = atoi(argv[3]);
 
-    
     FILE* pipe = fopen(pipeFilename, "w");
     FILE* file   = fopen(filename, "r");
-    
+
     char buffer [N + 1];
     int pid = getpid();
     
-    while (fread(buffer, sizeof(char), N, file) != 0) {
+    for (int read = fread(buffer, sizeof(char), N, file);
+             read != 0;
+             read = fread(buffer, sizeof(char), N, file)) {
+
+        buffer[read] = '\0';
+
         fprintf(pipe, "#%d#%s\n", pid, buffer);
         sleep(SLEEP_TIME);
     }

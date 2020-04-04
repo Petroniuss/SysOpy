@@ -26,9 +26,13 @@ int main(int argc, char* argv[]) {
 
     char buffer [N + 1];
 
-    while (fread(buffer, sizeof(char), N, pipe) != 0) {
+    for (int read = fread(buffer, sizeof(char), N, pipe);
+             read != 0;
+             read = fread(buffer, sizeof(char), N, pipe)) {
+        
+        buffer[read] = '\0';
         fprintf(file, "%s", buffer);
     }
-    
+
     return 0;
 }
