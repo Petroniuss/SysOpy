@@ -9,12 +9,6 @@
 
 #define MAX_LINE_SIZE 1000
 
-struct Matrix {
-    FILE* filePtr;
-    int rows;
-    int cols;
-} typedef Matrix;
-
 char* concat(const char* s1, const char* s2) {
     int   len    = strlen(s1) + strlen(s2) + 1;
     char* result = (char*) malloc(len);

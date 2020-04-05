@@ -7,9 +7,6 @@
 
 #include "utils_lib.h"
 
-#define FLAG_PIPE  1
-#define FLAG_POPEN 2
-
 void error(const char* msg) {
     printf("Error: %s\n", msg);
     
