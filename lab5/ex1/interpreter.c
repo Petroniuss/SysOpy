@@ -16,7 +16,6 @@ void error(const char* msg) {
     exit(EXIT_FAILURE);
 }
 
-
 // Solution with exec/fork/pipe.
 void runProcess(char* line) {
     int tokenC;
@@ -92,14 +91,6 @@ void runProcess(char* line) {
     exit(1);
 }
 
-void runProcessWithPopen(char* line) {
-    FILE* file = popen(line, "w"); 
-    pclose(file);
-
-    exit(EXIT_SUCCESS);
-}
-
-
 int main(int argc, char* argv[]) { 
     if (argc < 2) 
         error("Not enaugh arguments!");
@@ -108,28 +99,10 @@ int main(int argc, char* argv[]) {
     int    linesC = countLines(filename);
     char** linesV = readLines(linesC, filename);
 
-    int flag = 0;
-
-    if (strcmp(argv[2], "-pipe") == 0) {
-        flag |= FLAG_PIPE;
-    } else if (strcmp(argv[2], "-popen") == 0) {
-        flag |= FLAG_POPEN;
-    } else {
-        error("Enter flag: -pipe or -popen");
+    for (int i = 0; i < linesC; i++) {
+        if (fork() == 0) 
+            runProcess(linesV[i]);
     }
-
-    if (flag & FLAG_PIPE) {
-        for (int i = 0; i < linesC; i++) {
-            if (fork() == 0) 
-                runProcess(linesV[i]);
-        }
-    } else if (flag & FLAG_POPEN) {
-        for (int i = 0; i < linesC; i++) {
-            if (fork() == 0) 
-                runProcessWithPopen(linesV[i]);
-        }
-    }
-
     
     printf("Main\n  Waiting...\n");
     for (int i = 0; i < linesC; i++) 

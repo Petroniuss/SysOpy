@@ -8,11 +8,11 @@ compile: interpreter
 
 # Example using prepared file with commands (executing using exec/fork/pipe)
 test: interpreter
-	./interpreter "test/sh-1.txt" -pipe
+	./interpreter "test/sh-1.txt" 
 
-# Another example interpreting different file using popen
+# Another example interpreting different file 
 another: interpreter
-	./interpreter "test/sh-2.txt" -popen
+	./interpreter "test/sh-2.txt" 
 
 interpreter: $(OBJ)
 	$(CC) -o interpreter interpreter.o utils_lib.o
