@@ -2,16 +2,17 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 
-#define CLIENT_STOP 1
-#define CLIENT_DISCONNECT 2
-#define CLIENT_LIST 3
-#define CLIENT_CONNECT 4
-#define CLIENT_INIT 5
-#define CLIENT_TO_CLIENT 6
+#define CLIENT_SERVER_STOP 1
+#define CLIENT_SERVER_DISCONNECT 2
+#define CLIENT_SERVER_LIST 3
+#define CLIENT_SERVER_CONNECT 4
+#define CLIENT_SERVER_INIT 5
 
-#define SERVER_CHAT_INIT 1
-#define SERVER_RESPONSE 2
-#define SERVER_TERMINATED 3
+#define CLIENT_CLIENT_MSG 1
+#define CLIENT_CLIENT_DICONNECT 2
+
+#define SERVER_CLIENT_CHAT_INIT 1
+#define SERVER_CLIENT_TERMINATE 2
 
 #define SERVER_MAX_CLIENTS_CAPACITY 32
 #define MAX_MSG_LENGTH 128
@@ -26,22 +27,24 @@
 #define CREATE_QUEUE(key) (msgget(key, 0666 | IPC_PRIVATE))
 #define GET_QUEUE(key) (msgget(key, 0666))
 
-// TODO define custom messages and figure out a way to deserialize them.
-// So it looks like i am allowed to have only one type for a message.
-struct ClientMessage
+struct ClientServerMessage
 {
     long type;
-    long clientId;
-    long clientKey;
-    long connectToClientId; // another client id
-    char msg[MAX_MSG_LENGTH];
+    int clientId;
+    key_t clientKey;
+    int connectToClientId;
 } typedef ClientMessage;
 
-struct ServerMessage
+struct ClientClientMessage
 {
     long type;
-    long clientId;
-    long connectToClientId;
+    char msg[MAX_MSG_LENGTH];
+} typedef ClientClientMessage;
+
+struct ServerClientMessage
+{
+    long type;
+    key_t connectToClientKey;
 } typedef ServerMessage;
 
 struct Client
