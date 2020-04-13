@@ -18,4 +18,5 @@ server: $(OBJ)
 clean: 
 	rm -r *.o server client
 
-	clean run 
+.PHONY:
+	clean runServer
