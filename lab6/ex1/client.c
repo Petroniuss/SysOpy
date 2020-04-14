@@ -24,7 +24,6 @@ void registerMe() {
 
   ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
   RECEIVE_MESSAGE(clientQueueId, scMsg, SERVER_CLIENT_REGISTRED);
-  printError();
   clientId = scMsg->clientId;
   printf("Client -- registered with id: %d, key: %d\n", clientId, key);
 
@@ -106,7 +105,7 @@ void sendMessage(char* message) {
 
 // HANDLE - DISCONNECT
 void handleDisconnect(ClientClientMessage* msg) {
-  printf("Client received disconnect msg from chatee..\n");
+  printf("Client -- received disconnect msg from chatee..\n");
   chateeQueueId = -1;
   sendDisconnect();
 }
@@ -114,21 +113,20 @@ void handleDisconnect(ClientClientMessage* msg) {
 
 // Handle - CHAT_INIT
 void handleChatInit(ServerClientMessage* msg) {
-  printf("Client enters chat..\n");
+  printf("Client -- entering chat with client %d..\n", msg->clientId);
   chateeQueueId = GET_QUEUE(msg->chateeKey);
-  printError();
 }
 // ----------------
 
 // Handle - TERMINATE
 void handleTerminate() {
-  printf("Received terminate signal.. Server is wating for STOP..\n");
+  printf("Client -- Received terminate signal.. Server is wating for STOP..\n");
 }
 // ----------------
 
 // Handle - MSG
 void handleMessage(ClientClientMessage* msg) {
-  printf("Client recieved msg..\n");
+  printf("Client -- recieved msg..\n");
   printf("\t%s\n", msg->msg);
 }
 // ----------------
@@ -136,9 +134,9 @@ void handleMessage(ClientClientMessage* msg) {
 void execuateAtExit() { DELETE_QUEUE(clientQueueId); }
 
 int main(int charc, char* argv[]) {
-  printError();
   key = UNIQUE_KEY;
   clientQueueId = CREATE_QUEUE(key);
+  // This is just in case our key was not unique.
   if (clientQueueId == -1) {
     printf("There already exists client associated with this queue...\n");
     return -1;
@@ -152,7 +150,6 @@ int main(int charc, char* argv[]) {
 
   char buffer[64];
   char message[MAX_MSG_LENGTH];
-  // Part below is broken!!! For some reason client cannot read CHAT_INIT :/
   while (1) {
     //   First handle waiting messages from client/server.
     while (!isQueueEmpty(clientQueueId)) {
@@ -169,7 +166,7 @@ int main(int charc, char* argv[]) {
                                   SERVER_CLIENT_TERMINATE) != -1) {
         handleTerminate();
       }
-      // TODO Handle messages from another client
+      // Handle messages from another client
       if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, ccMsg, CLIENT_CLIENT_MSG) !=
           -1) {
         handleMessage(ccMsg);

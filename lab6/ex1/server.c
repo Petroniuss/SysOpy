@@ -32,7 +32,7 @@ void handleSignalExit(int signal) {
     }
   }
 
-  printf("Server waiting for clients to terminate.\n");
+  printf("Server -- waiting for clients to terminate.\n");
 }
 // -------------------------
 
@@ -58,7 +58,9 @@ void handleDisconnect(ClientServerMessage* msg) {
 
 // HANDLE - LIST
 void handleList(ClientServerMessage* msg) {
-  printf("Server -- listing available clients...\n");
+  printf("Server -- listing available clients as requested by client with id "
+         "%d...\n",
+         msg->clientId);
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (i == msg->clientId) {
       printf("\tClient --> id - %d, key - %d (ME)\n", clients[i]->clientId,
