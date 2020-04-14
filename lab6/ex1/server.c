@@ -3,7 +3,7 @@
 
 Client* clients[SERVER_MAX_CLIENTS_CAPACITY];
 
-int serverId = -1;
+int serverQueueId = -1;
 int clientsRunningCount = 0;
 int waitingForClientsToTerminate = 0;
 int current = 0;
@@ -11,7 +11,7 @@ int current = 0;
 // HANDLE EXIT - CRTL+C
 void exitServer() {
   printf("Server exits...\n");
-  DELETE_QUEUE(serverId);
+  DELETE_QUEUE(serverQueueId);
 
   exit(EXIT_SUCCESS);
 }
@@ -131,14 +131,38 @@ void handleInit(ClientServerMessage msg) {
 }
 // -------------------------
 
+// RECEIVE MESSAGE
+// Note that we handle messages in order based on priority.
+void handleMessage() {
+  printf("Server -- waiting for message ..\n");
+  ClientServerMessage msg;
+  RECEIVE_MESSAGE(serverQueueId, &msg, SERVER_MESSAGE_TYPE_PRIORITY);
+  printError();
+
+  int type = msg.type;
+  if (type == CLIENT_SERVER_STOP) {
+    handleStop(msg);
+  } else if (type == CLIENT_SERVER_DISCONNECT) {
+    handleDisconnect(msg);
+  } else if (type == CLIENT_SERVER_LIST) {
+    handleList(msg);
+  } else if (type == CLIENT_SERVER_CONNECT) {
+    handleConnect(msg);
+  } else if (type == CLIENT_SERVER_INIT) {
+    handleInit(msg);
+  } else {
+    printf("Server -- unknown message type.\n");
+  }
+}
+
 int main(int argc, char* arrgv[]) {
-  serverId = CREATE_QUEUE(SERVER_KEY);
-  printf("%d", serverId);
+  serverQueueId = CREATE_QUEUE(SERVER_KEY);
   signal(SIGINT, handleSignalExit);
 
-  ClientServerMessage msg;
+  printf("Server running...\n");
   while (1) {
-    ;
+    handleMessage();
   }
+
   return 0;
 }

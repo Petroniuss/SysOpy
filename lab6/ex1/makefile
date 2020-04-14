@@ -6,6 +6,9 @@ CC = gcc -Wall
 runServer: server
 	./server
 
+runClient: client 
+	./client
+
 client: $(OBJ) 
 	$(CC) -o client client.o shared.o
 

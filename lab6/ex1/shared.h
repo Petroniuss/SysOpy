@@ -12,6 +12,7 @@
 #define CLIENT_SERVER_LIST 3
 #define CLIENT_SERVER_CONNECT 4
 #define CLIENT_SERVER_INIT 5
+#define SERVER_MESSAGE_TYPE_PRIORITY (-6)
 
 #define CLIENT_CLIENT_MSG 1
 #define CLIENT_CLIENT_DICONNECT 2
@@ -36,7 +37,7 @@
 #define SEND_MESSAGE(id, msgPointer)                                           \
   (msgsnd(id, msgPointer, sizeof(*msgPointer) - sizeof(long), 0))
 #define RECEIVE_MESSAGE(id, msgPointer, type)                                  \
-  = (msgrcv(id, msgPointer, sizeof(*msgPointer) - sizeof(long), type, 0))
+  (msgrcv(id, msgPointer, sizeof(*msgPointer) - sizeof(long), type, 0))
 
 struct ClientServerMessage {
   long  type;
