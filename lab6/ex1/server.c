@@ -119,16 +119,15 @@ void handleInit(ClientServerMessage* msg) {
     clients[pointer] = client;
 
     // Notify client that he's now registered.
-    ServerClientMessage* scMsgP = malloc(sizeof(ServerClientMessage));
-    ServerClientMessage  scMsg = *scMsgP;
-    scMsg.type = SERVER_CLIENT_REGISTRED;
-    scMsg.clientId = pointer;
+    ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
+    scMsg->type = SERVER_CLIENT_REGISTRED;
+    scMsg->clientId = pointer;
 
-    SEND_MESSAGE(client->queueId, &scMsg);
+    SEND_MESSAGE(client->queueId, scMsg);
     printf("Server -- registered client - id: %d, key: %d\n", client->clientId,
            client->key);
     printError();
-    free(scMsgP);
+    free(scMsg);
   }
 }
 // -------------------------

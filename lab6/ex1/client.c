@@ -16,29 +16,33 @@ void exitClient() {
 
 // SEND - INIT
 void registerMe() {
-  ClientServerMessage csMsg;
-  csMsg.clientKey = key;
-  csMsg.type = CLIENT_SERVER_INIT;
+  ClientServerMessage* csMsg = malloc(sizeof(ClientServerMessage));
+  csMsg->clientKey = key;
+  csMsg->type = CLIENT_SERVER_INIT;
 
-  SEND_MESSAGE(serverQueueId, &csMsg);
+  SEND_MESSAGE(serverQueueId, csMsg);
   printError();
 
-  ServerClientMessage scMsg;
-  RECEIVE_MESSAGE(clientQueueId, &scMsg, SERVER_CLIENT_REGISTRED);
+  ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
+  RECEIVE_MESSAGE(clientQueueId, scMsg, SERVER_CLIENT_REGISTRED);
   printError();
-  clientId = scMsg.clientId;
+  clientId = scMsg->clientId;
   printf("Client -- registered with id: %d\n", clientId);
+
+  free(csMsg);
+  free(scMsg);
 }
 // ----------------
 
 // SEND - STOP
 void sendStop() {
   printf("Client -- sending STOP..\n");
-  ClientServerMessage msg;
-  msg.clientId = clientId;
-  msg.type = CLIENT_SERVER_STOP;
+  ClientServerMessage* msg = malloc(sizeof(ClientServerMessage));
+  msg->clientId = clientId;
+  msg->type = CLIENT_SERVER_STOP;
 
-  SEND_MESSAGE(serverQueueId, &msg);
+  SEND_MESSAGE(serverQueueId, msg);
+  free(msg);
   exitClient();
 }
 
@@ -49,29 +53,31 @@ void handleExitSignal(int sig) { sendStop(); }
 // SEND - LIST
 void sendList() {
   printf("Client -- sending LIST..\n");
-  ClientServerMessage msg;
-  msg.type = CLIENT_SERVER_LIST;
-  msg.clientId = clientId;
+  ClientServerMessage* msg = malloc(sizeof(ClientServerMessage));
+  msg->type = CLIENT_SERVER_LIST;
+  msg->clientId = clientId;
 
-  SEND_MESSAGE(serverQueueId, &msg);
+  SEND_MESSAGE(serverQueueId, msg);
+  free(msg);
 }
 // ----------------
 
 // SEND - DISCONNECT
 void sendDisconnect() {
   printf("Client -- sending DISCONNECT\n");
-  ClientServerMessage msg;
-  msg.clientId = clientId;
-  msg.type = CLIENT_SERVER_DISCONNECT;
+  ClientServerMessage* msg = malloc(sizeof(ClientServerMessage));
+  msg->clientId = clientId;
+  msg->type = CLIENT_SERVER_DISCONNECT;
 
-  SEND_MESSAGE(serverQueueId, &msg);
-
+  SEND_MESSAGE(serverQueueId, msg);
+  free(msg);
   if (chateeQueueId != -1) {
-    ClientClientMessage ccMsg;
-    ccMsg.type = CLIENT_CLIENT_DICONNECT;
+    ClientClientMessage* ccMsg = malloc(sizeof(ClientClientMessage));
+    ccMsg->type = CLIENT_CLIENT_DICONNECT;
 
-    SEND_MESSAGE(chateeQueueId, &ccMsg);
+    SEND_MESSAGE(chateeQueueId, ccMsg);
     chateeQueueId = -1;
+    free(ccMsg);
   }
 }
 // ----------------
@@ -79,34 +85,34 @@ void sendDisconnect() {
 // SEND - CONNECT
 void sendConnect(int chateeId) {
   printf("Client -- seending CONNECT to chatee with ID: %d\n", chateeId);
-  ClientServerMessage msg;
-  msg.clientId = clientId;
-  msg.chateeId = chateeId;
-  msg.type = CLIENT_SERVER_CONNECT;
+  ClientServerMessage* msg = malloc(sizeof(ClientServerMessage));
+  msg->clientId = clientId;
+  msg->chateeId = chateeId;
+  msg->type = CLIENT_SERVER_CONNECT;
 
-  SEND_MESSAGE(serverQueueId, &msg);
+  SEND_MESSAGE(serverQueueId, msg);
+  free(msg);
+  ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
+  RECEIVE_MESSAGE(clientQueueId, scMsg, SERVER_CLIENT_CHAT_INIT);
 
-  ServerClientMessage scMsg;
-  RECEIVE_MESSAGE(clientQueueId, &scMsg, SERVER_CLIENT_CHAT_INIT);
-
-  chateeQueueId = GET_QUEUE(scMsg.chateeKey);
+  chateeQueueId = GET_QUEUE(scMsg->chateeKey);
   printError();
   printf("Client -- started chat with client: %d, key: %d\n", chateeId,
-         scMsg.chateeKey);
+         scMsg->chateeKey);
 }
 // ----------------
 
 // SEND - MSG
 void sendMessage(char* message) {
-  ClientClientMessage msg;
-  msg.type = CLIENT_CLIENT_MSG;
+  ClientClientMessage* msg = malloc(sizeof(ClientClientMessage));
+  msg->type = CLIENT_CLIENT_MSG;
 
-  SEND_MESSAGE(chateeQueueId, &msg);
+  SEND_MESSAGE(chateeQueueId, msg);
 }
 // ----------------
 
 // HANDLE - DISCONNECT
-void handleDisconnect(ClientClientMessage msg) {
+void handleDisconnect(ClientClientMessage* msg) {
   printf("Client received disconnect msg from chatee..\n");
   chateeQueueId = -1;
   sendDisconnect();
@@ -114,9 +120,9 @@ void handleDisconnect(ClientClientMessage msg) {
 // ----------------
 
 // Handle - CHAT_INIT
-void handleChatInit(ServerClientMessage msg) {
+void handleChatInit(ServerClientMessage* msg) {
   printf("Client enters chat..\n");
-  chateeQueueId = GET_QUEUE(msg.chateeKey);
+  chateeQueueId = GET_QUEUE(msg->chateeKey);
   printError();
 }
 // ----------------
@@ -126,9 +132,9 @@ void handleTerminate() { sendStop(); }
 // ----------------
 
 // Handle - MSG
-void handleMessage(ClientClientMessage msg) {
+void handleMessage(ClientClientMessage* msg) {
   printf("Client recieved msg..\n");
-  printf("\t%s\n", msg.msg);
+  printf("\t%s\n", msg->msg);
 }
 // ----------------
 
@@ -147,21 +153,21 @@ int main(int charc, char* argv[]) {
   while (1) {
     //   First handle waiting messages from client/server.
     while (!isQueueEmpty(clientQueueId)) {
-      ServerClientMessage scMsg;
-      ClientClientMessage ccMsg;
+      ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
+      ClientClientMessage* ccMsg = malloc(sizeof(ClientClientMessage));
 
       // Handle messages from server
-      if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, &scMsg, 0) != -1) {
-        if (scMsg.type == SERVER_CLIENT_CHAT_INIT) {
+      if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, scMsg, 0) != -1) {
+        if (scMsg->type == SERVER_CLIENT_CHAT_INIT) {
           handleChatInit(scMsg);
-        } else if (scMsg.type == SERVER_CLIENT_TERMINATE) {
+        } else if (scMsg->type == SERVER_CLIENT_TERMINATE) {
           handleTerminate();
         }
         // Handle messages from another client
-      } else if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, &ccMsg, 0) != -1) {
-        if (ccMsg.type == CLIENT_CLIENT_MSG) {
+      } else if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, ccMsg, 0) != -1) {
+        if (ccMsg->type == CLIENT_CLIENT_MSG) {
           handleMessage(ccMsg);
-        } else if (ccMsg.type == CLIENT_CLIENT_DICONNECT)
+        } else if (ccMsg->type == CLIENT_CLIENT_DICONNECT)
           handleDisconnect(ccMsg);
       }
     }
