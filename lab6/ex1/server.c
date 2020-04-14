@@ -11,7 +11,6 @@ int current = 0;
 // HANDLE EXIT - CRTL+C
 void exitServer() {
   printf("Server exits...\n");
-  DELETE_QUEUE(serverQueueId);
 
   exit(EXIT_SUCCESS);
 }
@@ -155,9 +154,12 @@ void handleMessage() {
   }
 }
 
+void executeAtExit() { DELETE_QUEUE(serverQueueId); }
+
 int main(int argc, char* arrgv[]) {
   serverQueueId = CREATE_QUEUE(SERVER_KEY);
   signal(SIGINT, handleSignalExit);
+  atexit(executeAtExit);
 
   printf("Server running...\n");
   while (1) {

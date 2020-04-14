@@ -35,11 +35,11 @@
 #define GET_QUEUE(key) (msgget(key, 0666))
 
 #define SEND_MESSAGE(id, msgPointer)                                           \
-  (msgsnd(id, msgPointer, sizeof(*msgPointer) - sizeof(long), 0))
+  (msgsnd(id, msgPointer, sizeof(*msgPointer), 0))
 #define RECEIVE_MESSAGE(id, msgPointer, type)                                  \
-  (msgrcv(id, msgPointer, sizeof(*msgPointer) - sizeof(long), type, 0))
+  (msgrcv(id, msgPointer, sizeof(*msgPointer), type, 0))
 #define RECEIVE_MESSAGE_NO_WAIT(id, msgPointer, type)                          \
-  (msgrcv(id, msgPointer, sizeof(*msgPointer) - sizeof(long), type, IPC_NOWAIT))
+  (msgrcv(id, msgPointer, sizeof(*msgPointer), type, IPC_NOWAIT))
 
 struct ClientServerMessage {
   long  type;
@@ -61,7 +61,7 @@ struct ServerClientMessage {
 
 struct Client {
   key_t key;
-  long  clientId;
+  int   clientId;
   int   queueId;
   int   available;
 } typedef Client;

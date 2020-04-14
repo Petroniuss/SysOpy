@@ -11,11 +11,8 @@ int chateeQueueId = -1;
 
 void exitClient() {
   printf("Client -- exit..\n");
-  DELETE_QUEUE(clientQueueId);
   exit(EXIT_SUCCESS);
 }
-
-void handleExitSignal(int sig) { sendStop(); }
 
 // SEND - INIT
 void registerMe() {
@@ -43,6 +40,9 @@ void sendStop() {
   SEND_MESSAGE(serverQueueId, &msg);
   exitClient();
 }
+
+void handleExitSignal(int sig) { sendStop(); }
+
 // ----------------
 
 // SEND - LIST
@@ -131,11 +131,14 @@ void handleMessage(ClientClientMessage msg) {
 }
 // ----------------
 
+void execuateAtExit() { DELETE_QUEUE(clientQueueId); }
+
 int main(int charc, char* argv[]) {
   key = UNIQUE_KEY;
   clientQueueId = CREATE_QUEUE(key);
   serverQueueId = GET_QUEUE(SERVER_KEY);
   signal(SIGINT, handleExitSignal);
+  atexit(execuateAtExit);
   registerMe();
 
   char buffer[64];
@@ -162,7 +165,7 @@ int main(int charc, char* argv[]) {
       }
     }
 
-    // Second, client executes command.
+    // Secondly, client executes command.
     scanf("%s", buffer);
     if (stringEq(buffer, "STOP")) {
       sendStop();
