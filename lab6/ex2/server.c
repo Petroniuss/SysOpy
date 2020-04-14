@@ -3,7 +3,7 @@
 
 Client* clients[SERVER_MAX_CLIENTS_CAPACITY];
 
-int serverQueueId = -1;
+int serverQueueDesc = -1;
 int clientsRunningCount = 0;
 int waitingForClientsToTerminate = 0;
 int current = 0;
@@ -16,17 +16,16 @@ void exitServer() {
 }
 
 void handleSignalExit(int signal) {
-  ServerClientMessage* msg = malloc(sizeof(ServerClientMessage));
-  msg->type = SERVER_CLIENT_TERMINATE;
+  char msg[MAX_MSG_LENGTH];
+  sprintf(msg, "%d", SERVER_CLIENT_TERMINATE);
 
   if (clientsRunningCount <= 0)
     exitServer();
 
   waitingForClientsToTerminate = 1;
-
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (clients[i]) {
-      SEND_MESSAGE(clients[i]->queueId, msg);
+      SEND_MESSAGE(clients[i]->queueDesc, msg, SERVER_CLIENT_TERMINATE);
     }
   }
 
@@ -35,12 +34,15 @@ void handleSignalExit(int signal) {
 // -------------------------
 
 // HANDLE - STOP
-void handleStop(ClientServerMessage* msg) {
-  clients[msg->clientId] = NULL;
-  free(clients[msg->clientId]);
-  clientsRunningCount -= 1;
+void handleStop(char* msg) {
+  int type, clientId;
+  sscanf(msg, "%d %d", &type, &clientId);
 
-  printf("Server -- Received STOP from %d\n", msg->clientId);
+  clients[clientId] = NULL;
+  free(clients[clientId]);
+
+  clientsRunningCount -= 1;
+  printf("Server -- Received STOP from %d\n", clientId);
 
   if (waitingForClientsToTerminate && clientsRunningCount <= 0) {
     exitServer();
@@ -49,33 +51,42 @@ void handleStop(ClientServerMessage* msg) {
 // -------------------------
 
 // HANDLE - DISCONNECT
-void handleDisconnect(ClientServerMessage* msg) {
-  clients[msg->clientId]->available = 1;
+void handleDisconnect(char* msg) {
+  int type, clientId;
+  sscanf(msg, "%d %d", &type, &clientId);
+
+  clients[clientId]->available = 1;
 }
 // -------------------------
 
 // HANDLE - LIST
-void handleList(ClientServerMessage* msg) {
+void handleList(char* msg) {
+  int type, clientId;
+  sscanf(msg, "%d %d", &type, &clientId);
+
   printf("Server -- listing available clients as requested by client with id "
          "%d...\n",
-         msg->clientId);
+         clientId);
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
-    if (i == msg->clientId) {
-      printf("\tClient --> id - %d, key - %d (ME)\n", clients[i]->clientId,
-             clients[i]->key);
+    if (i == clientId) {
+      printf("\tClient --> id - %d, path - %d (ME)\n", clients[i]->clientId,
+             clients[i]->name);
 
     } else if (clients[i] && clients[i]->available) {
-      printf("\tClient --> id - %d, key - %d\n", clients[i]->clientId,
-             clients[i]->key);
+      printf("\tClient --> id - %d, path - %d\n", clients[i]->clientId,
+             clients[i]->name);
     }
   }
 }
 // -------------------------
 
 // HANDLE - CONNECT
-void handleConnect(ClientServerMessage* msg) {
-  int id1 = msg->clientId;
-  int id2 = msg->chateeId;
+void handleConnect(char* msg) {
+  int type, clientId, chateeId;
+  sscanf(msg, "%d %d %d", &type, &clientId, &chateeId);
+
+  int id1 = clientId;
+  int id2 = chateeId;
 
   // Check if client under sent id is avaiable
   if (id2 < 0 || id2 >= SERVER_MAX_CLIENTS_CAPACITY || !clients[id2] ||
@@ -83,28 +94,28 @@ void handleConnect(ClientServerMessage* msg) {
     printf("Server -- requested client is not avaiable\n");
     return;
   }
+  char msg1[MAX_MSG_LENGTH];
+  char msg2[MAX_MSG_LENGTH];
+
+  sprintf(msg1, "%d %s", SERVER_CLIENT_CHAT_INIT, clients[id2]->name);
+  sprintf(msg2, "%d %s", SERVER_CLIENT_CHAT_INIT, clients[id1]->name);
 
   clients[id1]->available = 0;
   clients[id2]->available = 0;
 
-  ServerClientMessage* msg1 = malloc(sizeof(ServerClientMessage));
-  ServerClientMessage* msg2 = malloc(sizeof(ServerClientMessage));
-
-  msg1->type = SERVER_CLIENT_CHAT_INIT;
-  msg2->type = SERVER_CLIENT_CHAT_INIT;
-
-  msg1->chateeKey = clients[id2]->key;
-  msg2->chateeKey = clients[id1]->key;
-
-  SEND_MESSAGE(clients[id1]->queueId, msg1);
-  SEND_MESSAGE(clients[id2]->queueId, msg2);
+  SEND_MESSAGE(clients[id1]->queueDesc, msg1, SERVER_CLIENT_CHAT_INIT);
+  SEND_MESSAGE(clients[id2]->queueDesc, msg2, SERVER_CLIENT_CHAT_INIT);
 
   printf("Server -- initialized chat, %d <=> %d\n", id1, id2);
 }
 // -------------------------
 
 // HANDLE - INIT
-void handleInit(ClientServerMessage* msg) {
+void handleInit(char* msg) {
+  int   type, clientId;
+  char* name = malloc(MAX_MSG_LENGTH * sizeof(char));
+  sscanf(msg, "%d %d %s", &type, &clientId, name);
+
   int pointer = -1;
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     pointer = (current + i) % SERVER_MAX_CLIENTS_CAPACITY;
@@ -118,25 +129,23 @@ void handleInit(ClientServerMessage* msg) {
   } else {
     Client* client = malloc(sizeof(Client));
     client->available = 1;
-    client->key = msg->clientKey;
+    client->name = name;
     client->clientId = pointer;
-    client->queueId = GET_QUEUE(msg->clientKey);
+    client->queueDesc = GET_QUEUE(name);
     // debug
     printError();
 
     clients[pointer] = client;
 
     // Notify client that he's now registered.
-    ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
-    scMsg->type = SERVER_CLIENT_REGISTRED;
-    scMsg->clientId = pointer;
+    char scMsg[MAX_MSG_LENGTH];
+    fprintf(scMsg, "%d %d", SERVER_CLIENT_REGISTRED, pointer);
 
-    SEND_MESSAGE(client->queueId, scMsg);
+    SEND_MESSAGE(client->name, scMsg, SERVER_CLIENT_REGISTRED);
     clientsRunningCount += 1;
-    printf("Server -- registered client - id: %d, key: %d\n", client->clientId,
-           client->key);
+    printf("Server -- registered client - id: %d, path: %s\n", client->clientId,
+           client->name);
     printError();
-    free(scMsg);
   }
 }
 // -------------------------
@@ -144,11 +153,10 @@ void handleInit(ClientServerMessage* msg) {
 // RECEIVE MESSAGE
 // Note that we handle messages in order based on priority.
 void handleMessage() {
-  ClientServerMessage* msg = malloc(sizeof(ClientServerMessage*));
+  char* msg = malloc(sizeof(char) * MAX_MSG_LENGTH);
+  int   type;
+  RECEIVE_MESSAGE(serverQueueDesc, msg, &type);
 
-  RECEIVE_MESSAGE(serverQueueId, msg, SERVER_MESSAGE_TYPE_PRIORITY);
-
-  int type = msg->type;
   if (type == CLIENT_SERVER_STOP) {
     handleStop(msg);
   } else if (type == CLIENT_SERVER_DISCONNECT) {
@@ -164,13 +172,9 @@ void handleMessage() {
   free(msg);
 }
 
-void executeAtExit() { DELETE_QUEUE(serverQueueId); }
-
 int main(int argc, char* arrgv[]) {
-  serverQueueId = CREATE_QUEUE(SERVER_KEY);
-
+  serverQueueDesc = CREATE_QUEUE(QUEUE_SERVER_PATH);
   signal(SIGINT, handleSignalExit);
-  atexit(executeAtExit);
 
   printf("Server running...\n");
   while (1) {

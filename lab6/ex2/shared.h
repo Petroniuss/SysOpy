@@ -36,7 +36,7 @@
 
 #define SEND_MESSAGE(desc, msgPointer, type)                                   \
   (mq_send(desc, msgPointer, strlen(msgPointer), type))
-#define RECEIVE_MESSAGE(id, msgPointer, typePointer)                           \
+#define RECEIVE_MESSAGE(desc, msgPointer, typePointer)                         \
   (mq_receive(desc, msgPointer, MAX_MSG_LENGTH, typePointer))
 #define REGISTER_NOTIFICATION(desc, sigevent) (mq_notify(desc, sigevent))
 
@@ -45,6 +45,13 @@ int   stringEq(char* str1, char* str2);
 char* randomString(int length);
 char* concat(const char* s1, const char* s2);
 char* getCurrentWorkingDirectory();
+
+struct Client {
+  int   clientId;
+  int   queueDesc;
+  char* name;
+  int   available;
+} typedef Client;
 
 /*
 struct ClientServerMessage {
@@ -65,11 +72,5 @@ struct ServerClientMessage {
   key_t chateeKey;
 } typedef ServerClientMessage;
 
-struct Client {
-  key_t key;
-  int   clientId;
-  int   queueId;
-  int   available;
-} typedef Client;
 
 */
