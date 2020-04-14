@@ -5,6 +5,7 @@
 #include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/types.h>
+#include <time.h>
 #include <unistd.h>
 
 #define CLIENT_SERVER_STOP 1
@@ -12,7 +13,6 @@
 #define CLIENT_SERVER_LIST 3
 #define CLIENT_SERVER_CONNECT 4
 #define CLIENT_SERVER_INIT 5
-#define SERVER_MESSAGE_TYPE_PRIORITY (-6)
 
 #define CLIENT_CLIENT_MSG 1
 #define CLIENT_CLIENT_DICONNECT 2
@@ -22,13 +22,15 @@
 #define SERVER_CLIENT_REGISTRED 3
 
 #define SERVER_MAX_CLIENTS_CAPACITY 32
+#define SERVER_MESSAGE_TYPE_PRIORITY (-6)
 #define MAX_MSG_LENGTH 128
 
 #define KEY_GENERATOR_PATH (getenv("HOME"))
-#define PROJECT_IDENTIFIER 'P'
+#define PROJECT_IDENTIFIER (112358)
+const int ID_NUMS[SERVER_MAX_CLIENTS_CAPACITY];
 
-#define UNIQUE_KEY (ftok(KEY_GENERATOR_PATH, PROJECT_IDENTIFIER))
-#define SERVER_KEY ((key_t)112358)
+#define UNIQUE_KEY (ftok(KEY_GENERATOR_PATH, getpid()))
+#define SERVER_KEY (ftok(KEY_GENERATOR_PATH, PROJECT_IDENTIFIER))
 
 #define DELETE_QUEUE(id) (msgctl(id, IPC_RMID, NULL))
 #define CREATE_QUEUE(key) (msgget(key, 0666 | IPC_CREAT | IPC_EXCL))
@@ -69,3 +71,4 @@ struct Client {
 void printError();
 int  stringEq(char* str1, char* str2);
 int  isQueueEmpty(int queueId);
+int  iPointer;

@@ -26,7 +26,7 @@ void handleSignalExit(int signal) {
 
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (clients[i]) {
-      SEND_MESSAGE(clients[i]->clientId, msg);
+      SEND_MESSAGE(clients[i]->queueId, msg);
     }
   }
 
@@ -42,7 +42,7 @@ void handleStop(ClientServerMessage* msg) {
 
   printf("Server -- Received STOP from %d\n", msg->clientId);
 
-  if (waitingForClientsToTerminate <= 0) {
+  if (waitingForClientsToTerminate && clientsRunningCount <= 0) {
     exitServer();
   }
 }
@@ -74,7 +74,7 @@ void handleConnect(ClientServerMessage* msg) {
 
   // Check if client under sent id is avaiable
   if (id2 < 0 || id2 >= SERVER_MAX_CLIENTS_CAPACITY || !clients[id2] ||
-      !clients[id2]->available) {
+      !clients[id2]->available || id1 == id2) {
     printf("Server -- requested client is not avaiable\n");
   }
 
@@ -124,6 +124,7 @@ void handleInit(ClientServerMessage* msg) {
     scMsg->clientId = pointer;
 
     SEND_MESSAGE(client->queueId, scMsg);
+    clientsRunningCount += 1;
     printf("Server -- registered client - id: %d, key: %d\n", client->clientId,
            client->key);
     printError();
@@ -151,8 +152,6 @@ void handleMessage() {
     handleConnect(msg);
   } else if (type == CLIENT_SERVER_INIT) {
     handleInit(msg);
-  } else {
-    printf("Server -- unknown message type.\n");
   }
 
   free(msg);
@@ -162,6 +161,8 @@ void executeAtExit() { DELETE_QUEUE(serverQueueId); }
 
 int main(int argc, char* arrgv[]) {
   serverQueueId = CREATE_QUEUE(SERVER_KEY);
+
+  // If program crashed we delete previously created icp queue.
   if (serverQueueId == -1) {
     DELETE_QUEUE(GET_QUEUE(SERVER_KEY));
     serverQueueId = CREATE_QUEUE(SERVER_KEY);

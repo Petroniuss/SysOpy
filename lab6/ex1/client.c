@@ -128,7 +128,9 @@ void handleChatInit(ServerClientMessage* msg) {
 // ----------------
 
 // Handle - TERMINATE
-void handleTerminate() { sendStop(); }
+void handleTerminate() {
+  printf("Received terminate signal.. Server is wating for STOP..\n");
+}
 // ----------------
 
 // Handle - MSG
@@ -141,11 +143,12 @@ void handleMessage(ClientClientMessage* msg) {
 void execuateAtExit() { DELETE_QUEUE(clientQueueId); }
 
 int main(int charc, char* argv[]) {
-  key = UNIQUE_KEY;
-  clientQueueId = CREATE_QUEUE(key);
+  clientQueueId = CREATE_QUEUE(UNIQUE_KEY);
   serverQueueId = GET_QUEUE(SERVER_KEY);
+
   signal(SIGINT, handleExitSignal);
   atexit(execuateAtExit);
+
   registerMe();
 
   char buffer[64];
@@ -193,6 +196,8 @@ int main(int charc, char* argv[]) {
       } else {
         sendMessage(message);
       }
+    } else if (stringEq(buffer, "PASS")) {
+      ;
     } else {
       printf("Client --  unknown command.\n");
     }
