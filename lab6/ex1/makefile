@@ -7,10 +7,10 @@ runServer: server
 	./server
 
 client: $(OBJ) 
-	$(CC) -o client client.o
+	$(CC) -o client client.o shared.o
 
 server: $(OBJ) 
-	$(CC) -o server server.o
+	$(CC) -o server server.o shared.o
 
 %.o: %.c $(HEADERS)
 	$(CC) -c -o $@ $<

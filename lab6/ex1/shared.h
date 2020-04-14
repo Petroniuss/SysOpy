@@ -1,6 +1,11 @@
-#include <sys/types.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
+#include <sys/types.h>
+#include <unistd.h>
 
 #define CLIENT_SERVER_STOP 1
 #define CLIENT_SERVER_DISCONNECT 2
@@ -13,6 +18,7 @@
 
 #define SERVER_CLIENT_CHAT_INIT 1
 #define SERVER_CLIENT_TERMINATE 2
+#define SERVER_CLIENT_REGISTRED 3
 
 #define SERVER_MAX_CLIENTS_CAPACITY 32
 #define MAX_MSG_LENGTH 128
@@ -24,32 +30,37 @@
 #define SERVER_KEY ((key_t)112358)
 
 #define DELETE_QUEUE(id) (msgctl(id, IPC_RMID, NULL))
-#define CREATE_QUEUE(key) (msgget(key, 0666 | IPC_PRIVATE))
+#define CREATE_QUEUE(key) (msgget(key, 0666 | IPC_CREAT | IPC_EXCL))
 #define GET_QUEUE(key) (msgget(key, 0666))
 
-struct ClientServerMessage
-{
-    long type;
-    int clientId;
-    key_t clientKey;
-    int connectToClientId;
-} typedef ClientMessage;
+#define SEND_MESSAGE(id, msgPointer)                                           \
+  (msgsnd(id, msgPointer, sizeof(*msgPointer) - sizeof(long), 0))
+#define RECEIVE_MESSAGE(id, msgPointer, type)                                  \
+  = (msgrcv(id, msgPointer, sizeof(*msgPointer) - sizeof(long), type, 0))
 
-struct ClientClientMessage
-{
-    long type;
-    char msg[MAX_MSG_LENGTH];
+struct ClientServerMessage {
+  long  type;
+  int   clientId;
+  key_t clientKey;
+  int   connectToClientId;
+} typedef ClientServerMessage;
+
+struct ClientClientMessage {
+  long type;
+  char msg[MAX_MSG_LENGTH];
 } typedef ClientClientMessage;
 
-struct ServerClientMessage
-{
-    long type;
-    key_t connectToClientKey;
-} typedef ServerMessage;
+struct ServerClientMessage {
+  long  type;
+  int   clientId;
+  key_t connectToClientKey;
+} typedef ServerClientMessage;
 
-struct Client
-{
-    key_t key;
-    long clientId;
-    int available;
+struct Client {
+  key_t key;
+  long  clientId;
+  int   queueId;
+  int   available;
 } typedef Client;
+
+void printError();
