@@ -69,7 +69,7 @@ void handleList(ClientServerMessage msg) {
 // HANDLE - CONNECT
 void handleConnect(ClientServerMessage msg) {
   int id1 = msg.clientId;
-  int id2 = msg.connectToClientId;
+  int id2 = msg.chateeId;
 
   // Check if client under sent id is avaiable
   if (id2 < 0 || id2 >= SERVER_MAX_CLIENTS_CAPACITY || !clients[id2] ||

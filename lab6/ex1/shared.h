@@ -38,12 +38,14 @@
   (msgsnd(id, msgPointer, sizeof(*msgPointer) - sizeof(long), 0))
 #define RECEIVE_MESSAGE(id, msgPointer, type)                                  \
   (msgrcv(id, msgPointer, sizeof(*msgPointer) - sizeof(long), type, 0))
+#define RECEIVE_MESSAGE_NO_WAIT(id, msgPointer, type)                          \
+  (msgrcv(id, msgPointer, sizeof(*msgPointer) - sizeof(long), type, IPC_NOWAIT))
 
 struct ClientServerMessage {
   long  type;
   int   clientId;
   key_t clientKey;
-  int   connectToClientId;
+  int   chateeId;
 } typedef ClientServerMessage;
 
 struct ClientClientMessage {
@@ -54,7 +56,7 @@ struct ClientClientMessage {
 struct ServerClientMessage {
   long  type;
   int   clientId;
-  key_t connectToClientKey;
+  key_t chateeKey;
 } typedef ServerClientMessage;
 
 struct Client {
@@ -65,3 +67,5 @@ struct Client {
 } typedef Client;
 
 void printError();
+int  stringEq(char* str1, char* str2);
+int  isQueueEmpty(int queueId);
