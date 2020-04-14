@@ -8,8 +8,6 @@ int clientsRunningCount = 0;
 int waitingForClientsToTerminate = 0;
 int current = 0;
 
-// FIXME --> convert static allocation to dynamic!
-
 // HANDLE EXIT - CRTL+C
 void exitServer() {
   printf("Server exits...\n");

@@ -127,7 +127,9 @@ void handleTerminate() {
 // Handle - MSG
 void handleMessage(ClientClientMessage* msg) {
   printf("Client -- recieved msg..\n");
+  printf("------------------------------------------------\n");
   printf("\t%s\n", msg->msg);
+  printf("------------------------------------------------\n");
 }
 // ----------------
 
