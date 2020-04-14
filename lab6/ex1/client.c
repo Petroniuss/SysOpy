@@ -21,13 +21,12 @@ void registerMe() {
   csMsg->type = CLIENT_SERVER_INIT;
 
   SEND_MESSAGE(serverQueueId, csMsg);
-  printError();
 
   ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
   RECEIVE_MESSAGE(clientQueueId, scMsg, SERVER_CLIENT_REGISTRED);
   printError();
   clientId = scMsg->clientId;
-  printf("Client -- registered with id: %d\n", clientId);
+  printf("Client -- registered with id: %d, key: %d\n", clientId, key);
 
   free(csMsg);
   free(scMsg);
@@ -92,13 +91,6 @@ void sendConnect(int chateeId) {
 
   SEND_MESSAGE(serverQueueId, msg);
   free(msg);
-  ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
-  RECEIVE_MESSAGE(clientQueueId, scMsg, SERVER_CLIENT_CHAT_INIT);
-
-  chateeQueueId = GET_QUEUE(scMsg->chateeKey);
-  printError();
-  printf("Client -- started chat with client: %d, key: %d\n", chateeId,
-         scMsg->chateeKey);
 }
 // ----------------
 
@@ -106,6 +98,7 @@ void sendConnect(int chateeId) {
 void sendMessage(char* message) {
   ClientClientMessage* msg = malloc(sizeof(ClientClientMessage));
   msg->type = CLIENT_CLIENT_MSG;
+  strcpy(msg->msg, message);
 
   SEND_MESSAGE(chateeQueueId, msg);
 }
@@ -143,7 +136,13 @@ void handleMessage(ClientClientMessage* msg) {
 void execuateAtExit() { DELETE_QUEUE(clientQueueId); }
 
 int main(int charc, char* argv[]) {
-  clientQueueId = CREATE_QUEUE(UNIQUE_KEY);
+  printError();
+  key = UNIQUE_KEY;
+  clientQueueId = CREATE_QUEUE(key);
+  if (clientQueueId == -1) {
+    printf("There already exists client associated with this queue...\n");
+    return -1;
+  }
   serverQueueId = GET_QUEUE(SERVER_KEY);
 
   signal(SIGINT, handleExitSignal);
@@ -153,6 +152,7 @@ int main(int charc, char* argv[]) {
 
   char buffer[64];
   char message[MAX_MSG_LENGTH];
+  // Part below is broken!!! For some reason client cannot read CHAT_INIT :/
   while (1) {
     //   First handle waiting messages from client/server.
     while (!isQueueEmpty(clientQueueId)) {
@@ -160,19 +160,28 @@ int main(int charc, char* argv[]) {
       ClientClientMessage* ccMsg = malloc(sizeof(ClientClientMessage));
 
       // Handle messages from server
-      if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, scMsg, 0) != -1) {
-        if (scMsg->type == SERVER_CLIENT_CHAT_INIT) {
-          handleChatInit(scMsg);
-        } else if (scMsg->type == SERVER_CLIENT_TERMINATE) {
-          handleTerminate();
-        }
-        // Handle messages from another client
-      } else if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, ccMsg, 0) != -1) {
-        if (ccMsg->type == CLIENT_CLIENT_MSG) {
-          handleMessage(ccMsg);
-        } else if (ccMsg->type == CLIENT_CLIENT_DICONNECT)
-          handleDisconnect(ccMsg);
+      if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, scMsg,
+                                  SERVER_CLIENT_CHAT_INIT) != -1) {
+        handleChatInit(scMsg);
       }
+
+      if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, scMsg,
+                                  SERVER_CLIENT_TERMINATE) != -1) {
+        handleTerminate();
+      }
+      // TODO Handle messages from another client
+      if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, ccMsg, CLIENT_CLIENT_MSG) !=
+          -1) {
+        handleMessage(ccMsg);
+      }
+
+      if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, ccMsg,
+                                  CLIENT_CLIENT_DICONNECT) != -1) {
+        handleDisconnect(ccMsg);
+      }
+
+      free(scMsg);
+      free(ccMsg);
     }
 
     // Secondly, client executes command.

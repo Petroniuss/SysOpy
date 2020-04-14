@@ -24,6 +24,8 @@ void handleSignalExit(int signal) {
   if (clientsRunningCount <= 0)
     exitServer();
 
+  waitingForClientsToTerminate = 1;
+
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (clients[i]) {
       SEND_MESSAGE(clients[i]->queueId, msg);
@@ -56,14 +58,17 @@ void handleDisconnect(ClientServerMessage* msg) {
 
 // HANDLE - LIST
 void handleList(ClientServerMessage* msg) {
-  printf("Server - listing available clients...\n");
+  printf("Server -- listing available clients...\n");
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
-    if (clients[i] && clients[i]->available) {
+    if (i == msg->clientId) {
+      printf("\tClient --> id - %d, key - %d (ME)\n", clients[i]->clientId,
+             clients[i]->key);
+
+    } else if (clients[i] && clients[i]->available) {
       printf("\tClient --> id - %d, key - %d\n", clients[i]->clientId,
              clients[i]->key);
     }
   }
-  printf("Server -- done...\n");
 }
 // -------------------------
 
@@ -76,20 +81,23 @@ void handleConnect(ClientServerMessage* msg) {
   if (id2 < 0 || id2 >= SERVER_MAX_CLIENTS_CAPACITY || !clients[id2] ||
       !clients[id2]->available || id1 == id2) {
     printf("Server -- requested client is not avaiable\n");
+    return;
   }
 
-  ClientServerMessage* msg1 = malloc(sizeof(ClientServerMessage));
-  ClientServerMessage* msg2 = malloc(sizeof(ClientServerMessage));
+  clients[id1]->available = 0;
+  clients[id2]->available = 0;
+
+  ServerClientMessage* msg1 = malloc(sizeof(ServerClientMessage));
+  ServerClientMessage* msg2 = malloc(sizeof(ServerClientMessage));
 
   msg1->type = SERVER_CLIENT_CHAT_INIT;
   msg2->type = SERVER_CLIENT_CHAT_INIT;
 
-  msg1->clientKey = clients[id2]->key;
-  msg2->clientKey = clients[id1]->key;
+  msg1->chateeKey = clients[id2]->key;
+  msg2->chateeKey = clients[id1]->key;
 
   SEND_MESSAGE(clients[id1]->queueId, msg1);
   SEND_MESSAGE(clients[id2]->queueId, msg2);
-  printError();
 
   printf("Server -- initialized chat, %d <=> %d\n", id1, id2);
 }
@@ -136,7 +144,6 @@ void handleInit(ClientServerMessage* msg) {
 // RECEIVE MESSAGE
 // Note that we handle messages in order based on priority.
 void handleMessage() {
-  printf("Server -- waiting for message ..\n");
   ClientServerMessage* msg = malloc(sizeof(ClientServerMessage*));
 
   RECEIVE_MESSAGE(serverQueueId, msg, SERVER_MESSAGE_TYPE_PRIORITY);
@@ -162,11 +169,6 @@ void executeAtExit() { DELETE_QUEUE(serverQueueId); }
 int main(int argc, char* arrgv[]) {
   serverQueueId = CREATE_QUEUE(SERVER_KEY);
 
-  // If program crashed we delete previously created icp queue.
-  if (serverQueueId == -1) {
-    DELETE_QUEUE(GET_QUEUE(SERVER_KEY));
-    serverQueueId = CREATE_QUEUE(SERVER_KEY);
-  }
   signal(SIGINT, handleSignalExit);
   atexit(executeAtExit);
 

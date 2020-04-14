@@ -14,12 +14,11 @@
 #define CLIENT_SERVER_CONNECT 4
 #define CLIENT_SERVER_INIT 5
 
-#define CLIENT_CLIENT_MSG 1
-#define CLIENT_CLIENT_DICONNECT 2
-
 #define SERVER_CLIENT_CHAT_INIT 1
 #define SERVER_CLIENT_TERMINATE 2
 #define SERVER_CLIENT_REGISTRED 3
+#define CLIENT_CLIENT_MSG 4
+#define CLIENT_CLIENT_DICONNECT 5
 
 #define SERVER_MAX_CLIENTS_CAPACITY 32
 #define SERVER_MESSAGE_TYPE_PRIORITY (-6)
@@ -71,4 +70,3 @@ struct Client {
 void printError();
 int  stringEq(char* str1, char* str2);
 int  isQueueEmpty(int queueId);
-int  iPointer;
