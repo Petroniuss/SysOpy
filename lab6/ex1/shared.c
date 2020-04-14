@@ -1,8 +1,10 @@
 #include "shared.h"
 
 void printError() {
-  fprintf(stderr, "Value of errno: %d\n", errno);
-  perror("Error printed by perror");
+  if (errno != 0) {
+    fprintf(stderr, "Value of errno: %d\n", errno);
+    perror("Error printed by perror");
+  }
 }
 
 int stringEq(char* str1, char* str2) { return strcmp(str1, str2) == 0; }

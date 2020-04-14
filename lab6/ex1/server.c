@@ -8,6 +8,8 @@ int clientsRunningCount = 0;
 int waitingForClientsToTerminate = 0;
 int current = 0;
 
+// FIXME --> convert static allocation to dynamic!
+
 // HANDLE EXIT - CRTL+C
 void exitServer() {
   printf("Server exits...\n");
@@ -16,15 +18,15 @@ void exitServer() {
 }
 
 void handleSignalExit(int signal) {
-  ServerClientMessage msg;
-  msg.type = SERVER_CLIENT_TERMINATE;
+  ServerClientMessage* msg = malloc(sizeof(ServerClientMessage));
+  msg->type = SERVER_CLIENT_TERMINATE;
 
   if (clientsRunningCount <= 0)
     exitServer();
 
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (clients[i]) {
-      SEND_MESSAGE(clients[i]->clientId, &msg);
+      SEND_MESSAGE(clients[i]->clientId, msg);
     }
   }
 
@@ -33,12 +35,12 @@ void handleSignalExit(int signal) {
 // -------------------------
 
 // HANDLE - STOP
-void handleStop(ClientServerMessage msg) {
-  clients[msg.clientId] = NULL;
-  free(clients[msg.clientId]);
+void handleStop(ClientServerMessage* msg) {
+  clients[msg->clientId] = NULL;
+  free(clients[msg->clientId]);
   clientsRunningCount -= 1;
 
-  printf("Server -- Received STOP from %d\n", msg.clientId);
+  printf("Server -- Received STOP from %d\n", msg->clientId);
 
   if (waitingForClientsToTerminate <= 0) {
     exitServer();
@@ -47,13 +49,13 @@ void handleStop(ClientServerMessage msg) {
 // -------------------------
 
 // HANDLE - DISCONNECT
-void handleDisconnect(ClientServerMessage msg) {
-  clients[msg.clientId]->available = 1;
+void handleDisconnect(ClientServerMessage* msg) {
+  clients[msg->clientId]->available = 1;
 }
 // -------------------------
 
 // HANDLE - LIST
-void handleList(ClientServerMessage msg) {
+void handleList(ClientServerMessage* msg) {
   printf("Server - listing available clients...\n");
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (clients[i] && clients[i]->available) {
@@ -66,9 +68,9 @@ void handleList(ClientServerMessage msg) {
 // -------------------------
 
 // HANDLE - CONNECT
-void handleConnect(ClientServerMessage msg) {
-  int id1 = msg.clientId;
-  int id2 = msg.chateeId;
+void handleConnect(ClientServerMessage* msg) {
+  int id1 = msg->clientId;
+  int id2 = msg->chateeId;
 
   // Check if client under sent id is avaiable
   if (id2 < 0 || id2 >= SERVER_MAX_CLIENTS_CAPACITY || !clients[id2] ||
@@ -76,17 +78,17 @@ void handleConnect(ClientServerMessage msg) {
     printf("Server -- requested client is not avaiable\n");
   }
 
-  ClientServerMessage msg1;
-  ClientServerMessage msg2;
+  ClientServerMessage* msg1 = malloc(sizeof(ClientServerMessage));
+  ClientServerMessage* msg2 = malloc(sizeof(ClientServerMessage));
 
-  msg1.type = SERVER_CLIENT_CHAT_INIT;
-  msg2.type = SERVER_CLIENT_CHAT_INIT;
+  msg1->type = SERVER_CLIENT_CHAT_INIT;
+  msg2->type = SERVER_CLIENT_CHAT_INIT;
 
-  msg1.clientKey = clients[id2]->key;
-  msg2.clientKey = clients[id1]->key;
+  msg1->clientKey = clients[id2]->key;
+  msg2->clientKey = clients[id1]->key;
 
-  SEND_MESSAGE(clients[id1]->queueId, &msg1);
-  SEND_MESSAGE(clients[id2]->queueId, &msg2);
+  SEND_MESSAGE(clients[id1]->queueId, msg1);
+  SEND_MESSAGE(clients[id2]->queueId, msg2);
   printError();
 
   printf("Server -- initialized chat, %d <=> %d\n", id1, id2);
@@ -94,11 +96,10 @@ void handleConnect(ClientServerMessage msg) {
 // -------------------------
 
 // HANDLE - INIT
-void handleInit(ClientServerMessage msg) {
+void handleInit(ClientServerMessage* msg) {
   int pointer = -1;
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     pointer = (current + i) % SERVER_MAX_CLIENTS_CAPACITY;
-
     if (!clients[pointer]) {
       break;
     }
@@ -109,23 +110,25 @@ void handleInit(ClientServerMessage msg) {
   } else {
     Client* client = malloc(sizeof(Client));
     client->available = 1;
-    client->key = msg.clientKey;
+    client->key = msg->clientKey;
     client->clientId = pointer;
-    client->queueId = GET_QUEUE(msg.clientKey);
+    client->queueId = GET_QUEUE(msg->clientKey);
     // debug
     printError();
 
     clients[pointer] = client;
 
     // Notify client that he's now registered.
-    ServerClientMessage msg;
-    msg.type = SERVER_CLIENT_REGISTRED;
-    msg.clientId = pointer;
+    ServerClientMessage* scMsgP = malloc(sizeof(ServerClientMessage));
+    ServerClientMessage  scMsg = *scMsgP;
+    scMsg.type = SERVER_CLIENT_REGISTRED;
+    scMsg.clientId = pointer;
 
-    SEND_MESSAGE(client->queueId, &msg);
-    printf("Server -- registered client - id: %d, key: %d\n", client->queueId,
+    SEND_MESSAGE(client->queueId, &scMsg);
+    printf("Server -- registered client - id: %d, key: %d\n", client->clientId,
            client->key);
     printError();
+    free(scMsgP);
   }
 }
 // -------------------------
@@ -134,11 +137,11 @@ void handleInit(ClientServerMessage msg) {
 // Note that we handle messages in order based on priority.
 void handleMessage() {
   printf("Server -- waiting for message ..\n");
-  ClientServerMessage msg;
-  RECEIVE_MESSAGE(serverQueueId, &msg, SERVER_MESSAGE_TYPE_PRIORITY);
-  printError();
+  ClientServerMessage* msg = malloc(sizeof(ClientServerMessage*));
 
-  int type = msg.type;
+  RECEIVE_MESSAGE(serverQueueId, msg, SERVER_MESSAGE_TYPE_PRIORITY);
+
+  int type = msg->type;
   if (type == CLIENT_SERVER_STOP) {
     handleStop(msg);
   } else if (type == CLIENT_SERVER_DISCONNECT) {
@@ -152,12 +155,18 @@ void handleMessage() {
   } else {
     printf("Server -- unknown message type.\n");
   }
+
+  free(msg);
 }
 
 void executeAtExit() { DELETE_QUEUE(serverQueueId); }
 
 int main(int argc, char* arrgv[]) {
   serverQueueId = CREATE_QUEUE(SERVER_KEY);
+  if (serverQueueId == -1) {
+    DELETE_QUEUE(GET_QUEUE(SERVER_KEY));
+    serverQueueId = CREATE_QUEUE(SERVER_KEY);
+  }
   signal(SIGINT, handleSignalExit);
   atexit(executeAtExit);
 

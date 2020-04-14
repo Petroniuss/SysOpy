@@ -27,6 +27,7 @@ void registerMe() {
   RECEIVE_MESSAGE(clientQueueId, &scMsg, SERVER_CLIENT_REGISTRED);
   printError();
   clientId = scMsg.clientId;
+  printf("Client -- registered with id: %d\n", clientId);
 }
 // ----------------
 
