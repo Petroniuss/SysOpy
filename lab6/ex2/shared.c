@@ -25,12 +25,7 @@ char* concat(const char* s1, const char* s2) {
   return result;
 }
 
-char* getCurrentWorkingDirectory() {
-  char* buffer = malloc(sizeof(char) * PATH_MAX);
-  getcwd(buffer, sizeof(buffer));
-
-  return buffer;
-}
+char* getCurrentWorkingDirectory() { return getcwd(NULL, 0); }
 
 void printError() {
   if (errno != 0) {

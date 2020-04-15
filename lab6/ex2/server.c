@@ -174,6 +174,8 @@ void handleMessage() {
 
 int main(int argc, char* arrgv[]) {
   serverQueueDesc = CREATE_QUEUE(QUEUE_SERVER_PATH);
+  printf("%s\n", QUEUE_SERVER_PATH);
+  printError();
   signal(SIGINT, handleSignalExit);
 
   printf("Server running...\n");
