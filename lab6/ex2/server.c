@@ -11,6 +11,8 @@ int current = 0;
 // HANDLE EXIT - CRTL+C
 void exitServer() {
   printf("Server exits...\n");
+  CLOSE_QUEUE(serverQueueDesc);
+  DELETE_QUEUE(QUEUE_SERVER_NAME);
 
   exit(EXIT_SUCCESS);
 }
@@ -112,9 +114,9 @@ void handleConnect(char* msg) {
 
 // HANDLE - INIT
 void handleInit(char* msg) {
-  int   type, clientId;
+  int   type;
   char* name = malloc(MAX_MSG_LENGTH * sizeof(char));
-  sscanf(msg, "%d %d %s", &type, &clientId, name);
+  sscanf(msg, "%d %s", &type, name);
 
   int pointer = -1;
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
@@ -132,8 +134,11 @@ void handleInit(char* msg) {
     client->name = name;
     client->clientId = pointer;
     client->queueDesc = GET_QUEUE(name);
-    // debug
-    printError();
+
+    if (client->queueDesc == -1) {
+      printError();
+      printf("Faile to open client's queue\n");
+    }
 
     clients[pointer] = client;
 
@@ -145,7 +150,6 @@ void handleInit(char* msg) {
     clientsRunningCount += 1;
     printf("Server -- registered client - id: %d, path: %s\n", client->clientId,
            client->name);
-    printError();
   }
 }
 // -------------------------
@@ -167,15 +171,19 @@ void handleMessage() {
     handleConnect(msg);
   } else if (type == CLIENT_SERVER_INIT) {
     handleInit(msg);
+  } else {
+    printf("Unknown type\n");
   }
 
   free(msg);
 }
 
 int main(int argc, char* arrgv[]) {
-  serverQueueDesc = CREATE_QUEUE(QUEUE_SERVER_PATH);
-  printf("%s\n", QUEUE_SERVER_PATH);
-  printError();
+  serverQueueDesc = CREATE_QUEUE(QUEUE_SERVER_NAME);
+  if (serverQueueDesc == -1) {
+    printf("failed to open\n");
+    printError();
+  }
   signal(SIGINT, handleSignalExit);
 
   printf("Server running...\n");

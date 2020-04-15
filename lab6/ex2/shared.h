@@ -26,15 +26,15 @@
 #define SERVER_MAX_CLIENTS_CAPACITY 32
 #define MAX_MSG_LENGTH 256
 
-#define QUEUE_GENERATOR_PATH ("/queues-")
-#define QUEUE_SERVER_PATH (concat(QUEUE_GENERATOR_PATH, "server"))
-#define QUEUE_RANDOM_NAME (concat(QUEUE_GENERATOR_PATH, randomString(12)))
+#define QUEUE_GENERATOR_PREFIX ("/queues-")
+#define QUEUE_SERVER_NAME (concat(QUEUE_GENERATOR_PREFIX, "server"))
+#define QUEUE_CLIENT_RANDOM_NAME                                               \
+  (concat(QUEUE_GENERATOR_PREFIX, concat("client-", randomString(12))))
 
 #define DELETE_QUEUE(name) (mq_unlink(name))
 #define CLOSE_QUEUE(descr) (mq_close(descr))
-#define CREATE_QUEUE(name)                                                     \
-  (mq_open(name, O_RDWR | O_CREAT | O_EXCL, 0666, NULL))
-#define GET_QUEUE(name) (mq_open(name, O_RDWR))
+#define CREATE_QUEUE(name) (createQueue(name))
+#define GET_QUEUE(name) (mq_open(name, O_WRONLY))
 
 #define SEND_MESSAGE(desc, msgPointer, type)                                   \
   (mq_send(desc, msgPointer, strlen(msgPointer), type))
@@ -47,6 +47,7 @@ int   stringEq(char* str1, char* str2);
 char* randomString(int length);
 char* concat(const char* s1, const char* s2);
 char* getCurrentWorkingDirectory();
+int   createQueue(char* name);
 
 struct Client {
   int   clientId;
@@ -54,25 +55,3 @@ struct Client {
   char* name;
   int   available;
 } typedef Client;
-
-/*
-struct ClientServerMessage {
-  long  type;
-  int   clientId;
-  key_t clientKey;
-  int   chateeId;
-} typedef ClientServerMessage;
-
-struct ClientClientMessage {
-  long type;
-  char msg[MAX_MSG_LENGTH];
-} typedef ClientClientMessage;
-
-struct ServerClientMessage {
-  long  type;
-  int   clientId;
-  key_t chateeKey;
-} typedef ServerClientMessage;
-
-
-*/

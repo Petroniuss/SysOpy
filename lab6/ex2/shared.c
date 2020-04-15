@@ -33,3 +33,13 @@ void printError() {
     perror("Error printed by perror");
   }
 }
+
+int createQueue(char* name) {
+  struct mq_attr attr;
+  attr.mq_flags = 0;
+  attr.mq_maxmsg = 10;
+  attr.mq_msgsize = MAX_MSG_LENGTH - 1;
+  attr.mq_curmsgs = 0;
+
+  return mq_open(name, O_RDONLY | O_CREAT | O_EXCL, 0666, &attr);
+}
