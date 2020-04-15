@@ -26,7 +26,7 @@
 #define SERVER_MAX_CLIENTS_CAPACITY 32
 #define MAX_MSG_LENGTH 256
 
-#define QUEUE_GENERATOR_PATH (concat(getCurrentDirectory(), "/queues/"))
+#define QUEUE_GENERATOR_PATH (concat(getCurrentWorkingDirectory(), "/queues/"))
 #define QUEUE_SERVER_PATH (concat(QUEUE_GENERATOR_PATH, "server"))
 #define QUEUE_RANDOM_NAME (concat(QUEUE_GENERATOR_PATH, randomString(12)))
 

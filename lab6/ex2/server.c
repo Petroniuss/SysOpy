@@ -69,11 +69,11 @@ void handleList(char* msg) {
          clientId);
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (i == clientId) {
-      printf("\tClient --> id - %d, path - %d (ME)\n", clients[i]->clientId,
+      printf("\tClient --> id - %d, path - %s (ME)\n", clients[i]->clientId,
              clients[i]->name);
 
     } else if (clients[i] && clients[i]->available) {
-      printf("\tClient --> id - %d, path - %d\n", clients[i]->clientId,
+      printf("\tClient --> id - %d, path - %s\n", clients[i]->clientId,
              clients[i]->name);
     }
   }
@@ -97,8 +97,8 @@ void handleConnect(char* msg) {
   char msg1[MAX_MSG_LENGTH];
   char msg2[MAX_MSG_LENGTH];
 
-  sprintf(msg1, "%d %s", SERVER_CLIENT_CHAT_INIT, clients[id2]->name);
-  sprintf(msg2, "%d %s", SERVER_CLIENT_CHAT_INIT, clients[id1]->name);
+  sprintf(msg1, "%d %d %s", SERVER_CLIENT_CHAT_INIT, id2, clients[id2]->name);
+  sprintf(msg2, "%d %d %s", SERVER_CLIENT_CHAT_INIT, id1, clients[id1]->name);
 
   clients[id1]->available = 0;
   clients[id2]->available = 0;
@@ -139,9 +139,9 @@ void handleInit(char* msg) {
 
     // Notify client that he's now registered.
     char scMsg[MAX_MSG_LENGTH];
-    fprintf(scMsg, "%d %d", SERVER_CLIENT_REGISTRED, pointer);
+    sprintf(scMsg, "%d %d", SERVER_CLIENT_REGISTRED, pointer);
 
-    SEND_MESSAGE(client->name, scMsg, SERVER_CLIENT_REGISTRED);
+    SEND_MESSAGE(client->queueDesc, scMsg, SERVER_CLIENT_REGISTRED);
     clientsRunningCount += 1;
     printf("Server -- registered client - id: %d, path: %s\n", client->clientId,
            client->name);
@@ -153,8 +153,8 @@ void handleInit(char* msg) {
 // RECEIVE MESSAGE
 // Note that we handle messages in order based on priority.
 void handleMessage() {
-  char* msg = malloc(sizeof(char) * MAX_MSG_LENGTH);
-  int   type;
+  char*        msg = malloc(sizeof(char) * MAX_MSG_LENGTH);
+  unsigned int type;
   RECEIVE_MESSAGE(serverQueueDesc, msg, &type);
 
   if (type == CLIENT_SERVER_STOP) {

@@ -96,6 +96,9 @@ void handleConnect(ClientServerMessage* msg) {
   msg1->chateeKey = clients[id2]->key;
   msg2->chateeKey = clients[id1]->key;
 
+  msg1->clientId = id2;
+  msg2->clientId = id1;
+
   SEND_MESSAGE(clients[id1]->queueId, msg1);
   SEND_MESSAGE(clients[id2]->queueId, msg2);
 

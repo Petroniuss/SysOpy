@@ -25,10 +25,10 @@ void registerMe() {
 
   SEND_MESSAGE(serverQueueDesc, csMsg, CLIENT_SERVER_INIT);
 
-  char scMsg[MAX_MSG_LENGTH];
-  RECEIVE_MESSAGE(clientQueueDesc, scMsg, SERVER_CLIENT_REGISTRED);
+  char         scMsg[MAX_MSG_LENGTH];
+  unsigned int type;
+  RECEIVE_MESSAGE(clientQueueDesc, scMsg, &type);
 
-  int type;
   sscanf(scMsg, "%d %d", &type, &clientId);
   printf("Client -- registered with id: %d, key: %s\n", clientId, name);
 }
@@ -108,11 +108,12 @@ void handleDisconnect(char* msg) {
 
 // Handle - CHAT_INIT
 void handleChatInit(char* msg) {
-  int  type;
-  char chateeName[MAX_MSG_LENGTH];
-  sprintf(msg, "%d %d", &type, &chateeName);
-  printf("Client -- entering chat \n");
-  chateeQueueDesc = GET_QUEUE(chateeQueueDesc);
+  int          chateeId;
+  unsigned int type;
+  char         chateeName[MAX_MSG_LENGTH];
+  sscanf(msg, "%d %d %s", &type, &chateeId, chateeName);
+  printf("Client -- entering chat with %d..\n", chateeId);
+  chateeQueueDesc = GET_QUEUE(chateeName);
 }
 // ----------------
 
@@ -124,9 +125,9 @@ void handleTerminate() {
 
 // Handle - MSG
 void handleMessage(char* ccMsg) {
-  char msg[MAX_MSG_LENGTH];
-  int  type;
-  sprintf(ccMsg, "%d %s", &type, msg);
+  char         msg[MAX_MSG_LENGTH];
+  unsigned int type;
+  sscanf(ccMsg, "%d %s", &type, msg);
 
   printf("Client -- recieved msg..\n");
   printf("------------------------------------------------\n");
@@ -145,8 +146,8 @@ void registerNotification() {
 
 void handleSignal(int signal) {
 
-  char msg[MAX_MSG_LENGTH];
-  int  type;
+  char         msg[MAX_MSG_LENGTH];
+  unsigned int type;
 
   RECEIVE_MESSAGE(clientQueueDesc, msg, &type);
   if (type == SERVER_CLIENT_CHAT_INIT) {
@@ -165,7 +166,7 @@ void handleSignal(int signal) {
 }
 
 int main(int charc, char* argv[]) {
-  crand(time(NULL));
+  srand(time(NULL));
   name = QUEUE_RANDOM_NAME;
   clientQueueDesc = CREATE_QUEUE(name);
   // This is just in case our key was not unique.
