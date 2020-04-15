@@ -99,6 +99,10 @@ void sendMessage(char* message) {
   msg->type = CLIENT_CLIENT_MSG;
   strcpy(msg->msg, message);
 
+  printf("------------------------------------------------\n");
+  printf("Me       :\t%s\n", msg->msg);
+  printf("------------------------------------------------\n");
+
   SEND_MESSAGE(chateeQueueId, msg);
 }
 // ----------------
@@ -126,9 +130,8 @@ void handleTerminate() {
 
 // Handle - MSG
 void handleMessage(ClientClientMessage* msg) {
-  printf("Client -- recieved msg..\n");
   printf("------------------------------------------------\n");
-  printf("\t%s\n", msg->msg);
+  printf("Chatee says:\t%s\n", msg->msg);
   printf("------------------------------------------------\n");
 }
 // ----------------
