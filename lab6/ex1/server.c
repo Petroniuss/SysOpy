@@ -40,7 +40,7 @@ void handleStop(ClientServerMessage* msg) {
   free(clients[msg->clientId]);
   clientsRunningCount -= 1;
 
-  printf("Server -- Received STOP from %d\n", msg->clientId);
+  printf("Server -- Received STOP from client: %d\n", msg->clientId);
 
   if (waitingForClientsToTerminate && clientsRunningCount <= 0) {
     exitServer();
@@ -50,6 +50,8 @@ void handleStop(ClientServerMessage* msg) {
 
 // HANDLE - DISCONNECT
 void handleDisconnect(ClientServerMessage* msg) {
+  printf("Server -- client with id: %d disconnected and is now avaiable.\n",
+         msg->clientId);
   clients[msg->clientId]->available = 1;
 }
 // -------------------------
