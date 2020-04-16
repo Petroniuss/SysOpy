@@ -60,7 +60,7 @@ void sendList() {
 
 // SEND - DISCONNECT
 void sendDisconnect() {
-  printf("Client -- DISCONNECT\n");
+  printf("Client -- disconnected chat\n");
 
   char csMsg[MAX_MSG_LENGTH];
   sprintf(csMsg, "%d %d", CLIENT_SERVER_DISCONNECT, clientId);
@@ -70,7 +70,6 @@ void sendDisconnect() {
     char ccMsg[MAX_MSG_LENGTH];
     sprintf(csMsg, "%d %d", CLIENT_CLIENT_DICONNECT, clientId);
     SEND_MESSAGE(chateeQueueDesc, ccMsg, CLIENT_CLIENT_DICONNECT);
-    printf("%s\n", ccMsg);
 
     CLOSE_QUEUE(chateeQueueDesc);
     chateeQueueDesc = -1;
@@ -103,7 +102,6 @@ void sendMessage(char* message) {
 // HANDLE - DISCONNECT
 void handleDisconnect(char* msg) {
   printf("Client -- received disconnect msg from chatee..\n");
-  printf("%s\n", msg);
 
   chateeQueueDesc = -1;
   CLOSE_QUEUE(chateeQueueDesc);

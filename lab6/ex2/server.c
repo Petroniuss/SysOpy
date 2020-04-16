@@ -58,6 +58,8 @@ void handleDisconnect(char* msg) {
   sscanf(msg, "%d %d", &type, &clientId);
 
   clients[clientId]->available = 1;
+  printf("Server -- client with id %d left chat and is now available..\n",
+         clientId);
 }
 // -------------------------
 
