@@ -42,10 +42,13 @@ const int ID_NUMS[SERVER_MAX_CLIENTS_CAPACITY];
 #define RECEIVE_MESSAGE_NO_WAIT(id, msgPointer, type)                          \
   (msgrcv(id, msgPointer, sizeof(*msgPointer), type, IPC_NOWAIT))
 
+#define MESSAGE_SIGNAL SIGRTMIN
+
 struct ClientServerMessage {
   long  type;
   int   clientId;
   key_t clientKey;
+  int   clientPid;
   int   chateeId;
 } typedef ClientServerMessage;
 
@@ -58,11 +61,13 @@ struct ServerClientMessage {
   long  type;
   int   clientId;
   key_t chateeKey;
+  int   chateePid;
 } typedef ServerClientMessage;
 
 struct Client {
   key_t key;
   int   clientId;
+  int   clientPid;
   int   queueId;
   int   available;
 } typedef Client;

@@ -27,6 +27,7 @@ void handleSignalExit(int signal) {
   for (int i = 0; i < SERVER_MAX_CLIENTS_CAPACITY; i++) {
     if (clients[i]) {
       SEND_MESSAGE(clients[i]->queueId, msg);
+      kill(clients[i]->clientPid, MESSAGE_SIGNAL);
     }
   }
 
@@ -96,13 +97,18 @@ void handleConnect(ClientServerMessage* msg) {
   msg2->type = SERVER_CLIENT_CHAT_INIT;
 
   msg1->chateeKey = clients[id2]->key;
+  msg1->chateePid = clients[id2]->clientPid;
   msg2->chateeKey = clients[id1]->key;
+  msg2->chateeKey = clients[id1]->clientPid;
 
   msg1->clientId = id2;
   msg2->clientId = id1;
 
   SEND_MESSAGE(clients[id1]->queueId, msg1);
   SEND_MESSAGE(clients[id2]->queueId, msg2);
+
+  kill(clients[id1]->clientPid, MESSAGE_SIGNAL);
+  kill(clients[id2]->clientPid, MESSAGE_SIGNAL);
 
   printf("Server -- initialized chat, %d <=> %d\n", id1, id2);
 }
@@ -125,6 +131,7 @@ void handleInit(ClientServerMessage* msg) {
     client->available = 1;
     client->key = msg->clientKey;
     client->clientId = pointer;
+    client->clientPid = msg->clientPid;
     client->queueId = GET_QUEUE(msg->clientKey);
     // debug
     printError();

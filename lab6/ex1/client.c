@@ -8,6 +8,7 @@ key_t key;
 
 // When chatting
 int chateeQueueId = -1;
+int chateePid = -1;
 
 void exitClient() {
   printf("Client -- exit..\n");
@@ -19,6 +20,7 @@ void registerMe() {
   ClientServerMessage* csMsg = malloc(sizeof(ClientServerMessage));
   csMsg->clientKey = key;
   csMsg->type = CLIENT_SERVER_INIT;
+  csMsg->clientPid = getpid();
 
   SEND_MESSAGE(serverQueueId, csMsg);
 
@@ -74,7 +76,9 @@ void sendDisconnect() {
     ccMsg->type = CLIENT_CLIENT_DICONNECT;
 
     SEND_MESSAGE(chateeQueueId, ccMsg);
+    kill(chateePid, MESSAGE_SIGNAL);
     chateeQueueId = -1;
+    chateePid = -1;
     free(ccMsg);
   }
 }
@@ -104,6 +108,7 @@ void sendMessage(char* message) {
   printf("------------------------------------------------\n");
 
   SEND_MESSAGE(chateeQueueId, msg);
+  kill(chateePid, MESSAGE_SIGNAL);
 }
 // ----------------
 
@@ -111,6 +116,8 @@ void sendMessage(char* message) {
 void handleDisconnect(ClientClientMessage* msg) {
   printf("Client -- received disconnect msg from chatee..\n");
   chateeQueueId = -1;
+  chateePid = -1;
+
   sendDisconnect();
 }
 // ----------------
@@ -119,6 +126,7 @@ void handleDisconnect(ClientClientMessage* msg) {
 void handleChatInit(ServerClientMessage* msg) {
   printf("Client -- entering chat with client %d..\n", msg->clientId);
   chateeQueueId = GET_QUEUE(msg->chateeKey);
+  chateePid = msg->chateePid;
 }
 // ----------------
 
@@ -138,6 +146,38 @@ void handleMessage(ClientClientMessage* msg) {
 
 void execuateAtExit() { DELETE_QUEUE(clientQueueId); }
 
+// Wake up when you receive signal!
+void handleMessageSignal(int signal) {
+  while (!isQueueEmpty(clientQueueId)) {
+    ServerClientMessage* scMsg = malloc(sizeof(ServerClientMessage));
+    ClientClientMessage* ccMsg = malloc(sizeof(ClientClientMessage));
+
+    // Handle messages from server
+    if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, scMsg,
+                                SERVER_CLIENT_CHAT_INIT) != -1) {
+      handleChatInit(scMsg);
+    }
+
+    if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, scMsg,
+                                SERVER_CLIENT_TERMINATE) != -1) {
+      handleTerminate();
+    }
+    // Handle messages from another client
+    if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, ccMsg, CLIENT_CLIENT_MSG) !=
+        -1) {
+      handleMessage(ccMsg);
+    }
+
+    if (RECEIVE_MESSAGE_NO_WAIT(clientQueueId, ccMsg,
+                                CLIENT_CLIENT_DICONNECT) != -1) {
+      handleDisconnect(ccMsg);
+    }
+
+    free(scMsg);
+    free(ccMsg);
+  }
+}
+
 int main(int charc, char* argv[]) {
   key = UNIQUE_KEY;
   clientQueueId = CREATE_QUEUE(key);
@@ -149,6 +189,7 @@ int main(int charc, char* argv[]) {
   serverQueueId = GET_QUEUE(SERVER_KEY);
 
   signal(SIGINT, handleExitSignal);
+  signal(MESSAGE_SIGNAL, handleMessageSignal);
   atexit(execuateAtExit);
 
   registerMe();
