@@ -9,6 +9,16 @@ Order newOrder(int num) {
   return *order;
 }
 
+void printLog(char* type, char* msg) {
+    int pid = getpid();
+    char timeBuff [TIME_BUFFER_LENGTH];
+    currentTime(timeBuff);
+
+    printf("[%s %d%s, %s%s %s] %s%s:%s %s\n", ANSI_COLOR_RED,  pid, ANSI_COLOR_RESET,
+            ANSI_COLOR_YELLOW, timeBuff, ANSI_COLOR_RESET,
+            ANSI_COLOR_GREEN, type, ANSI_COLOR_RESET, msg);
+}
+
 char* currentTime(char* buffer) {
     struct timeval curTime;
     gettimeofday(&curTime, NULL);
@@ -16,7 +26,7 @@ char* currentTime(char* buffer) {
     char buff [82];
   
     strftime(buff, 80, "%Y-%m-%d %H:%M:%S", localtime(&curTime.tv_sec));
-    sprintf(buffer, "%s:%03d", buffer, milli);
+    sprintf(buffer, "%s:%03d", buff, milli);
 
     return buffer;
 }
@@ -51,6 +61,37 @@ void printOrder(Order order) {
 
 int freeSpaces(Counter* counter) {
     return NO_MAX_ORDERS - (counter -> orders_packed + counter -> orders_waiting);
+}
+
+int  findNextEmpty(int startI, Order* orders) {
+    int i = startI;
+    while (true) {
+        if (orders[i].num == 0) {
+            return i;
+        }
+
+        i += 1;
+    }
+}
+
+int  findNextUnpacked(int startI, Order* orders) {
+    int i = startI;
+    while (true) {
+        if (!orders[i].packed) {
+            return i;
+        }
+
+        i += 1;
+    }
+}
+
+int  findNextPacked(int startI, Order* orders) {
+    int i = startI;
+    while (true) {
+        if (orders[i].packed) {
+            return i;
+        }
+    }
 }
 
 //--------------------------- SYSTEM V ----------------------------- 

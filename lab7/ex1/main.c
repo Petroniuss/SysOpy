@@ -7,7 +7,7 @@
 int    childrenPids [NO_TOTAL_WORKERS];
 
 void handleExit(int signal) {
-    printf("Terminating upon receiving signal %d...\n", signal);
+    printf("Terminating upon receiving signal %d - SIGINT...\n", signal);
     for (int i = 0; i < NO_TOTAL_WORKERS; i++) {
         kill(childrenPids[i], SIGINT); 
     }
@@ -16,6 +16,8 @@ void handleExit(int signal) {
 int main() {
     int shArrayId = createSharedArray();
     int shCounterId = createSharedCounter();
+    int semaphoreId = createSemaphore();
+    printError();
     
     Counter* counter = getCounter(shCounterId);
     counter -> orders_packed = 0;
@@ -67,7 +69,7 @@ int main() {
         waitpid(childrenPids[i], NULL, 0);    
     }
 
-
+    deleteSemaphore(semaphoreId);
     detachSharedArray(orders);
     detachSharedCounter(counter);
     deleteSharedCounter(shCounterId);
