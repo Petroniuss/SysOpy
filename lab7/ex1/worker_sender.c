@@ -1,26 +1,45 @@
 #include "shared.h"
 
 Order* orders;
+Counter* counter;
 int shArrayId;
+int shCounterId;
 int semaphoreId;
 
 void cleanup() {
-   detachSharedArray(orders); 
+    detachSharedArray(orders); 
+    detachSharedCounter(counter);
 }
 
 int main() {
     atexit(cleanup);
     shArrayId = getSharedArrayId();
+    shCounterId = getSharedCounterId();
     orders    = getOrders(shArrayId);
     semaphoreId = getSemaphore();
-    char timeBuff [TIME_BUFFER_LENGTH];
+    counter = getCounter(shCounterId);
 
-    P(semaphoreId);
-    printf("Pid: %d acquired semaphore... sleeping for 2sec...\n", getpid());
-    sleep(1);
-    currentTime(timeBuff);
-    printf("Time:%s, Pid: %d releasing semaphore...\n", timeBuff, getpid());
-    V(semaphoreId);    
+    char buff [84];
+    int i = 0;
+    while (true) {
+        P(semaphoreId);
+
+        if (counter -> orders_packed > 0) {
+            i = findNextPacked(i, orders);            
+            
+            orders[i].num *= 3;
+            counter -> orders_packed -= 1;
+
+            sprintf(buff, "Sent order of size: %d.. Orders to prepare: %d; orders to send %d", 
+                    orders[i].num, counter -> orders_waiting, counter -> orders_packed);
+            printLog(WORKER_TYPE_SENDER, buff);
+
+            orders[i].num = 0;
+            orders[i].packed = false;
+        } 
+
+        V(semaphoreId);
+    }
 
     return 0;
 }

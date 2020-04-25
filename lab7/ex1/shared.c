@@ -14,7 +14,8 @@ void printLog(char* type, char* msg) {
     char timeBuff [TIME_BUFFER_LENGTH];
     currentTime(timeBuff);
 
-    printf("[%s %d%s, %s%s %s] %s%s:%s %s\n", ANSI_COLOR_RED,  pid, ANSI_COLOR_RESET,
+    printf("[%s %d%s, %s%s %s] %s%s:          %s %s\n",
+            ANSI_COLOR_RED,  pid, ANSI_COLOR_RESET,
             ANSI_COLOR_YELLOW, timeBuff, ANSI_COLOR_RESET,
             ANSI_COLOR_GREEN, type, ANSI_COLOR_RESET, msg);
 }
@@ -70,7 +71,7 @@ int  findNextEmpty(int startI, Order* orders) {
             return i;
         }
 
-        i += 1;
+        i = (i + 1) % NO_MAX_ORDERS;
     }
 }
 
@@ -81,7 +82,7 @@ int  findNextUnpacked(int startI, Order* orders) {
             return i;
         }
 
-        i += 1;
+        i = (i + 1) % NO_MAX_ORDERS;
     }
 }
 
@@ -91,6 +92,8 @@ int  findNextPacked(int startI, Order* orders) {
         if (orders[i].packed) {
             return i;
         }
+
+        i = (i + 1) % NO_MAX_ORDERS;
     }
 }
 
@@ -139,7 +142,7 @@ int getSharedCounterId() {
 }
 
 int createSharedCounter() {
-    return shmget(SHM_KEY_ORDERS_ARRAY, sizeof(Counter), 0666 | IPC_CREAT);
+    return shmget(SHM_KEY_COUNTER, sizeof(Counter), 0666 | IPC_CREAT);
 }
 
 void detachSharedCounter(Counter* counter) {
@@ -196,35 +199,4 @@ void V(int semaphoreId) {
     
     semop(semaphoreId, bufs, 1);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

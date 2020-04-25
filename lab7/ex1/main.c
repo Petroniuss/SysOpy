@@ -17,7 +17,6 @@ int main() {
     int shArrayId = createSharedArray();
     int shCounterId = createSharedCounter();
     int semaphoreId = createSemaphore();
-    printError();
     
     Counter* counter = getCounter(shCounterId);
     counter -> orders_packed = 0;
@@ -25,7 +24,7 @@ int main() {
 
     Order* orders = getOrders(shArrayId);
     for (int i = 0; i < NO_MAX_ORDERS; i++) {
-        orders[i] = newOrder(i);
+        orders[i] = newOrder(0);
     }
 
     int pidI = 0;
