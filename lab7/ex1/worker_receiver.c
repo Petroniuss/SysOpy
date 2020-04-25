@@ -35,7 +35,9 @@ int main() {
 
             sprintf(buff, "Added number: %d.. Orders to prepare: %d; orders to send %d", 
                     orders[i].num, counter -> orders_waiting, counter -> orders_packed);
-            printLog(WORKER_TYPE_RECEIVER, buff);
+            printLog(WORKER_TYPE_RECEIVER, i, buff);
+
+            i = ((i + 1) % NO_MAX_ORDERS);
         } 
 
         V(semaphoreId);

@@ -25,7 +25,7 @@ int main() {
         P(semaphoreId);
 
         if (counter -> orders_waiting > 0) {
-            i = findNextUnpacked(i, orders);            
+            i = findNextWaiting(i, orders);            
             
             orders[i].num *= 2;
             orders[i].packed = true;
@@ -35,7 +35,9 @@ int main() {
 
             sprintf(buff, "Prepared order of size: %d.. Orders to prepare: %d; orders to send %d", 
                     orders[i].num, counter -> orders_waiting, counter -> orders_packed);
-            printLog(WORKER_TYPE_PACKER, buff);
+
+            printLog(WORKER_TYPE_PACKER, i, buff);
+            i = ((i + 1) % NO_MAX_ORDERS);
         } 
 
         V(semaphoreId);

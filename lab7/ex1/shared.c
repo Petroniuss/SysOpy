@@ -9,15 +9,16 @@ Order newOrder(int num) {
   return *order;
 }
 
-void printLog(char* type, char* msg) {
+void printLog(char* type, int i, char* msg) {
     int pid = getpid();
     char timeBuff [TIME_BUFFER_LENGTH];
     currentTime(timeBuff);
 
-    printf("[%s %d%s, %s%s %s] %s%s:          %s %s\n",
+    printf("[%s %d%s, %s%s %s] %s%s%s:           %s %s(Order index: %d)%s\n",
             ANSI_COLOR_RED,  pid, ANSI_COLOR_RESET,
             ANSI_COLOR_YELLOW, timeBuff, ANSI_COLOR_RESET,
-            ANSI_COLOR_GREEN, type, ANSI_COLOR_RESET, msg);
+            ANSI_COLOR_GREEN, type, ANSI_COLOR_RESET, msg,
+            ANSI_COLOR_MAGENTA, i, ANSI_COLOR_RESET);
 }
 
 char* currentTime(char* buffer) {
@@ -56,6 +57,14 @@ void printError() {
     }
 }
 
+void printOrders(Order* orders) {
+    printf("[ ");
+    for (int i = 0; i < NO_MAX_ORDERS; i++) {
+        printf("%d ", orders[i].num);    
+    }
+    printf("]\n");
+}
+
 void printOrder(Order order) {
     printf("Order { num: %d, packed: %d }\n", order.num, order.packed);
 }
@@ -75,10 +84,10 @@ int  findNextEmpty(int startI, Order* orders) {
     }
 }
 
-int  findNextUnpacked(int startI, Order* orders) {
+int  findNextWaiting(int startI, Order* orders) {
     int i = startI;
     while (true) {
-        if (!orders[i].packed) {
+        if (!orders[i].packed && orders[i].num != 0) {
             return i;
         }
 

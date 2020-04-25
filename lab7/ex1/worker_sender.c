@@ -32,10 +32,12 @@ int main() {
 
             sprintf(buff, "Sent order of size: %d.. Orders to prepare: %d; orders to send %d", 
                     orders[i].num, counter -> orders_waiting, counter -> orders_packed);
-            printLog(WORKER_TYPE_SENDER, buff);
+            printLog(WORKER_TYPE_SENDER, i, buff);
 
             orders[i].num = 0;
             orders[i].packed = false;
+
+            i = ((i + 1) % NO_MAX_ORDERS);
         } 
 
         V(semaphoreId);

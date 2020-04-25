@@ -29,7 +29,7 @@
 
 */
 
-#define NO_MAX_ORDERS 10
+#define NO_MAX_ORDERS 5
 #define SHM_KEY_ORDERS_ARRAY (ftok(getenv("HOME"), 12))
 #define SHM_KEY_COUNTER (ftok(getenv("HOME"), 124))
 #define SEMAPHORE_KEY (ftok(getenv("HOME"), 64))
@@ -39,8 +39,8 @@
 #define WORKER_TYPE_RECEIVER "RECEIVER"
 
 #define NO_WORKER_PACKER 2
-#define NO_WORKER_RECEIVER 5
-#define NO_WORKER_SENDER 1
+#define NO_WORKER_RECEIVER 4
+#define NO_WORKER_SENDER 3
 #define NO_TOTAL_WORKERS (NO_WORKER_SENDER + NO_WORKER_PACKER + NO_WORKER_RECEIVER)
 
 #define TIME_BUFFER_LENGTH 84
@@ -72,11 +72,13 @@ union semun {
 // Task specific utils...
 Order newOrder(int num);
 void printOrder(Order order);
-void printLog(char* type, char* msg);
+void printOrders(Order* orders);
+void printLog(char* type, int i, char* msg);
 int  freeSpaces(Counter* counter);
 int  findNextEmpty(int startI, Order* orders);
-int  findNextUnpacked(int startI, Order* orders);
+int  findNextWaiting(int startI, Order* orders);
 int  findNextPacked(int startI, Order* orders);
+
 
 // General utils...
 char*  currentTime(char* buffer);
