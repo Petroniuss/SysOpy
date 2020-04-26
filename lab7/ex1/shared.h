@@ -1,19 +1,18 @@
 #define _XOPEN_SOURCE
+#include <errno.h>
+#include <signal.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <sys/shm.h>
 #include <sys/time.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <time.h>
 #include <unistd.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <sys/wait.h>
-#include <signal.h>
 
 /*
    Let's define common iterface so that this will be the only
@@ -29,7 +28,7 @@
 
 */
 
-#define NO_MAX_ORDERS 5
+#define NO_MAX_ORDERS 100
 #define SHM_KEY_ORDERS_ARRAY (ftok(getenv("HOME"), 12))
 #define SHM_KEY_COUNTER (ftok(getenv("HOME"), 124))
 #define SEMAPHORE_KEY (ftok(getenv("HOME"), 64))
@@ -38,78 +37,73 @@
 #define WORKER_TYPE_PACKER "PACKER"
 #define WORKER_TYPE_RECEIVER "RECEIVER"
 
-#define NO_WORKER_PACKER 2
-#define NO_WORKER_RECEIVER 4
-#define NO_WORKER_SENDER 3
-#define NO_TOTAL_WORKERS (NO_WORKER_SENDER + NO_WORKER_PACKER + NO_WORKER_RECEIVER)
+#define NO_WORKER_PACKER 5
+#define NO_WORKER_RECEIVER 10
+#define NO_WORKER_SENDER 8
+#define NO_TOTAL_WORKERS                                                       \
+  (NO_WORKER_SENDER + NO_WORKER_PACKER + NO_WORKER_RECEIVER)
 
 #define TIME_BUFFER_LENGTH 84
-#define ANSI_COLOR_RED     "\x1b[31m"
-#define ANSI_COLOR_GREEN   "\x1b[32m"
-#define ANSI_COLOR_YELLOW  "\x1b[33m"
-#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_GREEN "\x1b[32m"
+#define ANSI_COLOR_YELLOW "\x1b[33m"
+#define ANSI_COLOR_BLUE "\x1b[34m"
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
-#define ANSI_COLOR_CYAN    "\x1b[36m"
-#define ANSI_COLOR_RESET   "\x1b[0m"
-
+#define ANSI_COLOR_CYAN "\x1b[36m"
+#define ANSI_COLOR_RESET "\x1b[0m"
 
 struct Order {
-    int  num;
-    bool packed;
+  int  num;
+  bool packed;
 } typedef Order;
 
 struct Counter {
-    int  orders_waiting;
-    int  orders_packed;
+  int orders_waiting;
+  int orders_packed;
 } typedef Counter;
 
 union semun {
-    int val;
-    struct semid_ds *buf;
-    unsigned short* array;
+  int              val;
+  struct semid_ds* buf;
+  unsigned short*  array;
 } arg;
 
 // Task specific utils...
 Order newOrder(int num);
-void printOrder(Order order);
-void printOrders(Order* orders);
-void printLog(char* type, int i, char* msg);
-int  freeSpaces(Counter* counter);
-int  findNextEmpty(int startI, Order* orders);
-int  findNextWaiting(int startI, Order* orders);
-int  findNextPacked(int startI, Order* orders);
-
+void  printOrder(Order order);
+void  printOrders(Order* orders);
+void  printLog(char* type, int i, char* msg);
+int   freeSpaces(Counter* counter);
+int   findNextEmpty(int startI, Order* orders);
+int   findNextWaiting(int startI, Order* orders);
+int   findNextPacked(int startI, Order* orders);
 
 // General utils...
-char*  currentTime(char* buffer);
-bool stringEq(char* str1, char* str2);
+char* currentTime(char* buffer);
+bool  stringEq(char* str1, char* str2);
 char* randomString(int length);
-void printError();
+void  printError();
 
-//--------------------------- SYSTEM V ----------------------------- 
+//--------------------------- SYSTEM V -----------------------------
 
 // Shared array...
-int getSharedArrayId();
-int createSharedArray();
-void detachSharedArray(Order* orders);
-void deleteSharedArray(int id); 
+int    getSharedArrayId();
+int    createSharedArray();
+void   detachSharedArray(Order* orders);
+void   deleteSharedArray(int id);
 Order* getOrders(int id);
 
 // Shared counter ..
-int getSharedCounterId();
-int createSharedCounter();
-void detachSharedCounter(Counter* counter);
-void deleteSharedCounter(int id); 
+int      getSharedCounterId();
+int      createSharedCounter();
+void     detachSharedCounter(Counter* counter);
+void     deleteSharedCounter(int id);
 Counter* getCounter(int id);
 
 // Seamphore..
-int createSemaphore(); 
+int  createSemaphore();
 void deleteSemaphore(int semaphoreId);
-int getSemaphore();
+int  getSemaphore();
 
 void P(int semaphoreId);
 void V(int semaphoreId);
-
-
-
-
