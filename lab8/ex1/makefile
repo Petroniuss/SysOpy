@@ -36,7 +36,7 @@ main: $(OBJ)
 	$(CC) -c -o $@ $<
 
 clean: 
-	rm -r *.o main 
+	rm -r *.o main tester
 
 .PHONY:
 	clean runServer
