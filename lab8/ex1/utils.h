@@ -8,9 +8,10 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <math.h>
+#include <time.h>
 
 struct PGM {
-  int witdth;
+  int width;
   int height;
   int M;
 } typedef PGM;
@@ -22,4 +23,4 @@ int readKth(FILE* ptr, int k);
 void ignoreK(FILE* ptr, int k);
 bool stringEq(const char* x, const char* y);
 void printResults(int* data, int m);
-
+void saveResults(int* results, int m, const char* filename);

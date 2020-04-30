@@ -3,47 +3,67 @@
 int m;
 char* filename;
 PGM* header;
+int** threadResults;
 
 struct SignThreadArg {
     int from;
     int until;
+    int k;
 } typedef SignThreadArg;
 
 struct ThreadArg {
     int k;
 } typedef ThreadArg;
 
+
+long int getTimeMicroSec(struct timespec start, struct timespec end) {
+    long int elapsedTime;
+
+    elapsedTime = (end.tv_sec - start.tv_sec) * 1e6;
+    elapsedTime += (end.tv_nsec - start.tv_nsec) * 1e-3;
+
+    return elapsedTime;
+}
+
 void* threadSign(void* signThreadArg) {
+    struct timespec start;
+    clock_gettime(CLOCK_REALTIME, &start);
+    
     SignThreadArg* arg = (SignThreadArg*) signThreadArg;
-    int* threadResults = calloc(header -> M + 1, sizeof(int)); 
-    printf("Thread: %d until %d\n", arg -> from, arg -> until);
+    threadResults[arg -> k]  = calloc(header -> M + 1, sizeof(int)); 
 
     FILE* filePtr = init(filename);
     int value;
-    int count = 0;
-    for (int i = 0; i < (header -> witdth) * (header -> height); i++) {
+    for (int i = 0; i < (header -> width) * (header -> height); i++) {
         value = readNext(filePtr);
         if (value >= arg -> from && value < arg -> until) {
-            count++;
-            threadResults[value] += 1;
+            threadResults[arg -> k][value] += 1;
         }
     }
 
-    printf("Last: %d\n", count);
     free(arg);
     fclose(filePtr);
-    return threadResults;
+    struct timespec end;
+    clock_gettime(CLOCK_REALTIME, &end);
+
+
+    return (void*) getTimeMicroSec(start, end);
 }
 
 void* threadBlock(void* threadArg) {
+    struct timespec start;
+    clock_gettime(CLOCK_REALTIME, &start);
     ThreadArg* arg = (ThreadArg*) threadArg;
-    int* threadResults = calloc(header -> M + 1, sizeof(int)); 
+    threadResults[arg -> k]  = calloc(header -> M + 1, sizeof(int)); 
     FILE* filePtr = init(filename);
 
-    int readK = ceil(header -> witdth / m);
-    int ignore = (header -> witdth) - readK; 
+    int readK = (header -> width) / m;
+    int ignore = (header -> width) - readK; 
+    // Just in case we get odd number.
+    if (arg -> k == m - 1) {
+        readK += readK % m; 
+    }
 
-    printf("ReadK: %d, ignoreK: %d, firstignore: %d\n", readK, ignore, arg -> k * readK);
     int value;
     for (int j = 0; j < header -> height; j++) {
         if (j == 0) {
@@ -54,46 +74,59 @@ void* threadBlock(void* threadArg) {
 
         for (int i = 0; i < readK; i++) {
             value = readNext(filePtr);
-            threadResults[value] += 1;
+            threadResults[arg -> k][value] += 1;
         }
     }
     
     free(arg);
     fclose(filePtr);
-    return threadResults;
+    struct timespec end;
+    clock_gettime(CLOCK_REALTIME, &end);
+
+
+    return (void*) getTimeMicroSec(start, end);
 }
 
 void* threadInterleaved(void* threadArg) {
+    struct timespec start;
+    clock_gettime(CLOCK_REALTIME, &start);
     ThreadArg* arg = (ThreadArg*) threadArg;
-    int* threadResults = calloc(header -> M + 1, sizeof(int)); 
+    threadResults[arg -> k]  = calloc(header -> M + 1, sizeof(int)); 
     FILE* filePtr = init(filename);
 
     int value;
     int leapSize = m - 1;
-    int max = header -> witdth * header -> height;
+    int max = header -> width * header -> height;
 
     ignoreK(filePtr, arg -> k);
     value = readNext(filePtr);
-    threadResults[value] += 1;
-    printf("First %d \n", value);
+    threadResults[arg -> k][value] += 1;
     for (int i = arg -> k + leapSize + 1; i < max; i += leapSize + 1) {
         ignoreK(filePtr, leapSize);
         value = readNext(filePtr);
-        threadResults[value] += 1;
+        threadResults[arg -> k][value] += 1;
     }
 
-    printf("Last %d \n", value);
     fclose(filePtr);
     free(arg);
-    return threadResults;
+    struct timespec end;
+    clock_gettime(CLOCK_REALTIME, &end);
+    struct timespec endCpu;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &endCpu);
+
+
+    return (void*) getTimeMicroSec(start, end);
 }
 
-// Try roboto mono!
 int main(int charc, char* argv []) {
     if (charc < 5) {
         printf("Not enaugh arguments!\n");
         return -1;
     }
+    struct timespec startReal;
+    clock_gettime(CLOCK_REALTIME, &startReal);
+    struct timespec startCpu;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &startCpu);
 
     m = atoi(argv[1]);
     char* flag = argv[2];
@@ -102,6 +135,7 @@ int main(int charc, char* argv []) {
 
     header = readHeaderPGM(filename);
     pthread_t* threads = malloc(sizeof(pthread_t) * m);
+    threadResults = malloc(sizeof(int*) * m);
 
     if (stringEq(flag, "sign")) {
         int reminder = (header -> M + 1) % m;
@@ -121,7 +155,7 @@ int main(int charc, char* argv []) {
            SignThreadArg* args = malloc(sizeof(SignThreadArg));
            args -> from = from;
            args -> until = until;
-           printf("%d %d\n", args -> from, args -> until);
+           args -> k = i;
 
            pthread_create(&threads[i], NULL, threadSign, (void*) args);
         }
@@ -144,33 +178,39 @@ int main(int charc, char* argv []) {
     } else {
         printf("Given flag: %s not supported!\n", flag);
     }
+    printf("-------------------------------------------------------\n");
+    printf("Running %s option, with %d threads.\n", flag, m);
 
     // Wait for threads termination and gather results in a generic way.
     int* results = calloc(header -> M + 1, sizeof(int)); 
-    void* threadResults; 
+    void* threadReturnValue;
     for (int i = 0; i < m; i++) {
-        pthread_join(threads[i], &threadResults);
-        int* threadValues = (int*) threadResults;
+        pthread_join(threads[i], &threadReturnValue);
+        long int threadTime = (long int) threadReturnValue;
+        printf("Thread: %lx, elapsed time: %ld mircoseconds.\n", threads[i], threadTime);
         for (int p = 0; p < header -> M + 1; p++) {
-            results[p] += threadValues[p];
+            results[p] += threadResults[i][p];
         }
 
-        //printResults(threadValues, header -> M + 1);
-        int sum = 0; 
-        for (int i = 0; i < header -> M + 1; i++) {
-            sum += results[i];
-        }
-        //printf("%d vs %d\n", sum, header -> witdth * header -> height);
-        free(threadResults);
+        free(threadResults[i]);
     }
 
+    saveResults(results, header -> M + 1, outputFilename);
+    printf("\n");
 
-    int sum = 0; 
-    for (int i = 0; i < header -> M + 1; i++) {
-        sum += results[i];
-    }
-    printf("%d vs %d\n", sum, header -> witdth * header -> height);
-    printResults(results, header -> M + 1);
+    struct timespec endReal;
+    clock_gettime(CLOCK_REALTIME, &endReal);
+    struct timespec endCpu;
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &endCpu);
+
+    long int elapsedCpuTime = getTimeMicroSec(startCpu, endCpu);
+    long int elapsedRealTime = getTimeMicroSec(startReal, endReal);
+
+    printf("Total cpu time: %ld mircoseconds.\n", elapsedCpuTime);
+    printf("Total elapsed (real) time: %ld mircoseconds.\n", elapsedRealTime);
+    printf("-------------------------------------------------------\n\n");
+    
+    free(threadResults);
     free(results);
     free(threads);
 

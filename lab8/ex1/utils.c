@@ -7,7 +7,7 @@ PGM* readHeaderPGM(const char* filename) {
     char magicNum[16];
     // Read magic number and ignore following comment.
     fscanf(ptr, "%s\n#%*[^\n]\n", magicNum);
-    fscanf(ptr, "%d %d %d", &header->witdth, &header->height, &header->M);
+    fscanf(ptr, "%d %d %d", &header->width, &header->height, &header->M);
 
     fclose(ptr);
     return header;
@@ -67,3 +67,12 @@ void printResults(int* data, int m) {
     }       
     printf("---------------------------------------------------------------------------------\n");
 }
+
+void saveResults(int* results, int m, const char* filename) {
+    FILE* ptr = fopen(filename, "w");
+    for (int i = 0; i < m; i++) {
+        fprintf(ptr, "%d %d\n", i, results[i]);
+    }
+}
+
+
