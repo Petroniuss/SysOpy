@@ -1,48 +1,37 @@
 #include "utils.h"
 
-PGM* readHeaderPGM(const char* filename) {
-    PGM*  header = malloc(sizeof(PGM));
+int** readImg(const char* filename, PGM* header) {
     FILE* ptr = fopen(filename, "r");
-
     char magicNum[16];
     // Read magic number and ignore following comment.
     fscanf(ptr, "%s\n#%*[^\n]\n", magicNum);
     fscanf(ptr, "%d %d %d", &header->width, &header->height, &header->M);
 
+    int** img = malloc(sizeof(int*) * header-> height);
+    for (int j = 0; j < header -> height; j++) {
+        img[j] = malloc(sizeof(int) * header -> width);
+        for(int i = 0; i < header -> width; i++) {
+            img[j][i] = readNext(ptr);
+        }
+    }
+
     fclose(ptr);
-    return header;
+    return img;
 }
 
-FILE* init(const char* filename) {
-    FILE* ptr = fopen(filename, "r");
+void freeImg(int** img, PGM* header) {
+    for (int j = 0; j < header -> height; j++) {
+        free(img[j]);
+    }
 
-    fscanf(ptr, "%*s\n#%*[^\n]\n");
-    fscanf(ptr, "%*d %*d %*d");
-
-    return ptr;
+    free(img);
 }
 
 int readNext(FILE* ptr) {
-    int v;
-    fscanf(ptr, "%d", &v);
+    int value;
+    fscanf(ptr, "%d", &value);
 
-    return v;
-}
-
-int readKth(FILE* ptr, int k) {
-    int v;
-    while (k-- > 0) {
-        fscanf(ptr, "%d", &v);
-    }
-
-    return v;
-}
-
-void ignoreK(FILE* ptr, int k) {
-    int x;
-    while (k-- > 0) {
-        fscanf(ptr, "%d", &x);
-    }
+    return value;
 }
 
 // Stupid c does not even have normal boolean type..

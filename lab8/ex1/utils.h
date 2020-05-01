@@ -16,11 +16,10 @@ struct PGM {
   int M;
 } typedef PGM;
 
-PGM* readHeaderPGM(const char* filename);
-FILE* init(const char* filename);
+int** readImg(const char* filename, PGM* header);
+void freeImg(int** img, PGM* header);
 int readNext(FILE* ptr);
-int readKth(FILE* ptr, int k);
-void ignoreK(FILE* ptr, int k);
 bool stringEq(const char* x, const char* y);
 void printResults(int* data, int m);
 void saveResults(int* results, int m, const char* filename);
+

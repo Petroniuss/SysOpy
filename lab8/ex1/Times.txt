@@ -4,130 +4,130 @@
 
 -------------------------------------------------------
 Running sign option, with 1 threads.
-Thread: 7fd5e8bf5700, elapsed time: 24281 mircoseconds.
 
-Total cpu time: 21090 mircoseconds.
-Total elapsed (real) time: 24795 mircoseconds.
+Thread: 7fcca84d5700, elapsed time: 1604 mircoseconds.
+Total cpu time: 230 mircoseconds.
+Total elapsed (real) time: 1905 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running sign option, with 2 threads.
-Thread: 7ff133af8700, elapsed time: 23893 mircoseconds.
-Thread: 7ff1332f7700, elapsed time: 23867 mircoseconds.
 
-Total cpu time: 29071 mircoseconds.
-Total elapsed (real) time: 24646 mircoseconds.
+Thread: 7f0c45140700, elapsed time: 1882 mircoseconds.
+Thread: 7f0c4493f700, elapsed time: 1971 mircoseconds.
+Total cpu time: 547 mircoseconds.
+Total elapsed (real) time: 2544 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running sign option, with 4 threads.
-Thread: 7f1eb0a4c700, elapsed time: 23568 mircoseconds.
-Thread: 7f1eb024b700, elapsed time: 23895 mircoseconds.
-Thread: 7f1eafa4a700, elapsed time: 23733 mircoseconds.
-Thread: 7f1eaf249700, elapsed time: 24244 mircoseconds.
 
-Total cpu time: 75448 mircoseconds.
-Total elapsed (real) time: 25380 mircoseconds.
+Thread: 7f7702b69700, elapsed time: 1339 mircoseconds.
+Thread: 7f7702368700, elapsed time: 2203 mircoseconds.
+Thread: 7f7701b67700, elapsed time: 2235 mircoseconds.
+Thread: 7f7701366700, elapsed time: 1440 mircoseconds.
+Total cpu time: 5052 mircoseconds.
+Total elapsed (real) time: 3065 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running sign option, with 8 threads.
-Thread: 7f7c6e49d700, elapsed time: 46412 mircoseconds.
-Thread: 7f7c6dc9c700, elapsed time: 33346 mircoseconds.
-Thread: 7f7c6d49b700, elapsed time: 43438 mircoseconds.
-Thread: 7f7c6cc9a700, elapsed time: 33672 mircoseconds.
-Thread: 7f7c67fff700, elapsed time: 46800 mircoseconds.
-Thread: 7f7c677fe700, elapsed time: 37935 mircoseconds.
-Thread: 7f7c66ffd700, elapsed time: 25443 mircoseconds.
-Thread: 7f7c667fc700, elapsed time: 24472 mircoseconds.
 
-Total cpu time: 164293 mircoseconds.
-Total elapsed (real) time: 47847 mircoseconds.
+Thread: 7f1ed9d42700, elapsed time: 1146 mircoseconds.
+Thread: 7f1ed9541700, elapsed time: 1794 mircoseconds.
+Thread: 7f1ed8d40700, elapsed time: 2839 mircoseconds.
+Thread: 7f1ed3fff700, elapsed time: 2734 mircoseconds.
+Thread: 7f1ecbfff700, elapsed time: 4135 mircoseconds.
+Thread: 7f1ed37fe700, elapsed time: 1783 mircoseconds.
+Thread: 7f1ed2ffd700, elapsed time: 1318 mircoseconds.
+Thread: 7f1ed27fc700, elapsed time: 850 mircoseconds.
+Total cpu time: 7982 mircoseconds.
+Total elapsed (real) time: 5539 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running block option, with 1 threads.
-Thread: 7f4f3c942700, elapsed time: 23078 mircoseconds.
 
-Total cpu time: 22896 mircoseconds.
-Total elapsed (real) time: 23380 mircoseconds.
+Thread: 7f6d6345e700, elapsed time: 1464 mircoseconds.
+Total cpu time: 249 mircoseconds.
+Total elapsed (real) time: 1837 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running block option, with 2 threads.
-Thread: 7fe8ba7a5700, elapsed time: 22091 mircoseconds.
-Thread: 7fe8b9fa4700, elapsed time: 22050 mircoseconds.
 
-Total cpu time: 37021 mircoseconds.
-Total elapsed (real) time: 22373 mircoseconds.
+Thread: 7f1074242700, elapsed time: 1225 mircoseconds.
+Thread: 7f1073a41700, elapsed time: 1150 mircoseconds.
+Total cpu time: 1013 mircoseconds.
+Total elapsed (real) time: 1581 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running block option, with 4 threads.
-Thread: 7f54aa7fd700, elapsed time: 22332 mircoseconds.
-Thread: 7f54a9ffc700, elapsed time: 22575 mircoseconds.
-Thread: 7f54a97fb700, elapsed time: 22650 mircoseconds.
-Thread: 7f54a8ffa700, elapsed time: 22514 mircoseconds.
 
-Total cpu time: 66688 mircoseconds.
-Total elapsed (real) time: 23015 mircoseconds.
+Thread: 7ffbbded2700, elapsed time: 1544 mircoseconds.
+Thread: 7ffbbd6d1700, elapsed time: 984 mircoseconds.
+Thread: 7ffbbced0700, elapsed time: 1331 mircoseconds.
+Thread: 7ffbb7fff700, elapsed time: 1261 mircoseconds.
+Total cpu time: 4085 mircoseconds.
+Total elapsed (real) time: 2545 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running block option, with 8 threads.
-Thread: 7f605b30c700, elapsed time: 22580 mircoseconds.
-Thread: 7f605ab0b700, elapsed time: 22794 mircoseconds.
-Thread: 7f605a30a700, elapsed time: 22869 mircoseconds.
-Thread: 7f6059b09700, elapsed time: 46599 mircoseconds.
-Thread: 7f6059308700, elapsed time: 32408 mircoseconds.
-Thread: 7f6058b07700, elapsed time: 24247 mircoseconds.
-Thread: 7f6043fff700, elapsed time: 22219 mircoseconds.
-Thread: 7f60437fe700, elapsed time: 22009 mircoseconds.
 
-Total cpu time: 160993 mircoseconds.
-Total elapsed (real) time: 63196 mircoseconds.
+Thread: 7facabc83700, elapsed time: 935 mircoseconds.
+Thread: 7facab482700, elapsed time: 655 mircoseconds.
+Thread: 7facaac81700, elapsed time: 467 mircoseconds.
+Thread: 7facaa480700, elapsed time: 738 mircoseconds.
+Thread: 7faca9c7f700, elapsed time: 272 mircoseconds.
+Thread: 7faca947e700, elapsed time: 171 mircoseconds.
+Thread: 7faca8c7d700, elapsed time: 251 mircoseconds.
+Thread: 7faca3fff700, elapsed time: 212 mircoseconds.
+Total cpu time: 2949 mircoseconds.
+Total elapsed (real) time: 2076 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running interleaved option, with 1 threads.
-Thread: 7f0463073700, elapsed time: 23111 mircoseconds.
 
-Total cpu time: 23393 mircoseconds.
-Total elapsed (real) time: 23380 mircoseconds.
+Thread: 7f053d7ef700, elapsed time: 2508 mircoseconds.
+Total cpu time: 2847 mircoseconds.
+Total elapsed (real) time: 2788 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running interleaved option, with 2 threads.
-Thread: 7f4332896700, elapsed time: 23404 mircoseconds.
-Thread: 7f4332095700, elapsed time: 23481 mircoseconds.
 
-Total cpu time: 47111 mircoseconds.
-Total elapsed (real) time: 23893 mircoseconds.
+Thread: 7f6304f28700, elapsed time: 1587 mircoseconds.
+Thread: 7f6304727700, elapsed time: 1278 mircoseconds.
+Total cpu time: 3544 mircoseconds.
+Total elapsed (real) time: 1937 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running interleaved option, with 4 threads.
-Thread: 7f9f54cd3700, elapsed time: 23094 mircoseconds.
-Thread: 7f9f544d2700, elapsed time: 23078 mircoseconds.
-Thread: 7f9f4bcd1700, elapsed time: 22663 mircoseconds.
-Thread: 7f9f53cd1700, elapsed time: 22531 mircoseconds.
 
-Total cpu time: 91733 mircoseconds.
-Total elapsed (real) time: 23590 mircoseconds.
+Thread: 7f06829ff700, elapsed time: 799 mircoseconds.
+Thread: 7f06821fe700, elapsed time: 1032 mircoseconds.
+Thread: 7f06819fd700, elapsed time: 1173 mircoseconds.
+Thread: 7f06811fc700, elapsed time: 755 mircoseconds.
+Total cpu time: 4736 mircoseconds.
+Total elapsed (real) time: 1854 mircoseconds.
 -------------------------------------------------------
 
 -------------------------------------------------------
 Running interleaved option, with 8 threads.
-Thread: 7f85dd22d700, elapsed time: 43154 mircoseconds.
-Thread: 7f85dca2c700, elapsed time: 34421 mircoseconds.
-Thread: 7f85d7fff700, elapsed time: 33809 mircoseconds.
-Thread: 7f85cffff700, elapsed time: 42921 mircoseconds.
-Thread: 7f85d77fe700, elapsed time: 32601 mircoseconds.
-Thread: 7f85d6ffd700, elapsed time: 32301 mircoseconds.
-Thread: 7f85d67fc700, elapsed time: 23861 mircoseconds.
-Thread: 7f85d5ffb700, elapsed time: 33439 mircoseconds.
 
-Total cpu time: 182401 mircoseconds.
-Total elapsed (real) time: 47113 mircoseconds.
+Thread: 7f5460871700, elapsed time: 407 mircoseconds.
+Thread: 7f5460070700, elapsed time: 468 mircoseconds.
+Thread: 7f545f86f700, elapsed time: 392 mircoseconds.
+Thread: 7f545f06e700, elapsed time: 673 mircoseconds.
+Thread: 7f545e86d700, elapsed time: 502 mircoseconds.
+Thread: 7f545e06c700, elapsed time: 385 mircoseconds.
+Thread: 7f545d86b700, elapsed time: 365 mircoseconds.
+Thread: 7f545d06a700, elapsed time: 391 mircoseconds.
+Total cpu time: 4671 mircoseconds.
+Total elapsed (real) time: 1842 mircoseconds.
 -------------------------------------------------------
 
