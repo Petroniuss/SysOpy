@@ -40,7 +40,7 @@ client: $(OBJ)
 	$(CC) -c -o $@ $<
 
 clean:
-	rm -r *.o server client
+	rm -rf *.o server client
 
 .PHONY:
 	clean run compile
