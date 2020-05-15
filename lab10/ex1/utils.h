@@ -44,10 +44,6 @@ struct sockaddr_un {
 #define MESSAGE_PING "ping"
 #define MESSAGE_NOT_UNIQUE  "not_unique"
 
-#define MV_BLANK  0
-#define MV_CIRCLE 1
-#define MV_CROSS  2
-
 #define MV_CHR_BLANK  '-'
 #define MV_CHR_CIRCLE 'O'
 #define MV_CHR_CROSS  'X'
@@ -61,7 +57,7 @@ struct Player {
 } typedef Player;
 
 struct Board {
-    int mv [3][3];
+    char mv [3][3];
     char nextMove;
 } typedef Board;
 
@@ -83,10 +79,6 @@ void move(Board* board, int position);
 
 void printBoard(Board* board);
 
-char mvToChar(int mv);
-
-int chhToMove(char v);
-
 char opposite(char mv);
 
 char crossCircle();
@@ -94,7 +86,7 @@ char crossCircle();
 // -1 for invalid, 0 for valid
 int validateMove(Board* board, char* errorBuff, int mv);
 
-bool gameover(Board* board); 
+int gameover(Board* board); 
 
 
 // creating valid messages

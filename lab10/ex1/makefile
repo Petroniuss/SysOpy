@@ -41,6 +41,7 @@ client: $(OBJ)
 
 clean:
 	rm -rf *.o server client
+	echo "Cleaned"
 
 .PHONY:
 	clean run compile

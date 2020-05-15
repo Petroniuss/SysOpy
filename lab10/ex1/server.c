@@ -15,9 +15,8 @@ char buffer [MESSAGE_BUFFER_LEN];
 void handleDisconnect(int i) {
     int sd = clientsSockets[i];
     int addrlen = sizeof(address);
-    getpeername(sd , (struct sockaddr*) &address ,(socklen_t*) &addrlen); printf("Client %s(%d) disconnected, ip %s, port %d \n",
-        players[i] -> name, i, 
-        inet_ntoa(address.sin_addr) , ntohs(address.sin_port)); 
+    getpeername(sd , (struct sockaddr*) &address ,(socklen_t*) &addrlen);
+    printf("[Server] Client %s(%d) disconnected\n", players[i] -> name, i);
         
     if (players[i] -> inGame) {
         int opponent = players[i] -> other;
@@ -49,6 +48,7 @@ void* pingThread(void* arg) {
                 Player* player = players[i];
                 // check if client responded to ping
                 if (player -> wasPinged && !player -> pingedBack) {
+                    printf("[Ping Thread] Client %s(%d) timed out\n", players[i] -> name, i);
                     handleDisconnect(i);
                 } else {
                     notificationMessage(buffer, MESSAGE_PING);
@@ -87,7 +87,7 @@ void cleanup() {
     close(unixSockfd);
 
     puts("");
-    printf("Server shutdwon -> closed all connections\n");
+    printf("[Server] shutdwon -> closed all connections\n");
 }
 
 int findOpponent(int j) {
@@ -159,7 +159,7 @@ int main(int charc, char* argv[]) {
     if ((listen(netSockfd, MAX_WAITING_CONNECTIONS)) != 0)   
         error("Listen failed");
     
-    printf("Server started on ipv4: %s (localhost), port: %d\n",
+    printf("[Server] INET socket started on ipv4: %s (localhost), port: %d\n",
             "127.0.0.1", ntohs(address.sin_port));
 
     // bind & listen unix socket
@@ -173,10 +173,10 @@ int main(int charc, char* argv[]) {
     if ((listen(unixSockfd, MAX_WAITING_CONNECTIONS)) != 0)   
         error("Listen unix socket failed");
 
-    printf("Server listening on path: %s \n", path);
+    printf("[Server] UNIX socket, listening on path: %s \n", path);
 
     int addrlen = sizeof(address);
-    puts("Waiting for connections");
+    puts("[Server] Waiting for connections");
 
     // start pinging thread
     pthread_t thr;
@@ -215,7 +215,7 @@ int main(int charc, char* argv[]) {
             if (newSocket == -1) 
                 error("Accept connection error");
 
-			printf("New connection, socket fd is %d, ip is : %s, port : %d \n",
+			printf("[Server] New connection, socket fd is %d, ip is : %s, port : %d \n",
                    newSocket , inet_ntoa(address.sin_addr),
                    ntohs(address.sin_port)); 
 		
@@ -234,7 +234,7 @@ int main(int charc, char* argv[]) {
             if (newSocket == -1) 
                 error("Accept connection error");
 
-			printf("New connection on unix socket, socket fd is %d\n", newSocket);
+			printf("[Server] New connection on unix socket, socket fd is %d\n", newSocket);
 		
             // add new socket/player
             for (int i = 0; i < MAX_CLIENTS; i++) {
@@ -278,7 +278,7 @@ int main(int charc, char* argv[]) {
                         // send wait message
                         notificationMessage(buffer, MESSAGE_WAIT);
                         send(newSocket, buffer, strlen(buffer), 0);
-                        printf("Sent wait message to player %s(%d)\n", name, i);
+                        printf("[Server] Sent wait message to player %s(%d)\n", name, i);
                     } else {
                         // start game 
                         char mark = crossCircle();
@@ -293,7 +293,7 @@ int main(int charc, char* argv[]) {
                         players[i] -> inGame = true;                 
                         players[opponent] -> inGame = true;
 
-                        printf("Starting game between %s(%d) and %s(%d)\n",
+                        printf("[Server] Starting game between %s(%d) and %s(%d)\n",
                             players[i] -> name, i, players[opponent] -> name, opponent);
 
                         // send players play message 
@@ -313,7 +313,7 @@ int main(int charc, char* argv[]) {
                 } else if(stringEq(header, MESSAGE_PING_BACK)) {
                     players[i] -> pingedBack = true;
                 } else {
-                    printf("Unknown message %s \n", buffer);
+                    printf("[Server] Unknown message %s \n", buffer);
                 }
             }
         }

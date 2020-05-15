@@ -106,9 +106,13 @@ int main(int charc, char* argv []) {
                 parseMoveMessage(buffer, &mv);
                 move(board, mv);
 
-                if (gameover(board)) {
+                int gameov = gameover(board);
+                if (gameov == 1) {
                     sprintf(buffer, "%s won!", otherPlayersName);
                     show(board, buffer);
+                    exit(EXIT_SUCCESS);
+                } else if (gameov == -1) {
+                    show(board, "Tie!");
                     exit(EXIT_SUCCESS);
                 } else {
                     show(board, "Your turn, type digit [0-8]");
@@ -168,8 +172,12 @@ int main(int charc, char* argv []) {
                         sprintf(buffer, "%s's turn", otherPlayersName);
                         show(board, buffer);
 
-                        if (gameover(board)) {
+                        int gameov = gameover(board);
+                        if (gameov == 1) {
                             show(board, "You won!");
+                            exit(EXIT_SUCCESS);
+                        } else if (gameov == -1) {
+                            show(board, "Tie!");
                             exit(EXIT_SUCCESS);
                         }
                     } else {

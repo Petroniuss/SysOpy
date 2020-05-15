@@ -28,17 +28,17 @@ void clearline() {
 
 Board* newBoard() {
     Board* board = malloc(sizeof(Board));
-    for (int i = 0; i < 9; i++) {
-        board -> mv[i / 3][i % 3] = MV_BLANK;
-    }
     board -> nextMove = MV_CHR_CIRCLE;
+    for (int i = 0; i < 9; i++) 
+        board -> mv[i / 3][i % 3] = MV_CHR_BLANK;
+
 
     return board;
 }
 
 //  msg format: ("move" - str) (position - int)
 void move(Board* board, int position) {
-    board -> mv[position / 3][position % 3] = chhToMove(board -> nextMove);
+    board -> mv[position / 3][position % 3] = board -> nextMove;
     board -> nextMove = opposite(board -> nextMove);
 }
 
@@ -48,9 +48,8 @@ void move(Board* board, int position) {
 void printBoard(Board* board) {
     printf("\t\t");
     for (int i = 0; i < 9; i++) {
-        int x  = board -> mv[i / 3][i % 3];
-        char mv = mvToChar(x);
-        printf("%c", mv);
+        char x  = board -> mv[i / 3][i % 3];
+        printf("%c", x);
         if (i % 3 == 2)
             printf("\n");
         else
@@ -59,32 +58,6 @@ void printBoard(Board* board) {
         if (i % 3 == 2 && i != 8)
             printf("\t\t");
     }
-}
-
-char mvToChar(int mv) {
-    if (mv == MV_BLANK) 
-        return MV_CHR_BLANK;
-    else if (mv == MV_CIRCLE)
-        return MV_CHR_CIRCLE;
-    else if (mv == MV_CROSS)
-        return MV_CHR_CROSS; 
-    else 
-        error("Bad mv..");
-
-    return 'x';
-}
-
-int chhToMove(char v) {
-    if (v == MV_CHR_BLANK) 
-        return MV_BLANK; 
-    else if (v == MV_CHR_CIRCLE)
-        return MV_CIRCLE;
-    else if (v == MV_CHR_CROSS)
-        return MV_CROSS;
-    else
-        error("Sth bad happend");
-    
-    return -1;
 }
 
 char opposite(char mv) {
@@ -98,7 +71,7 @@ char opposite(char mv) {
 int validateMove(Board* board, char* errorBuff, int mv) {
     if (mv < 0 || mv >= 9)
         sprintf(errorBuff, "%s", "Move must be between 0 and 9");
-    else if (board -> mv[mv / 3][mv % 3] != MV_BLANK)
+    else if (board -> mv[mv / 3][mv % 3] != MV_CHR_BLANK)
         sprintf(errorBuff, "%s", "This position is already taken");
     else 
         return 0;
@@ -107,15 +80,16 @@ int validateMove(Board* board, char* errorBuff, int mv) {
 }
 
 // should be performed after move
-bool gameover(Board* board) {
-    int x = chhToMove(opposite(board -> nextMove));
+// 1 gameover, -1 pat, 0 still in game
+int gameover(Board* board) {
+    char x = opposite(board -> nextMove);
     int matched = 0;
 
     // Check rows
     for (int j = 0; j < 3; j++) {
         matched = 0;
         for (int i = 0; i < 3; i++) {
-            int y = board -> mv [j][i];
+            char y = board -> mv [j][i];
             if (x != y)
                 break;
             else 
@@ -129,7 +103,7 @@ bool gameover(Board* board) {
     for (int j = 0; j < 3; j++) {
         matched = 0;
         for (int i = 0; i < 3; i++) {
-            int y = board -> mv [i][j];
+            char y = board -> mv [i][j];
             if (x != y)
                 break;
             else 
@@ -142,7 +116,7 @@ bool gameover(Board* board) {
     // Check diagonals
     matched = 0;
     for (int i = 0; i < 3; i++) {
-        int y = board -> mv [2 - i][i];
+        char y = board -> mv [2 - i][i];
         if (x != y)
             break;
         else 
@@ -153,7 +127,7 @@ bool gameover(Board* board) {
 
     matched = 0;
     for (int i = 0; i < 3; i++) {
-        int y = board -> mv [i][i];
+        char y = board -> mv [i][i];
         if (x != y)
             break;
         else 
@@ -162,7 +136,16 @@ bool gameover(Board* board) {
     if (matched == 3)
         return true;
 
-    return false;
+    matched = 0;
+    for (int i = 0; i < 9; i++) {
+        if (board -> mv[i / 3][i % 3] != MV_CHR_BLANK)
+            matched += 1;
+    }
+    
+    if (matched == 9) 
+        return -1;
+
+    return 0;
 }
 
 void notificationMessage(char* buffer, char* notification) {
