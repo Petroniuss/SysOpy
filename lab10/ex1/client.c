@@ -155,7 +155,9 @@ int main(int charc, char* argv []) {
         if (FD_ISSET(stdinfd, &s_rd)) {
             read(stdinfd, buffer, MESSAGE_BUFFER_LEN);
             // validate user input
-            if (mark != board -> nextMove) {
+            if (board == NULL) {
+                clearline();
+            } else if (mark != board -> nextMove) {
                 clearline();
                 show(board, "Wait for your turn!");
             } else {
