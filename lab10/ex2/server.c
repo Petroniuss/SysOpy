@@ -278,6 +278,7 @@ int main(int charc, char* argv[]) {
                 occupied[i] = 1; 
                 // handle non unique name
                 if (!uniqueName(name)) {
+                    printf("[Server] Not unique name! %s\n", name);
                     notificationMessage(buffer, MESSAGE_NOT_UNIQUE);
                     sendBuff(i);
                     handleDisconnect(i);
