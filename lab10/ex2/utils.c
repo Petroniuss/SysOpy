@@ -7,7 +7,7 @@ void error(const char* msg) {
         perror("Error printed by perror");
     }
 
-    exit(EXIT_FAILURE);
+    exit(EXIT_SUCCESS);
 }
 
 void show(Board* board, const char* comment) {

@@ -52,7 +52,7 @@ void unixSocket(char* path) {
 
     sockfd = socket(AF_UNIX, SOCK_DGRAM, 0);
 
-    // bind client to some random path (this shoudl be uquivalent so setting flag SO_PASCRED)
+    // autobind
     randPath = randomString(12);
     struct sockaddr_un client_addr;
     memset(&client_addr, 0, sizeof(client_addr));
@@ -60,17 +60,15 @@ void unixSocket(char* path) {
     strncpy(client_addr.sun_path, randPath, 108);
     bind(sockfd, (struct sockaddr *) &client_addr, sizeof(client_addr));
 
-    // autobind
     int opt = 1;  
     setsockopt(sockfd, SOL_SOCKET, SO_PASSCRED, (char *)&opt, sizeof(opt));
     if (sockfd < 0)
         error("Failed to create socket");
     
     if (connect(sockfd, (struct sockaddr*) &addr, sizeof(addr)) < 0) 
-        error("Connection failed");
+        error("Failed to establish connection");
 } 
 
-// todo unix socket fails to rcv messages
 int main(int charc, char* argv []) {
     srand(time(NULL));
     if (charc < 3)
@@ -78,6 +76,10 @@ int main(int charc, char* argv []) {
 
     char* name = argv[1];
     char* mode = argv[2];
+
+    atexit(cleanup);
+    signal(SIGINT, sighandler);
+    printf("\n");
 
     // connect using either socket
     if (stringEq(mode, MODE_NET)) {
@@ -96,13 +98,10 @@ int main(int charc, char* argv []) {
     } else 
         error("Unknown option");
 
-    atexit(cleanup);
-    signal(SIGINT, sighandler);
-    printf("\n");
-
     // once connected handle game logic
     nameMessage(buffer, name);
-    send(sockfd, buffer, strlen(buffer), 0);
+    if (send(sockfd, buffer, strlen(buffer), MSG_CONFIRM) <= 0)
+        error("Failed to establish connection");
 
     fd_set s_rd;
     int stdinfd = fileno(stdin);

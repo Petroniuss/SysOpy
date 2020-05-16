@@ -1,6 +1,7 @@
 #include "utils.h"
 
-int pingEvery = 3;
+// ping every second
+int pingEvery = 1;
 int netSockfd, unixSockfd;
 char* path;
 Player** players;
@@ -108,6 +109,7 @@ void* pingThread(void* arg) {
                     notificationMessage(buffer, MESSAGE_PING);
                     sendBuff(i);
                     player -> wasPinged = true;
+                    player -> pingedBack = false;
                 }
             }
         }
