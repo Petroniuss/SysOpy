@@ -54,6 +54,7 @@ void* pingThread(void* arg) {
                     notificationMessage(buffer, MESSAGE_PING);
                     send(clientsSockets[i], buffer, strlen(buffer), 0);
                     player -> wasPinged = true;
+                    player -> pingedBack = false;
                 }
             }
         }
